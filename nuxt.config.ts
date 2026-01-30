@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
-  devtools: { enabled: false }, // Desactivado para evitar warning del iframe
+  devtools: { enabled: false },
   
   modules: [
     '@nuxtjs/supabase',
@@ -23,5 +23,17 @@ export default defineNuxtConfig({
 
   supabase: {
     redirect: false
+  },
+
+  // Configuración para producción
+  nitro: {
+    preset: 'node-server'
+  },
+
+  runtimeConfig: {
+    public: {
+      supabaseUrl: process.env.SUPABASE_URL,
+      supabaseKey: process.env.SUPABASE_KEY
+    }
   }
 })
