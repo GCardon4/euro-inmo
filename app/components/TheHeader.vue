@@ -14,7 +14,15 @@
         <NuxtLink to="/properties" class="nav-link">Propiedades</NuxtLink>
         <NuxtLink to="/about" class="nav-link">Nosotros</NuxtLink>
         <NuxtLink to="/contact" class="nav-link">Contacto</NuxtLink>
-        <NuxtLink to="/admin/dashboard" class="nav-link nav-link-admin">Admin</NuxtLink>
+        
+        <!-- Si está autenticado -->
+        <NuxtLink v-if="authStore.isAuthenticated" to="/admin/dashboard" class="nav-link nav-link-admin">
+          Dashboard
+        </NuxtLink>
+        <!-- Si no está autenticado -->
+        <NuxtLink v-else to="/login" class="nav-link nav-link-admin">
+          Login
+        </NuxtLink>
       </nav>
 
       <!-- Botón menú móvil -->
@@ -31,12 +39,25 @@
       <NuxtLink to="/properties" class="nav-link-mobile" @click="closeMenu">Propiedades</NuxtLink>
       <NuxtLink to="/about" class="nav-link-mobile" @click="closeMenu">Nosotros</NuxtLink>
       <NuxtLink to="/contact" class="nav-link-mobile" @click="closeMenu">Contacto</NuxtLink>
-      <NuxtLink to="/admin/dashboard" class="nav-link-mobile" @click="closeMenu">Admin</NuxtLink>
+      
+      <!-- Si está autenticado -->
+      <NuxtLink v-if="authStore.isAuthenticated" to="/admin/dashboard" class="nav-link-mobile" @click="closeMenu">
+        Dashboard
+      </NuxtLink>
+      <!-- Si no está autenticado -->
+      <NuxtLink v-else to="/login" class="nav-link-mobile" @click="closeMenu">
+        Login
+      </NuxtLink>
     </nav>
   </header>
 </template>
 
 <script setup>
+import { useAuthStore } from '~/stores/auth'
+
+// Store de autenticación
+const authStore = useAuthStore()
+
 // Estado del menú móvil
 const isMenuOpen = ref(false)
 
@@ -49,6 +70,11 @@ const toggleMenu = () => {
 const closeMenu = () => {
   isMenuOpen.value = false
 }
+
+// Inicializar autenticación
+onMounted(async () => {
+  await authStore.initAuth()
+})
 </script>
 
 <style scoped>
