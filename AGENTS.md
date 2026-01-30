@@ -20,6 +20,10 @@ Pagina Web para empresa inmobiliaria, ubicada en el sector del Oriente Antioque�
 - Category (categorias) / Categorías de las propiedades, Apartamento, Casa, Finca, Lote, Local
 - Status (status) / Estado de la Propiedad Arriendo/Venta
 - Amenities (amenities) / Características de la propiedad
+- State (state) / Departamento donde se encuentra la propiedad ubicada
+- City (city) / Ciudad o Municipio donde se encuentra la propiedad
+- Zone (zone) / Zona o vereda de la ciudad o municipio
+- Properties Views (properties_view) / Vistas por propiedad
 
 ### Funcionalidades Principales
 
