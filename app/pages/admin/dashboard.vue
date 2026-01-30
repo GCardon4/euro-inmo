@@ -7,14 +7,6 @@
           <h1>Dashboard Administrativo</h1>
           <p>Bienvenido, {{ authStore.fullName || 'Usuario' }}</p>
         </div>
-        <div class="header-actions">
-          <NuxtLink to="/" class="btn-secondary">
-            Ver Sitio
-          </NuxtLink>
-          <button @click="handleLogout" class="btn-logout">
-            Cerrar Sesión
-          </button>
-        </div>
       </div>
     </div>
 
@@ -57,30 +49,42 @@
 
       <!-- Acciones rápidas -->
       <div class="quick-actions">
-        <h2>Acciones Rápidas</h2>
+        <h2>Gestión del Sistema</h2>
         <div class="actions-grid">
-          <NuxtLink to="/admin/createProperty" class="action-card">
-            <span class="action-icon">➕</span>
-            <h3>Nueva Propiedad</h3>
-            <p>Agregar una nueva propiedad al sistema</p>
+          <NuxtLink to="/admin/properties" class="action-card">
+            <span class="action-icon">🏠</span>
+            <h3>Propiedades</h3>
+            <p>Administrar inmuebles y propiedades</p>
           </NuxtLink>
 
-          <NuxtLink to="/admin/properties" class="action-card">
-            <span class="action-icon">📋</span>
-            <h3>Ver Propiedades</h3>
-            <p>Administrar propiedades existentes</p>
+          <NuxtLink to="/admin/agents" class="action-card">
+            <span class="action-icon">👥</span>
+            <h3>Agentes</h3>
+            <p>Gestionar agentes inmobiliarios</p>
+          </NuxtLink>
+
+          <NuxtLink to="/admin/categories" class="action-card">
+            <span class="action-icon">📂</span>
+            <h3>Categorías</h3>
+            <p>Administrar categorías de propiedades</p>
+          </NuxtLink>
+
+          <NuxtLink to="/admin/amenities" class="action-card">
+            <span class="action-icon">✨</span>
+            <h3>Características</h3>
+            <p>Gestionar características de inmuebles</p>
+          </NuxtLink>
+
+          <NuxtLink to="/admin/locations" class="action-card">
+            <span class="action-icon">📍</span>
+            <h3>Ubicaciones</h3>
+            <p>Gestionar ciudades y zonas</p>
           </NuxtLink>
 
           <NuxtLink to="/admin/users" class="action-card" v-if="authStore.isAdmin">
             <span class="action-icon">👤</span>
             <h3>Usuarios</h3>
             <p>Gestionar usuarios del sistema</p>
-          </NuxtLink>
-
-          <NuxtLink to="/admin/settings" class="action-card">
-            <span class="action-icon">⚙️</span>
-            <h3>Configuración</h3>
-            <p>Ajustes del sistema</p>
           </NuxtLink>
         </div>
       </div>
@@ -113,7 +117,8 @@ import { useAuthStore } from '~/stores/auth'
 
 // Middleware de autenticación
 definePageMeta({
-  middleware: 'auth'
+  middleware: 'auth',
+  layout: 'admin'
 })
 
 // Meta tags
@@ -210,11 +215,6 @@ const loadStats = async () => {
   }
 }
 
-// Manejar logout
-const handleLogout = async () => {
-  await authStore.signOut()
-}
-
 // Cargar datos al montar
 onMounted(() => {
   loadStats()
@@ -236,13 +236,10 @@ onMounted(() => {
 .header-content {
   max-width: 1400px;
   margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .user-info h1 {
-  font-size: 1.75rem;
+  font-size: 1.875rem;
   color: #111827;
   margin: 0 0 0.25rem 0;
 }
@@ -252,64 +249,27 @@ onMounted(() => {
   margin: 0;
 }
 
-.header-actions {
-  display: flex;
-  gap: 1rem;
-}
-
-.btn-secondary,
-.btn-logout {
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-decoration: none;
-  border: none;
-  font-size: 0.95rem;
-}
-
-.btn-secondary {
-  background: #e5e7eb;
-  color: #374151;
-}
-
-.btn-secondary:hover {
-  background: #d1d5db;
-}
-
-.btn-logout {
-  background: #ef4444;
-  color: white;
-}
-
-.btn-logout:hover {
-  background: #dc2626;
-}
-
 .dashboard-content {
+  padding: 2rem;
   max-width: 1400px;
   margin: 0 auto;
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
 }
 
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .stat-card {
   background: white;
   padding: 1.5rem;
-  border-radius: 1rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 0.75rem;
   display: flex;
   align-items: center;
   gap: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .stat-icon {
@@ -318,8 +278,7 @@ onMounted(() => {
 
 .stat-info h3 {
   font-size: 2rem;
-  font-weight: 800;
-  color: #2563eb;
+  color: #111827;
   margin: 0;
 }
 
@@ -333,8 +292,9 @@ onMounted(() => {
 .recent-section {
   background: white;
   padding: 2rem;
-  border-radius: 1rem;
+  border-radius: 0.75rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
 }
 
 .quick-actions h2,
@@ -427,17 +387,6 @@ onMounted(() => {
 
 /* Responsive */
 @media (max-width: 768px) {
-  .header-content {
-    flex-direction: column;
-    gap: 1rem;
-    align-items: flex-start;
-  }
-
-  .header-actions {
-    width: 100%;
-    flex-direction: column;
-  }
-
   .dashboard-content {
     padding: 1rem;
   }

@@ -16,7 +16,7 @@
         <NuxtLink to="/contact" class="nav-link">Contacto</NuxtLink>
         
         <!-- Si está autenticado -->
-        <NuxtLink v-if="authStore.isAuthenticated" to="/admin/dashboard" class="nav-link nav-link-admin">
+        <NuxtLink v-if="isAuthenticated" to="/admin/dashboard" class="nav-link nav-link-admin">
           Dashboard
         </NuxtLink>
         <!-- Si no está autenticado -->
@@ -41,7 +41,7 @@
       <NuxtLink to="/contact" class="nav-link-mobile" @click="closeMenu">Contacto</NuxtLink>
       
       <!-- Si está autenticado -->
-      <NuxtLink v-if="authStore.isAuthenticated" to="/admin/dashboard" class="nav-link-mobile" @click="closeMenu">
+      <NuxtLink v-if="isAuthenticated" to="/admin/dashboard" class="nav-link-mobile" @click="closeMenu">
         Dashboard
       </NuxtLink>
       <!-- Si no está autenticado -->
@@ -53,10 +53,12 @@
 </template>
 
 <script setup>
+import { storeToRefs } from 'pinia'
 import { useAuthStore } from '~/stores/auth'
 
 // Store de autenticación
 const authStore = useAuthStore()
+const { isAuthenticated, fullName } = storeToRefs(authStore)
 
 // Estado del menú móvil
 const isMenuOpen = ref(false)
