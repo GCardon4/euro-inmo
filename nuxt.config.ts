@@ -47,5 +47,24 @@ export default defineNuxtConfig({
   experimental: {
     // Usar esbuild en lugar de oxc
     watcher: 'chokidar'
+  },
+
+  // Forzar uso de esbuild en lugar de oxc-parser
+  typescript: {
+    tsConfig: {
+      compilerOptions: {
+        moduleResolution: 'bundler'
+      }
+    }
+  },
+
+  hooks: {
+    'nitro:config': (config) => {
+      // Deshabilitar oxc completamente
+      config.replace = {
+        ...config.replace,
+        'oxc-parser': 'esbuild'
+      }
+    }
   }
 })
