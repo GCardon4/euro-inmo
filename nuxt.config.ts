@@ -64,13 +64,17 @@ export default defineNuxtConfig({
     serveStatic: true,
     publicAssets: [
       {
-        baseURL: '',
-        dir: 'public',
-        maxAge: 60 * 60 * 24 * 7 // 7 días
+        baseURL: '/',
+        dir: '../public',
+        maxAge: 60 * 60 * 24 // 24 horas
       }
     ],
     routeRules: {
-      '/': { ssr: true },
+      '/': { ssr: false },
+      '/properties': { ssr: false },
+      '/about': { ssr: false },
+      '/contact': { ssr: false },
+      '/property-*': { ssr: false },
       '/admin/**': { ssr: true },
       '/_nuxt/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
       '/favicon.ico': { headers: { 'cache-control': 'public, max-age=86400' } },
