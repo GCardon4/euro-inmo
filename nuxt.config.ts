@@ -1,8 +1,8 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: '2025-07-15',
-  devtools: { enabled: true },
-  
+  compatibilityDate: '2024-11-01',
+  devtools: { enabled: false },
+
   modules: [
     '@nuxtjs/supabase',
     '@pinia/nuxt'
@@ -23,7 +23,7 @@ export default defineNuxtConfig({
         { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/logotipo-euroinmo.png' },
         { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/logotipo-euroinmo.png' },
         { rel: 'apple-touch-icon', sizes: '180x180', href: '/logotipo-euroinmo.png' },
-        { 
+        {
           rel: 'stylesheet',
           href: 'https://fonts.googleapis.com/icon?family=Material+Icons'
         }
@@ -34,36 +34,17 @@ export default defineNuxtConfig({
 
   supabase: {
     redirect: false,
-    url: process.env.SUPABASE_URL || '',
-    key: process.env.SUPABASE_KEY || '',
     redirectOptions: {
       login: '/login',
       callback: '/confirm',
       exclude: ['/', '/properties', '/about', '/contact', '/property-*']
-    },
-    cookieOptions: {
-      maxAge: 60 * 60 * 8,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production'
-    },
-    clientOptions: {
-      auth: {
-        flowType: 'pkce',
-        detectSessionInUrl: false,
-        persistSession: true,
-        autoRefreshToken: false
-      }
-    },
-    cookieName: 'sb-auth-token'
+    }
   },
 
   // Configuración para producción
   nitro: {
     preset: 'node-server',
     compressPublicAssets: true,
-    // Permitir que el servidor escuche en todas las interfaces
-    host: process.env.NITRO_HOST || '0.0.0.0',
-    port: process.env.NITRO_PORT || 3000,
     routeRules: {
       '/': { ssr: false },
       '/properties': { ssr: false },
