@@ -35,5 +35,17 @@ export default defineNuxtConfig({
       supabaseUrl: process.env.SUPABASE_URL,
       supabaseKey: process.env.SUPABASE_KEY
     }
+  },
+
+  // Deshabilitar oxc-parser para evitar problemas en producción
+  vite: {
+    esbuild: {
+      target: 'es2020'
+    }
+  },
+
+  experimental: {
+    // Usar esbuild en lugar de oxc
+    watcher: 'chokidar'
   }
 })
