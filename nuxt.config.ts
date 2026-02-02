@@ -61,14 +61,6 @@ export default defineNuxtConfig({
   nitro: {
     preset: 'node-server',
     compressPublicAssets: true,
-    serveStatic: true,
-    publicAssets: [
-      {
-        baseURL: '/',
-        dir: '../public',
-        maxAge: 60 * 60 * 24 // 24 horas
-      }
-    ],
     routeRules: {
       '/': { ssr: false },
       '/properties': { ssr: false },

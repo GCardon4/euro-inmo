@@ -4,7 +4,7 @@
       "nixPkgs": ["nodejs_22"]
     },
     "install": {
-      "cmds": ["npm ci"]
+      "cmds": ["npm ci --include=dev"]
     },
     "build": {
       "cmds": ["npm run build"]
@@ -12,5 +12,8 @@
   },
   "start": {
     "cmd": "node .output/server/index.mjs"
+  },
+  "staticAssets": {
+    "directory": ".output/public"
   }
 }
