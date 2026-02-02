@@ -5,7 +5,8 @@ aptPkgs = ["python3", "build-essential"]
 [phases.install]
 cmds = [
   "rm -rf node_modules package-lock.json .nuxt",
-  "NUXT_TELEMETRY_DISABLED=1 npm install --force"
+  "NUXT_TELEMETRY_DISABLED=1 npm install --force",
+  "npm install --no-save oxc-parser@0.42.0 || true"
 ]
 
 [phases.build]

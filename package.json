@@ -18,7 +18,7 @@
     "vue": "^3.5.26",
     "vue-router": "^4.6.4"
   },
-  "overrides": {
-    "oxc-parser": "npm:esbuild@latest"
+  "optionalDependencies": {
+    "oxc-parser": "^0.42.0"
   }
 }
