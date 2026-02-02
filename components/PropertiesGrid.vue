@@ -116,10 +116,7 @@ const fetchProperties = async () => {
         name,
         description,
         price,
-        bedrooms,
-        bathrooms,
-        area,
-        categorias!inner(name),
+        category!inner(name),
         status!inner(name),
         city!inner(name),
         zone(name)
@@ -142,13 +139,10 @@ const fetchProperties = async () => {
       id: prop.id,
       code: prop.code,
       name: prop.name,
-      category: prop.categorias?.name || 'Sin categoría',
+      category: prop.category?.name || 'Sin categoría',
       status: prop.status?.name || 'Disponible',
       location: prop.zone ? `${prop.zone.name}, ${prop.city.name}` : (prop.city?.name || 'Sin ubicación'),
       price: prop.price,
-      bedrooms: prop.bedrooms,
-      bathrooms: prop.bathrooms,
-      area: prop.area,
       imageUrl: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400' // Placeholder
     }))
   } catch (err) {

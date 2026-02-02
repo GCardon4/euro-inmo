@@ -17,7 +17,7 @@ Pagina Web para empresa inmobiliaria, ubicada en el sector del Oriente Antioque�
 - Profiles (profiles) / Usuarios
 - Properties (properties) / Propiedades, Vivienda o Inmueble
 - Roles (roles) / Roles creados = Admin, Asesor
-- Category (categorias) / Categorías de las propiedades, Apartamento, Casa, Finca, Lote, Local
+- Category (category) / Categorías de las propiedades, Apartamento, Casa, Finca, Lote, Local
 - Status (status) / Estado de la Propiedad Arriendo/Venta
 - Amenities (amenities) / Características de la propiedad
 - State (state) / Departamento donde se encuentra la propiedad ubicada
@@ -64,7 +64,7 @@ Pagina Web para empresa inmobiliaria, ubicada en el sector del Oriente Antioque�
 
 ##  Stack Tecnológico
 
-- **Frontend**: Nuxt 4
+- **Frontend**: Nuxt 3
 - **Rendering**: SSR
 - **Backend**: Supabase (Auth, PostgreSQL, Storage)
 - **Estado**: Pinia

@@ -256,6 +256,7 @@ onUnmounted(() => {
   font-size: 3.5rem;
   font-weight: 800;
   margin: 0 0 1rem 0;
+  color: white;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
   animation: fadeInUp 0.8s ease-out;
 }

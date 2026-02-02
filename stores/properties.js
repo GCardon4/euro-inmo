@@ -83,7 +83,7 @@ export const usePropertiesStore = defineStore('properties', {
           .from('properties')
           .select(`
             *,
-            categorias:category_id(*),
+            category:category_id(*),
             city:city_id(*),
             state:state_id(*)
           `)
@@ -116,7 +116,7 @@ export const usePropertiesStore = defineStore('properties', {
           .from('properties')
           .select(`
             *,
-            categorias:category_id(*),
+            category:category_id(*),
             city:city_id(*),
             state:state_id(*),
             zone:zone_id(*)

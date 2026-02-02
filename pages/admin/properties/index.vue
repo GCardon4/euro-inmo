@@ -57,7 +57,7 @@
           <tr v-for="property in filteredProperties" :key="property.id">
             <td><span class="code">{{ property.code }}</span></td>
             <td class="property-name">{{ property.name }}</td>
-            <td>{{ property.categorias?.name || '-' }}</td>
+            <td>{{ property.category?.name || '-' }}</td>
             <td>{{ property.city?.name || '-' }}</td>
             <td>
               <span class="badge" :class="property.status === 'Venta' ? 'badge-sale' : 'badge-rent'">
@@ -125,7 +125,7 @@ const loadProperties = async () => {
       .from('properties')
       .select(`
         *,
-        categorias:category_id(*),
+        category:category_id(*),
         city:city_id(*)
       `)
       .order('created_at', { ascending: false })
@@ -144,7 +144,7 @@ const loadProperties = async () => {
 const loadCategories = async () => {
   try {
     const { data, error } = await supabase
-      .from('categorias')
+      .from('category')
       .select('*')
       .order('name')
 

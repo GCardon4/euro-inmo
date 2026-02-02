@@ -30,7 +30,7 @@
       </p>
 
       <!-- Características principales -->
-      <div class="property-features">
+      <div class="property-features" v-if="property.bedrooms || property.bathrooms || property.area">
         <span v-if="property.bedrooms" class="feature">
           <Icon name="bed" custom-class="icon" />
           <span>{{ property.bedrooms }} hab.</span>

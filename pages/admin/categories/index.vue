@@ -67,7 +67,7 @@ const loadCategories = async () => {
   loading.value = true
   try {
     const { data, error } = await supabase
-      .from('categorias')
+      .from('category')
       .select('*')
       .order('name')
     if (error) throw error
@@ -88,14 +88,14 @@ const saveCategory = async () => {
   try {
     if (editingItem.value) {
       const { error } = await supabase
-        .from('categorias')
+        .from('category')
         .update(formData.value)
         .eq('id', editingItem.value.id)
       if (error) throw error
       alert('Categoría actualizada')
     } else {
       const { error } = await supabase
-        .from('categorias')
+        .from('category')
         .insert([formData.value])
       if (error) throw error
       alert('Categoría creada')
@@ -112,7 +112,7 @@ const deleteCategory = async (item) => {
   if (!confirm(`¿Eliminar "${item.name}"?`)) return
   try {
     const { error } = await supabase
-      .from('categorias')
+      .from('category')
       .delete()
       .eq('id', item.id)
     if (error) throw error
