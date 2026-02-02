@@ -2,7 +2,7 @@
 nixPkgs = ["nodejs_20"]
 
 [phases.install]
-cmds = ["rm -rf node_modules package-lock.json", "npm install --legacy-peer-deps"]
+cmds = ["rm -rf node_modules package-lock.json", "npm install --legacy-peer-deps --no-optional"]
 
 [phases.build]
 cmds = ["npm run build"]
@@ -14,3 +14,5 @@ cmd = "node .output/server/index.mjs"
 NODE_ENV = "production"
 NITRO_HOST = "0.0.0.0"
 NITRO_PORT = "3000"
+NIXPACKS_NODE_VERSION = "20"
+NPM_CONFIG_LEGACY_PEER_DEPS = "true"
