@@ -3,7 +3,10 @@
     <div class="footer-container">
       <!-- Columna 1: Información de la empresa -->
       <div class="footer-column">
-        <h3 class="footer-title">Euro Inmo</h3>
+        <div class="footer-logo">
+          <img src="/logotipo-euro.svg" alt="Euro Inmo Logo" class="footer-logo-img" />
+          <h3 class="footer-title">Euro Inmo</h3>
+        </div>
         <p class="footer-text">
           Líder en bienes raíces del Oriente Antioqueño. 
           Más de 10 años conectando personas con sus hogares ideales.
@@ -103,10 +106,23 @@ const currentYear = new Date().getFullYear()
   gap: 1rem;
 }
 
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.footer-logo-img {
+  height: 50px;
+  width: auto;
+  filter: brightness(0) invert(1);
+}
+
 .footer-title {
   font-size: 1.8rem;
   font-weight: 700;
-  margin: 0 0 1rem 0;
+  margin: 0;
   color: white;
 }
 

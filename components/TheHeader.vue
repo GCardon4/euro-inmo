@@ -3,8 +3,9 @@
     <div class="header-container">
       <!-- Logo -->
       <div class="logo">
-        <NuxtLink to="/">
-          <h1>Euro Inmo</h1>
+        <NuxtLink to="/" class="logo-link">
+          <img src="/logotipo-euro.svg" alt="Euro Inmo Logo" class="logo-img" />
+          <span class="logo-text">Euro Inmo</span>
         </NuxtLink>
       </div>
 
@@ -96,6 +97,35 @@ onMounted(async () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  transition: opacity 0.3s ease;
+}
+
+.logo-link:hover {
+  opacity: 0.8;
+}
+
+.logo-img {
+  height: 40px;
+  width: auto;
+}
+
+.logo-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2563eb;
+  letter-spacing: -0.5px;
 }
 
 .logo h1 {
