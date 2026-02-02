@@ -105,7 +105,10 @@ const fetchProperties = async () => {
     
     // Verificar que las credenciales de Supabase estén disponibles
     if (!config.public.supabaseUrl || !config.public.supabaseKey) {
-      throw new Error('Configuración de Supabase no disponible')
+      console.warn('Configuración de Supabase no disponible')
+      properties.value = []
+      loading.value = false
+      return
     }
     
     const { data, error: fetchError } = await supabase
@@ -126,7 +129,9 @@ const fetchProperties = async () => {
 
     if (fetchError) {
       console.error('Error de Supabase:', fetchError)
-      throw new Error(fetchError.message || 'Error al cargar propiedades')
+      error.value = 'No se pudieron cargar las propiedades'
+      properties.value = []
+      return
     }
     
     if (!data || data.length === 0) {
@@ -146,8 +151,9 @@ const fetchProperties = async () => {
       imageUrl: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400' // Placeholder
     }))
   } catch (err) {
-    error.value = err.message || 'Error desconocido al cargar propiedades'
     console.error('Error cargando propiedades:', err)
+    error.value = 'Error al cargar propiedades'
+    properties.value = []
   } finally {
     loading.value = false
   }

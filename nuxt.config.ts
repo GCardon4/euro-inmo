@@ -20,8 +20,9 @@ export default defineNuxtConfig({
       ],
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-        { rel: 'icon', type: 'image/svg+xml', href: '/logotipo-euro.svg' },
-        { rel: 'apple-touch-icon', sizes: '180x180', href: '/logotipo-euro.svg' },
+        { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/logotipo-euroinmo.png' },
+        { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/logotipo-euroinmo.png' },
+        { rel: 'apple-touch-icon', sizes: '180x180', href: '/logotipo-euroinmo.png' },
         { 
           rel: 'stylesheet',
           href: 'https://fonts.googleapis.com/icon?family=Material+Icons'
@@ -60,12 +61,22 @@ export default defineNuxtConfig({
   nitro: {
     preset: 'node-server',
     compressPublicAssets: true,
+    serveStatic: true,
+    publicAssets: [
+      {
+        baseURL: '',
+        dir: 'public',
+        maxAge: 60 * 60 * 24 * 7 // 7 días
+      }
+    ],
     routeRules: {
       '/': { ssr: true },
       '/admin/**': { ssr: true },
       '/_nuxt/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
       '/favicon.ico': { headers: { 'cache-control': 'public, max-age=86400' } },
-      '/robots.txt': { headers: { 'cache-control': 'public, max-age=86400' } }
+      '/robots.txt': { headers: { 'cache-control': 'public, max-age=86400' } },
+      '/**/*.svg': { headers: { 'cache-control': 'public, max-age=86400' } },
+      '/**/*.png': { headers: { 'cache-control': 'public, max-age=86400' } }
     }
   },
 

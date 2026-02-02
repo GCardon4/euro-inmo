@@ -74,9 +74,13 @@ const closeMenu = () => {
   isMenuOpen.value = false
 }
 
-// Inicializar autenticación
+// Inicializar autenticación solo en cliente
 onMounted(async () => {
-  await authStore.initAuth()
+  try {
+    await authStore.initAuth()
+  } catch (err) {
+    console.warn('Error al inicializar autenticación:', err)
+  }
 })
 </script>
 
