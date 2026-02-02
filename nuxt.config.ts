@@ -44,7 +44,8 @@ export default defineNuxtConfig({
   // Configuración para producción
   nitro: {
     preset: 'node-server',
-    compressPublicAssets: true,
+    compressPublicAssets: false,
+    serveStatic: true,
     routeRules: {
       '/': { ssr: false },
       '/properties': { ssr: false },
