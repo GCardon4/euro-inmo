@@ -1,7 +1,9 @@
 <template>
   <div class="home-page">
     <!-- Header -->
-    <TheHeader />
+    <ClientOnly>
+      <TheHeader />
+    </ClientOnly>
 
     <!-- Hero con Slider y Filtros -->
     <HeroSection />

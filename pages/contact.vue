@@ -1,6 +1,8 @@
 <template>
   <div class="contact-page">
-    <TheHeader />
+    <ClientOnly>
+      <TheHeader />
+    </ClientOnly>
     <ContactSection />
     <TheFooter />
   </div>

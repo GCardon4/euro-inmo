@@ -1,6 +1,8 @@
 <template>
   <div class="properties-page">
-    <TheHeader />
+    <ClientOnly>
+      <TheHeader />
+    </ClientOnly>
     
     <section class="page-header">
       <div class="container">

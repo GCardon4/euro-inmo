@@ -1,14 +1,15 @@
 // Plugin para inicializar Pinia correctamente en SSR
-export default defineNuxtPlugin(() => {
-  // Asegurar que Pinia esté disponible tanto en cliente como servidor
-  const pinia = usePinia()
-  
+export default defineNuxtPlugin((nuxtApp) => {
+  // En SSR, asegurar que cada request tenga su propia instancia de stores
   if (process.server) {
-    // En servidor, crear una nueva instancia de pinia por cada request
-    return {
-      provide: {
-        pinia
+    nuxtApp.hook('app:rendered', () => {
+      // Limpiar stores después de cada render en servidor
+      const pinia = nuxtApp.$pinia
+      if (pinia && pinia.state && pinia.state.value) {
+        Object.keys(pinia.state.value).forEach(key => {
+          delete pinia.state.value[key]
+        })
       }
-    }
+    })
   }
 })
