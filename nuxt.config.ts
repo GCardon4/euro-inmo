@@ -19,6 +19,7 @@ export default defineNuxtConfig({
         { name: 'description', content: 'Encuentra tu hogar ideal en el Oriente Antioqueño' }
       ],
       link: [
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
         { rel: 'icon', type: 'image/svg+xml', href: '/logotipo-euro.svg' },
         { rel: 'apple-touch-icon', sizes: '180x180', href: '/logotipo-euro.svg' },
         { 
@@ -61,7 +62,9 @@ export default defineNuxtConfig({
     routeRules: {
       '/': { ssr: true },
       '/admin/**': { ssr: true },
-      '/_nuxt/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } }
+      '/_nuxt/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
+      '/favicon.ico': { headers: { 'cache-control': 'public, max-age=86400' } },
+      '/robots.txt': { headers: { 'cache-control': 'public, max-age=86400' } }
     }
   },
 
