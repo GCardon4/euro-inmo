@@ -25,22 +25,22 @@
 
       <!-- Ubicación -->
       <p class="property-location">
-        <span class="icon">📍</span>
+        <Icon name="location_on" custom-class="icon" />
         <span>{{ property.location }}</span>
       </p>
 
       <!-- Características principales -->
       <div class="property-features">
         <span v-if="property.bedrooms" class="feature">
-          <span class="icon">🛏️</span>
+          <Icon name="bed" custom-class="icon" />
           <span>{{ property.bedrooms }} hab.</span>
         </span>
         <span v-if="property.bathrooms" class="feature">
-          <span class="icon">🚿</span>
+          <Icon name="bathtub" custom-class="icon" />
           <span>{{ property.bathrooms }} baños</span>
         </span>
         <span v-if="property.area" class="feature">
-          <span class="icon">📐</span>
+          <Icon name="square_foot" custom-class="icon" />
           <span>{{ property.area }} m²</span>
         </span>
       </div>
@@ -174,7 +174,7 @@ const goToProperty = () => {
   margin: 0;
   font-size: 1.25rem;
   font-weight: 700;
-  color: #111827;
+  color: #1e1e1c;
   line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -187,9 +187,24 @@ const goToProperty = () => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #6b7280;
+  color: #585857;
   margin: 0;
   font-size: 0.95rem;
+}
+
+.property-location .icon {
+  font-size: 18px;
+  color: #82bad3;
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
 }
 
 .property-features {
@@ -205,9 +220,24 @@ const goToProperty = () => {
   display: flex;
   align-items: center;
   gap: 0.375rem;
-  color: #374151;
+  color: #585857;
   font-size: 0.9rem;
   font-weight: 500;
+}
+
+.feature .icon {
+  font-size: 18px;
+  color: #0b6182;
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
 }
 
 .property-price {
@@ -220,11 +250,11 @@ const goToProperty = () => {
 .price {
   font-size: 1.5rem;
   font-weight: 800;
-  color: #2563eb;
+  color: #0b6182;
 }
 
 .price-period {
-  color: #6b7280;
+  color: #585857;
   font-size: 0.9rem;
 }
 

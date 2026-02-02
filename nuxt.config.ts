@@ -20,7 +20,16 @@ export default defineNuxtConfig({
       ],
       link: [
         { rel: 'icon', type: 'image/svg+xml', href: '/logotipo-euro.svg' },
-        { rel: 'apple-touch-icon', sizes: '180x180', href: '/logotipo-euro.svg' }
+        { rel: 'apple-touch-icon', sizes: '180x180', href: '/logotipo-euro.svg' },
+        { 
+          rel: 'preload', 
+          as: 'style',
+          href: 'https://fonts.googleapis.com/icon?family=Material+Icons',
+          onload: "this.onload=null;this.rel='stylesheet'"
+        }
+      ],
+      noscript: [
+        { children: '<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">' }
       ]
     },
     pageTransition: { name: 'page', mode: 'out-in' }

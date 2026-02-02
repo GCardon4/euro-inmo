@@ -18,19 +18,19 @@
           :class="{ active: selectedFilter === filter.value }"
           @click="selectedFilter = filter.value"
         >
-          <span class="filter-icon">{{ filter.icon }}</span>
+          <Icon :name="filter.icon" custom-class="filter-icon" />
           <span>{{ filter.label }}</span>
         </button>
       </div>
 
       <!-- Grid de propiedades -->
       <div v-if="loading" class="loading-state">
-        <span class="spinner">⏳</span>
+        <Icon name="refresh" custom-class="spinner" />
         <p>Cargando propiedades...</p>
       </div>
 
       <div v-else-if="error" class="error-state">
-        <span class="error-icon">❌</span>
+        <Icon name="error_outline" custom-class="error-icon" />
         <h3>Error al cargar propiedades</h3>
         <p>{{ error }}</p>
       </div>
@@ -45,7 +45,7 @@
 
       <!-- Estado vacío -->
       <div v-else class="empty-state">
-        <span class="empty-icon">🏠</span>
+        <Icon name="home_work" custom-class="empty-icon" />
         <h3>No hay propiedades disponibles</h3>
         <p>Intenta ajustar los filtros de búsqueda</p>
       </div>
@@ -65,7 +65,7 @@
       <div class="view-all">
         <NuxtLink to="/properties" class="btn-view-all">
           Ver todas las propiedades
-          <span>→</span>
+          <Icon name="arrow_forward" />
         </NuxtLink>
       </div>
     </div>
@@ -75,11 +75,11 @@
 <script setup>
 // Filtros rápidos
 const quickFilters = [
-  { label: 'Todas', value: 'all', icon: '🏘️' },
-  { label: 'Apartamentos', value: 'apartamento', icon: '🏢' },
-  { label: 'Casas', value: 'casa', icon: '🏠' },
-  { label: 'Fincas', value: 'finca', icon: '🌾' },
-  { label: 'Lotes', value: 'lote', icon: '📐' }
+  { label: 'Todas', value: 'all', icon: 'home_work' },
+  { label: 'Apartamentos', value: 'apartamento', icon: 'apartment' },
+  { label: 'Casas', value: 'casa', icon: 'home' },
+  { label: 'Fincas', value: 'finca', icon: 'landscape' },
+  { label: 'Lotes', value: 'lote', icon: 'grid_on' }
 ]
 
 // Estado de filtro seleccionado
@@ -209,13 +209,13 @@ watch(selectedFilter, () => {
 .section-title {
   font-size: 2.5rem;
   font-weight: 800;
-  color: #111827;
+  color: #1e1e1c;
   margin: 0 0 1rem 0;
 }
 
 .section-subtitle {
   font-size: 1.2rem;
-  color: #6b7280;
+  color: #585857;
   margin: 0;
 }
 
@@ -243,19 +243,20 @@ watch(selectedFilter, () => {
 }
 
 .quick-filter-btn:hover {
-  border-color: #2563eb;
-  color: #2563eb;
+  border-color: #0b6182;
+  color: #0b6182;
   transform: translateY(-2px);
 }
 
 .quick-filter-btn.active {
-  background: #2563eb;
+  background: #0b6182;
   color: white;
-  border-color: #2563eb;
+  border-color: #0b6182;
 }
 
 .filter-icon {
   font-size: 1.25rem;
+  user-select: none;
 }
 
 .properties-grid {
@@ -275,6 +276,7 @@ watch(selectedFilter, () => {
   font-size: 5rem;
   display: block;
   margin-bottom: 1rem;
+  color: #82bad3;
 }
 
 .empty-state h3 {
@@ -299,6 +301,7 @@ watch(selectedFilter, () => {
   font-size: 3rem;
   display: block;
   margin-bottom: 1rem;
+  color: #0b6182;
   animation: spin 1s linear infinite;
 }
 
@@ -315,6 +318,7 @@ watch(selectedFilter, () => {
   font-size: 3rem;
   display: block;
   margin-bottom: 1rem;
+  color: #dc2626;
 }
 
 .error-state h3 {
@@ -355,19 +359,20 @@ watch(selectedFilter, () => {
   align-items: center;
   gap: 0.75rem;
   padding: 1.25rem 3rem;
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  background: linear-gradient(135deg, #0b6182 0%, #082f3d 100%);
   color: white;
   text-decoration: none;
   border-radius: 0.75rem;
   font-weight: 700;
   font-size: 1.1rem;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 4px 12px rgba(11, 97, 130, 0.3);
 }
 
 .btn-view-all:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+  box-shadow: 0 8px 20px rgba(11, 97, 130, 0.4);
+  background: linear-gradient(135deg, #0d7599 0%, #0b6182 100%);
 }
 
 /* Responsive */

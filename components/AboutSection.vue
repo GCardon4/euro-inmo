@@ -30,7 +30,9 @@
           <!-- Valores/Características -->
           <div class="features-list">
             <div class="feature-item">
-              <div class="feature-icon">✓</div>
+              <div class="feature-icon">
+                <Icon name="check_circle" />
+              </div>
               <div class="feature-text">
                 <h4>Amplio Portafolio</h4>
                 <p>Más de 500 propiedades disponibles en toda la región</p>
@@ -38,7 +40,9 @@
             </div>
 
             <div class="feature-item">
-              <div class="feature-icon">✓</div>
+              <div class="feature-icon">
+                <Icon name="check_circle" />
+              </div>
               <div class="feature-text">
                 <h4>Asesoría Personalizada</h4>
                 <p>Acompañamiento profesional en cada paso del proceso</p>
@@ -46,7 +50,9 @@
             </div>
 
             <div class="feature-item">
-              <div class="feature-icon">✓</div>
+              <div class="feature-icon">
+                <Icon name="check_circle" />
+              </div>
               <div class="feature-text">
                 <h4>Procesos Seguros</h4>
                 <p>Garantizamos transparencia y legalidad en todas nuestras transacciones</p>
@@ -54,7 +60,9 @@
             </div>
 
             <div class="feature-item">
-              <div class="feature-icon">✓</div>
+              <div class="feature-icon">
+                <Icon name="check_circle" />
+              </div>
               <div class="feature-text">
                 <h4>Cobertura Regional</h4>
                 <p>Presencia en Rionegro, La Ceja, El Retiro, Marinilla y más</p>
@@ -128,11 +136,11 @@
   position: absolute;
   bottom: 2rem;
   right: 2rem;
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  background: linear-gradient(135deg, #0b6182 0%, #082f3d 100%);
   padding: 2rem;
   border-radius: 1rem;
   color: white;
-  box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
+  box-shadow: 0 10px 30px rgba(11, 97, 130, 0.4);
 }
 
 .badge-content {
@@ -161,7 +169,7 @@
 }
 
 .about-label {
-  color: #2563eb;
+  color: #0b6182;
   font-weight: 700;
   font-size: 0.875rem;
   text-transform: uppercase;
@@ -171,14 +179,14 @@
 .about-title {
   font-size: 2.5rem;
   font-weight: 800;
-  color: #111827;
+  color: #1e1e1c;
   line-height: 1.2;
   margin: 0;
 }
 
 .about-description {
   font-size: 1.125rem;
-  color: #4b5563;
+  color: #585857;
   line-height: 1.8;
   margin: 0;
 }
@@ -197,10 +205,10 @@
 }
 
 .feature-icon {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   background: #dbeafe;
-  color: #2563eb;
+  color: #0b6182;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -209,16 +217,20 @@
   flex-shrink: 0;
 }
 
+.feature-icon .material-icons {
+  font-size: 24px;
+}
+
 .feature-text h4 {
   margin: 0 0 0.25rem 0;
   font-size: 1.125rem;
   font-weight: 700;
-  color: #111827;
+  color: #1e1e1c;
 }
 
 .feature-text p {
   margin: 0;
-  color: #6b7280;
+  color: #585857;
   font-size: 0.95rem;
   line-height: 1.5;
 }
@@ -243,12 +255,12 @@
 .stat-number {
   font-size: 2.5rem;
   font-weight: 800;
-  color: #2563eb;
+  color: #0b6182;
   line-height: 1;
 }
 
 .stat-label {
-  color: #6b7280;
+  color: #585857;
   font-weight: 600;
   font-size: 0.875rem;
   margin-top: 0.5rem;

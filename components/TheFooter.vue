@@ -13,13 +13,13 @@
         </p>
         <div class="social-links">
           <a href="#" class="social-link" aria-label="Facebook">
-            <span>📘</span>
+            <Icon name="facebook" />
           </a>
           <a href="#" class="social-link" aria-label="Instagram">
-            <span>📷</span>
+            <Icon name="photo_camera" />
           </a>
           <a href="#" class="social-link" aria-label="WhatsApp">
-            <span>💬</span>
+            <Icon name="chat" />
           </a>
         </div>
       </div>
@@ -52,19 +52,19 @@
         <h4 class="footer-subtitle">Contacto</h4>
         <ul class="footer-contact">
           <li>
-            <span class="icon">📍</span>
+            <Icon name="location_on" custom-class="icon" />
             <span>Oriente Antioqueño, Colombia</span>
           </li>
           <li>
-            <span class="icon">📞</span>
+            <Icon name="phone" custom-class="icon" />
             <span>+57 (604) 123 4567</span>
           </li>
           <li>
-            <span class="icon">✉️</span>
+            <Icon name="email" custom-class="icon" />
             <span>info@euroinmo.com</span>
           </li>
           <li>
-            <span class="icon">🕐</span>
+            <Icon name="schedule" custom-class="icon" />
             <span>Lun - Vie: 8:00 AM - 6:00 PM</span>
           </li>
         </ul>
@@ -85,7 +85,7 @@ const currentYear = new Date().getFullYear()
 
 <style scoped>
 .footer {
-  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+  background: linear-gradient(135deg, #0b6182 0%, #1e1e1c 100%);
   color: white;
   padding: 4rem 2rem 1rem;
   margin-top: 4rem;
@@ -177,8 +177,19 @@ const currentYear = new Date().getFullYear()
 }
 
 .footer-contact .icon {
-  font-size: 1.2rem;
+  font-size: 20px;
   flex-shrink: 0;
+  color: #82bad3;
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
 }
 
 .social-links {
@@ -196,12 +207,16 @@ const currentYear = new Date().getFullYear()
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  font-size: 1.2rem;
   transition: all 0.3s ease;
+  color: white;
+}
+
+.social-link .material-icons {
+  font-size: 20px;
 }
 
 .social-link:hover {
-  background: white;
+  background: rgba(130, 186, 211, 0.3);
   transform: translateY(-3px);
 }
 

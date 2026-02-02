@@ -14,7 +14,9 @@
           <!-- Información de contacto -->
           <div class="contact-details">
             <div class="detail-item">
-              <div class="detail-icon">📍</div>
+              <div class="detail-icon">
+                <Icon name="location_on" />
+              </div>
               <div class="detail-content">
                 <h4>Ubicación</h4>
                 <p>Calle Principal #123<br>Rionegro, Antioquia</p>
@@ -22,7 +24,9 @@
             </div>
 
             <div class="detail-item">
-              <div class="detail-icon">📞</div>
+              <div class="detail-icon">
+                <Icon name="phone" />
+              </div>
               <div class="detail-content">
                 <h4>Teléfono</h4>
                 <p>+57 (604) 123 4567<br>+57 300 123 4567</p>
@@ -30,7 +34,9 @@
             </div>
 
             <div class="detail-item">
-              <div class="detail-icon">✉️</div>
+              <div class="detail-icon">
+                <Icon name="email" />
+              </div>
               <div class="detail-content">
                 <h4>Email</h4>
                 <p>info@euroinmo.com<br>ventas@euroinmo.com</p>
@@ -38,7 +44,9 @@
             </div>
 
             <div class="detail-item">
-              <div class="detail-icon">🕐</div>
+              <div class="detail-icon">
+                <Icon name="schedule" />
+              </div>
               <div class="detail-content">
                 <h4>Horario</h4>
                 <p>Lunes - Viernes: 8:00 AM - 6:00 PM<br>Sábados: 9:00 AM - 1:00 PM</p>
@@ -51,16 +59,16 @@
             <h4>Síguenos</h4>
             <div class="social-links">
               <a href="#" class="social-link" aria-label="Facebook">
-                <span>📘</span>
+                <Icon name="facebook" />
               </a>
               <a href="#" class="social-link" aria-label="Instagram">
-                <span>📷</span>
+                <Icon name="photo_camera" />
               </a>
               <a href="#" class="social-link" aria-label="WhatsApp">
-                <span>💬</span>
+                <Icon name="chat" />
               </a>
               <a href="#" class="social-link" aria-label="LinkedIn">
-                <span>💼</span>
+                <Icon name="business_center" />
               </a>
             </div>
           </div>
@@ -244,7 +252,7 @@ const handleSubmit = async () => {
 }
 
 .contact-label {
-  color: #2563eb;
+  color: #0b6182;
   font-weight: 700;
   font-size: 0.875rem;
   text-transform: uppercase;
@@ -254,14 +262,14 @@ const handleSubmit = async () => {
 .contact-title {
   font-size: 2.5rem;
   font-weight: 800;
-  color: #111827;
+  color: #1e1e1c;
   line-height: 1.2;
   margin: 0;
 }
 
 .contact-description {
   font-size: 1.125rem;
-  color: #4b5563;
+  color: #585857;
   line-height: 1.8;
   margin: 0;
 }
@@ -287,20 +295,24 @@ const handleSubmit = async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
   flex-shrink: 0;
+  color: #0b6182;
+}
+
+.detail-icon .material-icons {
+  font-size: 28px;
 }
 
 .detail-content h4 {
   margin: 0 0 0.5rem 0;
   font-size: 1.125rem;
   font-weight: 700;
-  color: #111827;
+  color: #1e1e1c;
 }
 
 .detail-content p {
   margin: 0;
-  color: #6b7280;
+  color: #585857;
   line-height: 1.6;
 }
 
@@ -312,7 +324,7 @@ const handleSubmit = async () => {
 .social-section h4 {
   font-size: 1.125rem;
   font-weight: 700;
-  color: #111827;
+  color: #1e1e1c;
   margin: 0 0 1rem 0;
 }
 
@@ -325,14 +337,18 @@ const handleSubmit = async () => {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  background: linear-gradient(135deg, #0b6182 0%, #082f3d 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  font-size: 1.5rem;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 4px 12px rgba(11, 97, 130, 0.3);
+  color: white;
+}
+
+.social-link .material-icons {
+  font-size: 24px;
 }
 
 .social-link:hover {

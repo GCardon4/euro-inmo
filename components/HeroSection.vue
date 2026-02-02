@@ -86,7 +86,7 @@
 
           <!-- Botón de búsqueda -->
           <button type="submit" class="btn-search">
-            <span>🔍</span>
+            <Icon name="search" />
             <span>Buscar</span>
           </button>
         </form>
@@ -239,7 +239,7 @@ onUnmounted(() => {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, rgba(30, 58, 138, 0.85) 0%, rgba(37, 99, 235, 0.75) 100%);
+  background: linear-gradient(135deg, rgba(11, 97, 130, 0.85) 0%, rgba(130, 186, 211, 0.75) 100%);
 }
 
 .hero-content {
@@ -288,7 +288,7 @@ onUnmounted(() => {
   padding: 0.75rem 2rem;
   border: 2px solid #e5e7eb;
   background: white;
-  color: #374151;
+  color: #585857;
   font-weight: 600;
   border-radius: 0.5rem;
   cursor: pointer;
@@ -296,14 +296,14 @@ onUnmounted(() => {
 }
 
 .filter-tab:hover {
-  border-color: #2563eb;
-  color: #2563eb;
+  border-color: #0b6182;
+  color: #0b6182;
 }
 
 .filter-tab.active {
-  background: #2563eb;
+  background: #0b6182;
   color: white;
-  border-color: #2563eb;
+  border-color: #0b6182;
 }
 
 .search-form {
@@ -345,7 +345,7 @@ onUnmounted(() => {
 
 .btn-search {
   padding: 0.875rem 2rem;
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  background: linear-gradient(135deg, #0b6182 0%, #094d68 100%);
   color: white;
   border: none;
   border-radius: 0.5rem;
@@ -361,7 +361,7 @@ onUnmounted(() => {
 
 .btn-search:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 10px 20px rgba(11, 97, 130, 0.3);
 }
 
 .slider-indicators {

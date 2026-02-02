@@ -4,8 +4,8 @@
       <!-- Logo -->
       <div class="logo">
         <NuxtLink to="/" class="logo-link">
-          <img src="/logotipo-euro.svg" alt="Euro Inmo Logo" class="logo-img" />
-          <span class="logo-text">Euro Inmo</span>
+          <img src="/logotipo-euro.svg" alt="EuroInmobiliaria Logo" class="logo-img" />
+          <span class="logo-text">EuroInmobiliaria</span>
         </NuxtLink>
       </div>
 
@@ -124,7 +124,7 @@ onMounted(async () => {
 .logo-text {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #2563eb;
+  color: #0b6182;
   letter-spacing: -0.5px;
 }
 
@@ -148,7 +148,7 @@ onMounted(async () => {
 
 .nav-link {
   text-decoration: none;
-  color: #374151;
+  color: #585857;
   font-weight: 500;
   font-size: 1rem;
   transition: color 0.3s ease;
@@ -162,12 +162,12 @@ onMounted(async () => {
   height: 2px;
   bottom: -4px;
   left: 0;
-  background-color: #2563eb;
+  background-color: #0b6182;
   transition: width 0.3s ease;
 }
 
 .nav-link:hover {
-  color: #2563eb;
+  color: #0b6182;
 }
 
 .nav-link:hover::after {
@@ -175,7 +175,7 @@ onMounted(async () => {
 }
 
 .nav-link-admin {
-  background: #2563eb;
+  background: #0b6182;
   color: white;
   padding: 0.5rem 1.25rem;
   border-radius: 0.5rem;

@@ -29,10 +29,10 @@
                   <span>💬</span>
                 </a>
                 <a :href="agent.email" class="social-icon" aria-label="Email">
-                  <span>✉️</span>
+                  <Icon name="email" />
                 </a>
                 <a :href="agent.phone" class="social-icon" aria-label="Teléfono">
-                  <span>📞</span>
+                  <Icon name="phone" />
                 </a>
               </div>
             </div>
@@ -44,11 +44,11 @@
             
             <div class="agent-stats">
               <div class="stat">
-                <span class="stat-icon">🏠</span>
+                <Icon name="home" custom-class="stat-icon" />
                 <span class="stat-text">{{ agent.properties }} propiedades</span>
               </div>
               <div class="stat">
-                <span class="stat-icon">⭐</span>
+                <Icon name="star" custom-class="stat-icon" />
                 <span class="stat-text">{{ agent.rating }} rating</span>
               </div>
             </div>
@@ -223,10 +223,14 @@ const agents = ref([
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.25rem;
   text-decoration: none;
   transition: all 0.3s ease;
   transform: translateY(20px);
+  color: #0b6182;
+}
+
+.social-icon .material-icons {
+  font-size: 20px;
 }
 
 .agent-card:hover .social-icon {
@@ -248,12 +252,12 @@ const agents = ref([
 .agent-name {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #111827;
+  color: #1e1e1c;
   margin: 0;
 }
 
 .agent-role {
-  color: #2563eb;
+  color: #0b6182;
   font-weight: 600;
   font-size: 0.95rem;
   margin: 0;
@@ -274,17 +278,32 @@ const agents = ref([
 }
 
 .stat-icon {
-  font-size: 1.25rem;
+  font-size: 20px;
+  color: #0b6182;
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'liga';
 }
 
 .stat-text {
-  color: #6b7280;
+  color: #585857;
   font-size: 0.875rem;
   font-weight: 500;
 }
 
 .agent-description {
-  color: #4b5563;
+  color: #585857;
   font-size: 0.95rem;
   line-height: 1.6;
   margin: 0;
@@ -292,7 +311,7 @@ const agents = ref([
 
 .btn-contact {
   padding: 0.875rem 1.5rem;
-  background: #2563eb;
+  background: #0b6182;
   color: white;
   text-align: center;
   text-decoration: none;

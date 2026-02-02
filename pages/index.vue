@@ -26,9 +26,9 @@
 <script setup lang="ts">
 // Configuración SEO para la página principal con useSeoMeta (mejor para Nuxt 3)
 useSeoMeta({
-  title: 'Euro Inmo - Propiedades en el Oriente Antioqueño',
+  title: 'EuroInmobiliaria - Propiedades en el Oriente Antioqueño',
   description: 'Encuentra tu hogar ideal en el Oriente Antioqueño. Casas, apartamentos, fincas y más. Más de 10 años de experiencia en bienes raíces.',
-  ogTitle: 'Euro Inmo - Propiedades en el Oriente Antioqueño',
+  ogTitle: 'EuroInmobiliaria - Propiedades en el Oriente Antioqueño',
   ogDescription: 'Las mejores propiedades del Oriente Antioqueño. Compra, venta y arriendo.',
   ogType: 'website',
   ogUrl: 'https://euro-inmo.com',
