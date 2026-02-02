@@ -61,6 +61,9 @@ export default defineNuxtConfig({
   nitro: {
     preset: 'node-server',
     compressPublicAssets: true,
+    // Permitir que el servidor escuche en todas las interfaces
+    host: process.env.NITRO_HOST || '0.0.0.0',
+    port: process.env.NITRO_PORT || 3000,
     routeRules: {
       '/': { ssr: false },
       '/properties': { ssr: false },

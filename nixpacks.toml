@@ -1,12 +1,8 @@
 [phases.setup]
 nixPkgs = ["nodejs_22"]
-aptPkgs = ["python3", "build-essential"]
 
 [phases.install]
-cmds = [
-  "rm -rf node_modules package-lock.json .nuxt",
-  "npm install --force"
-]
+cmds = ["npm ci || npm install"]
 
 [phases.build]
 cmds = ["npm run build"]
@@ -16,3 +12,5 @@ cmd = "node .output/server/index.mjs"
 
 [variables]
 NODE_ENV = "production"
+NITRO_HOST = "0.0.0.0"
+NITRO_PORT = "3000"
