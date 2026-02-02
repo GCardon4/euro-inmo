@@ -50,9 +50,10 @@ export default defineNuxtConfig({
         flowType: 'pkce',
         detectSessionInUrl: false,
         persistSession: true,
-        autoRefreshToken: true
+        autoRefreshToken: false
       }
-    }
+    },
+    cookieName: 'sb-auth-token'
   },
 
   // Configuración para producción

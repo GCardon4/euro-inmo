@@ -1,0 +1,16 @@
+{
+  "phases": {
+    "setup": {
+      "nixPkgs": ["nodejs_22"]
+    },
+    "install": {
+      "cmds": ["npm ci"]
+    },
+    "build": {
+      "cmds": ["npm run build"]
+    }
+  },
+  "start": {
+    "cmd": "node .output/server/index.mjs"
+  }
+}
