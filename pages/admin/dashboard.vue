@@ -5,7 +5,7 @@
       <div class="header-content">
         <div class="user-info">
           <h1>Dashboard Administrativo</h1>
-          <p>Bienvenido, {{ authStore.fullName || 'Usuario' }}</p>
+          <p>Bienvenido, {{ authStore.full_name || 'Usuario' }}</p>
         </div>
       </div>
     </div>
@@ -146,52 +146,58 @@ const loadStats = async () => {
 
   try {
     // Total de propiedades
-    const { count: totalCount } = await supabase
+    const { count: totalCount, error: totalError } = await supabase
       .from('properties')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .eq('is_active', true)
 
+    if (totalError) console.error('Error total:', totalError)
     stats.value.totalProperties = totalCount || 0
 
     // Propiedades en venta
-    const { count: saleCount } = await supabase
+    const { count: saleCount, error: saleError } = await supabase
       .from('properties')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .eq('is_active', true)
-      .eq('status', 'Venta')
+      .eq('status_id', 1)
 
+    if (saleError) console.error('Error venta:', saleError)
     stats.value.propertiesForSale = saleCount || 0
 
     // Propiedades en arriendo
-    const { count: rentCount } = await supabase
+    const { count: rentCount, error: rentError } = await supabase
       .from('properties')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .eq('is_active', true)
-      .eq('status', 'Arriendo')
+      .eq('status_id', 2)
 
+    if (rentError) console.error('Error arriendo:', rentError)
     stats.value.propertiesForRent = rentCount || 0
 
     // Total usuarios (solo si es admin)
     if (authStore.isAdmin) {
-      const { count: usersCount } = await supabase
+      const { count: usersCount, error: usersError } = await supabase
         .from('profiles')
-        .select('*', { count: 'exact', head: true })
+        .select('id', { count: 'exact', head: true })
 
+      if (usersError) console.error('Error usuarios:', usersError)
       stats.value.totalUsers = usersCount || 0
     }
 
     // Propiedades más visitadas
-    const { data: properties } = await supabase
+    const { data: properties, error: propsError } = await supabase
       .from('properties')
       .select(`
         id,
         name,
         code,
-        status,
-        city:city_id(name)
+        status(name),
+        city(name)
       `)
       .eq('is_active', true)
       .limit(5)
+
+    if (propsError) console.error('Error propiedades:', propsError)
 
     if (properties) {
       // Contar vistas por cada propiedad

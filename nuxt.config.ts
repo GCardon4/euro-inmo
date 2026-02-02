@@ -32,12 +32,12 @@ export default defineNuxtConfig({
 
   supabase: {
     redirect: false,
-    url: process.env.SUPABASE_URL,
-    key: process.env.SUPABASE_KEY,
+    url: process.env.SUPABASE_URL || '',
+    key: process.env.SUPABASE_KEY || '',
     redirectOptions: {
       login: '/login',
       callback: '/confirm',
-      exclude: ['/', '/property-*']
+      exclude: ['/', '/property-*', '/contact']
     },
     cookieOptions: {
       maxAge: 60 * 60 * 8,
@@ -59,15 +59,16 @@ export default defineNuxtConfig({
     preset: 'node-server',
     compressPublicAssets: true,
     routeRules: {
-      '/': { prerender: false },
-      '/admin/**': { ssr: true }
+      '/': { ssr: true },
+      '/admin/**': { ssr: true },
+      '/_nuxt/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } }
     }
   },
 
   runtimeConfig: {
     public: {
-      supabaseUrl: process.env.SUPABASE_URL,
-      supabaseKey: process.env.SUPABASE_KEY
+      supabaseUrl: process.env.SUPABASE_URL || '',
+      supabaseKey: process.env.SUPABASE_KEY || ''
     }
   },
 

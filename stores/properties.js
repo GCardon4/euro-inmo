@@ -74,6 +74,15 @@ export const usePropertiesStore = defineStore('properties', {
   actions: {
     // Cargar todas las propiedades desde Supabase
     async fetchProperties() {
+      const config = useRuntimeConfig()
+      
+      if (!config.public.supabaseUrl || !config.public.supabaseKey) {
+        console.warn('Supabase no configurado correctamente')
+        this.properties = []
+        this.featuredProperties = []
+        return
+      }
+      
       this.loading = true
       this.error = null
 
@@ -107,6 +116,13 @@ export const usePropertiesStore = defineStore('properties', {
 
     // Cargar una propiedad específica por código
     async fetchPropertyByCode(code) {
+      const config = useRuntimeConfig()
+      
+      if (!config.public.supabaseUrl || !config.public.supabaseKey) {
+        console.warn('Supabase no configurado correctamente')
+        return null
+      }
+      
       this.loading = true
       this.error = null
 

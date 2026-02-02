@@ -29,6 +29,14 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     // Inicializar sesión desde Supabase
     async initAuth() {
+      const config = useRuntimeConfig()
+      
+      // Verificar que las variables de entorno estén configuradas
+      if (!config.public.supabaseUrl || !config.public.supabaseKey) {
+        console.warn('Supabase no configurado correctamente')
+        return
+      }
+      
       const supabase = useSupabaseClient()
       
       try {
