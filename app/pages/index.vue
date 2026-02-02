@@ -23,26 +23,28 @@
   </div>
 </template>
 
-<script setup>
-// Configuración SEO para la página principal
-useHead({
+<script setup lang="ts">
+// Configuración SEO para la página principal con useSeoMeta (mejor para Nuxt 3)
+useSeoMeta({
   title: 'Euro Inmo - Propiedades en el Oriente Antioqueño',
-  meta: [
+  description: 'Encuentra tu hogar ideal en el Oriente Antioqueño. Casas, apartamentos, fincas y más. Más de 10 años de experiencia en bienes raíces.',
+  ogTitle: 'Euro Inmo - Propiedades en el Oriente Antioqueño',
+  ogDescription: 'Las mejores propiedades del Oriente Antioqueño. Compra, venta y arriendo.',
+  ogType: 'website',
+  ogUrl: 'https://euro-inmo.com',
+  ogImage: '/og-image.jpg',
+  twitterCard: 'summary_large_image'
+})
+
+// Configuración adicional del head
+useHead({
+  htmlAttrs: {
+    lang: 'es'
+  },
+  link: [
     {
-      name: 'description',
-      content: 'Encuentra tu hogar ideal en el Oriente Antioqueño. Casas, apartamentos, fincas y más. Más de 10 años de experiencia en bienes raíces.'
-    },
-    {
-      property: 'og:title',
-      content: 'Euro Inmo - Propiedades en el Oriente Antioqueño'
-    },
-    {
-      property: 'og:description',
-      content: 'Las mejores propiedades del Oriente Antioqueño. Compra, venta y arriendo.'
-    },
-    {
-      property: 'og:type',
-      content: 'website'
+      rel: 'canonical',
+      href: 'https://euro-inmo.com'
     }
   ]
 })
@@ -53,5 +55,6 @@ useHead({
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: #ffffff;
 }
 </style>

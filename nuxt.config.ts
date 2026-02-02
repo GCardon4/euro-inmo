@@ -1,14 +1,14 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
-  devtools: { enabled: false },
+  devtools: { enabled: true },
   
   modules: [
     '@nuxtjs/supabase',
     '@pinia/nuxt'
   ],
 
-  css: ['~/assets/css/main.css'],
+  css: ['~/app/assets/css/main.css'],
 
   app: {
     head: {
@@ -17,23 +17,61 @@ export default defineNuxtConfig({
       title: 'Euro Inmo - Bienes Raíces Oriente Antioqueño',
       meta: [
         { name: 'description', content: 'Encuentra tu hogar ideal en el Oriente Antioqueño' }
+      ],
+      link: [
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
       ]
-    }
+    },
+    pageTransition: { name: 'page', mode: 'out-in' }
   },
 
   supabase: {
-    redirect: false
+    redirect: false,
+    url: process.env.SUPABASE_URL,
+    key: process.env.SUPABASE_KEY,
+    redirectOptions: {
+      login: '/login',
+      callback: '/confirm',
+      exclude: ['/', '/property-*']
+    },
+    cookieOptions: {
+      maxAge: 60 * 60 * 8,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production'
+    },
+    clientOptions: {
+      auth: {
+        flowType: 'pkce',
+        detectSessionInUrl: false,
+        persistSession: true,
+        autoRefreshToken: true
+      }
+    }
   },
 
   // Configuración para producción
   nitro: {
-    preset: 'node-server'
+    preset: 'node-server',
+    compressPublicAssets: true,
+    routeRules: {
+      '/': { prerender: false },
+      '/admin/**': { ssr: true }
+    }
   },
 
   runtimeConfig: {
     public: {
       supabaseUrl: process.env.SUPABASE_URL,
       supabaseKey: process.env.SUPABASE_KEY
+    }
+  },
+
+  ssr: true,
+
+  // Optimizaciones de build
+  vite: {
+    build: {
+      cssMinify: 'esbuild'
     }
   }
 })

@@ -24,7 +24,18 @@
       </div>
 
       <!-- Grid de propiedades -->
-      <div v-if="filteredProperties.length > 0" class="properties-grid">
+      <div v-if="loading" class="loading-state">
+        <span class="spinner">⏳</span>
+        <p>Cargando propiedades...</p>
+      </div>
+
+      <div v-else-if="error" class="error-state">
+        <span class="error-icon">❌</span>
+        <h3>Error al cargar propiedades</h3>
+        <p>{{ error }}</p>
+      </div>
+
+      <div v-else-if="filteredProperties.length > 0" class="properties-grid">
         <PropertyCard
           v-for="property in displayedProperties"
           :key="property.id"
@@ -78,85 +89,80 @@ const selectedFilter = ref('all')
 const propertiesPerPage = 6
 const currentPage = ref(1)
 
-// Propiedades de ejemplo (TODO: Conectar con store/API)
-const properties = ref([
-  {
-    id: 1,
-    code: 'EURO001',
-    name: 'Apartamento Moderno en Rionegro',
-    category: 'Apartamento',
-    status: 'Venta',
-    location: 'Rionegro, Antioquia',
-    price: 350000000,
-    bedrooms: 3,
-    bathrooms: 2,
-    area: 85,
-    imageUrl: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400'
-  },
-  {
-    id: 2,
-    code: 'EURO002',
-    name: 'Casa Campestre con Piscina',
-    category: 'Casa',
-    status: 'Venta',
-    location: 'La Ceja, Antioquia',
-    price: 580000000,
-    bedrooms: 4,
-    bathrooms: 3,
-    area: 250,
-    imageUrl: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400'
-  },
-  {
-    id: 3,
-    code: 'EURO003',
-    name: 'Apartamento Céntrico Amoblado',
-    category: 'Apartamento',
-    status: 'Arriendo',
-    location: 'Rionegro, Antioquia',
-    price: 1800000,
-    bedrooms: 2,
-    bathrooms: 2,
-    area: 65,
-    imageUrl: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400'
-  },
-  {
-    id: 4,
-    code: 'EURO004',
-    name: 'Finca Ganadera con Casa',
-    category: 'Finca',
-    status: 'Venta',
-    location: 'El Retiro, Antioquia',
-    price: 1200000000,
-    bedrooms: 5,
-    bathrooms: 4,
-    area: 5000,
-    imageUrl: 'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=400'
-  },
-  {
-    id: 5,
-    code: 'EURO005',
-    name: 'Lote Urbano Esquinero',
-    category: 'Lote',
-    status: 'Venta',
-    location: 'Marinilla, Antioquia',
-    price: 180000000,
-    area: 300,
-    imageUrl: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400'
-  },
-  {
-    id: 6,
-    code: 'EURO006',
-    name: 'Casa de Dos Pisos con Jardín',
-    category: 'Casa',
-    status: 'Arriendo',
-    location: 'Guarne, Antioquia',
-    price: 2500000,
-    bedrooms: 3,
-    bathrooms: 3,
-    area: 180,
-    imageUrl: 'https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=400'
+// Cliente Supabase (sin requerir autenticación)
+const config = useRuntimeConfig()
+const supabase = useSupabaseClient()
+
+// Cargar propiedades desde Supabase
+const properties = ref([])
+const loading = ref(true)
+const error = ref(null)
+
+const fetchProperties = async () => {
+  try {
+    loading.value = true
+    error.value = null
+    
+    // Verificar que las credenciales de Supabase estén disponibles
+    if (!config.public.supabaseUrl || !config.public.supabaseKey) {
+      throw new Error('Configuración de Supabase no disponible')
+    }
+    
+    const { data, error: fetchError } = await supabase
+      .from('properties')
+      .select(`
+        id,
+        code,
+        name,
+        description,
+        price,
+        bedrooms,
+        bathrooms,
+        area,
+        categorias!inner(name),
+        status!inner(name),
+        city!inner(name),
+        zone(name)
+      `)
+      .order('created_at', { ascending: false })
+      .limit(12)
+
+    if (fetchError) {
+      console.error('Error de Supabase:', fetchError)
+      throw new Error(fetchError.message || 'Error al cargar propiedades')
+    }
+    
+    if (!data || data.length === 0) {
+      properties.value = []
+      return
+    }
+    
+    // Mapear datos al formato esperado
+    properties.value = data.map(prop => ({
+      id: prop.id,
+      code: prop.code,
+      name: prop.name,
+      category: prop.categorias?.name || 'Sin categoría',
+      status: prop.status?.name || 'Disponible',
+      location: prop.zone ? `${prop.zone.name}, ${prop.city.name}` : (prop.city?.name || 'Sin ubicación'),
+      price: prop.price,
+      bedrooms: prop.bedrooms,
+      bathrooms: prop.bathrooms,
+      area: prop.area,
+      imageUrl: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400' // Placeholder
+    }))
+  } catch (err) {
+    error.value = err.message || 'Error desconocido al cargar propiedades'
+    console.error('Error cargando propiedades:', err)
+  } finally {
+    loading.value = false
   }
-])
+}
+
+// Cargar propiedades al montar el componente
+onMounted(() => {
+  fetchProperties()
+})
 
 // Propiedades filtradas
 const filteredProperties = computed(() => {
@@ -280,6 +286,40 @@ watch(selectedFilter, () => {
 .empty-state p {
   font-size: 1rem;
   margin: 0;
+}
+
+.loading-state,
+.error-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #6b7280;
+}
+
+.spinner {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 1rem;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-state {
+  color: #dc2626;
+}
+
+.error-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.error-state h3 {
+  color: #dc2626;
+  margin: 0 0 0.5rem 0;
 }
 
 .load-more {

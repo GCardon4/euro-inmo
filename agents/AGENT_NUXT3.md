@@ -1,7 +1,7 @@
-# Agente Especialista – Nuxt 4
+# Agente Especialista – Nuxt 3
 
 ## Rol
-Arquitecto frontend especializado en **Nuxt 4**.
+Arquitecto frontend especializado en **Nuxt 3**.
 Implementa la aplicación consumiendo Supabase como backend seguro.
 
 ---
