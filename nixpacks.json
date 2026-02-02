@@ -12,8 +12,5 @@
   },
   "start": {
     "cmd": "node .output/server/index.mjs"
-  },
-  "staticAssets": {
-    "directory": ".output/public"
   }
 }
