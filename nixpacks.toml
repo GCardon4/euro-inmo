@@ -5,12 +5,14 @@ aptPkgs = ["python3", "build-essential"]
 [phases.install]
 cmds = [
   "rm -rf node_modules package-lock.json .nuxt",
-  "NUXT_TELEMETRY_DISABLED=1 npm install --force",
-  "npm install --no-save oxc-parser@0.42.0 || true"
+  "NUXT_TELEMETRY_DISABLED=1 npm install --ignore-scripts --force"
 ]
 
 [phases.build]
-cmds = ["NUXT_TELEMETRY_DISABLED=1 npm run build"]
+cmds = [
+  "NUXT_TELEMETRY_DISABLED=1 npx nuxi prepare || true",
+  "NUXT_TELEMETRY_DISABLED=1 npm run build"
+]
 
 [start]
 cmd = "node .output/server/index.mjs"
