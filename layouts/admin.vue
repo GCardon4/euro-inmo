@@ -76,9 +76,12 @@ import { useAuthStore } from '~/stores/auth'
 
 const authStore = useAuthStore()
 
+// Obtener cliente Supabase en el contexto del componente
+const supabase = useSupabaseClient()
+
 // Manejar logout
 const handleLogout = async () => {
-  await authStore.signOut()
+  await authStore.signOut(supabase)
 }
 </script>
 

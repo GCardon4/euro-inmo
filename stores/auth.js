@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
 
 // Store para gestión de autenticación
+// IMPORTANTE: Los composables se pasan como parámetros desde los componentes
+// para evitar el error "nuxt instance unavailable" durante SSR
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null,
@@ -12,13 +14,13 @@ export const useAuthStore = defineStore('auth', {
   getters: {
     // Verificar si el usuario está autenticado
     isAuthenticated: (state) => !!state.user,
-    
+
     // Verificar si el usuario es admin
     isAdmin: (state) => state.profile?.role_id === 1,
-    
+
     // Verificar si el usuario es asesor
     isAsesor: (state) => state.profile?.role_id === 2,
-    
+
     // Obtener nombre completo del usuario
     fullName: (state) => {
       if (!state.profile) return ''
@@ -28,23 +30,25 @@ export const useAuthStore = defineStore('auth', {
 
   actions: {
     // Inicializar sesión desde Supabase
-    async initAuth() {
-      const config = useRuntimeConfig()
-      
+    // Recibe el cliente y config como parámetros para evitar problemas de contexto
+    async initAuth(supabase, config) {
       // Verificar que las variables de entorno estén configuradas
-      if (!config.public.supabaseUrl || !config.public.supabaseKey) {
+      if (!config?.public?.supabaseUrl || !config?.public?.supabaseKey) {
         console.warn('Supabase no configurado correctamente')
         return
       }
-      
-      const supabase = useSupabaseClient()
-      
+
+      if (!supabase) {
+        console.warn('Cliente Supabase no disponible')
+        return
+      }
+
       try {
         const { data: { user } } = await supabase.auth.getUser()
-        
+
         if (user) {
           this.user = user
-          await this.fetchProfile()
+          await this.fetchProfile(supabase)
         }
       } catch (error) {
         console.error('Error al inicializar autenticación:', error)
@@ -52,11 +56,9 @@ export const useAuthStore = defineStore('auth', {
     },
 
     // Obtener perfil del usuario desde la tabla profiles
-    async fetchProfile() {
-      if (!this.user) return
+    async fetchProfile(supabase) {
+      if (!this.user || !supabase) return
 
-      const supabase = useSupabaseClient()
-      
       try {
         const { data, error } = await supabase
           .from('profiles')
@@ -65,7 +67,7 @@ export const useAuthStore = defineStore('auth', {
           .single()
 
         if (error) throw error
-        
+
         this.profile = data
       } catch (error) {
         console.error('Error al cargar perfil:', error)
@@ -74,11 +76,15 @@ export const useAuthStore = defineStore('auth', {
     },
 
     // Iniciar sesión con email y contraseña
-    async signIn(email, password) {
+    async signIn(email, password, supabase) {
       this.loading = true
       this.error = null
 
-      const supabase = useSupabaseClient()
+      if (!supabase) {
+        this.error = 'Cliente Supabase no disponible'
+        this.loading = false
+        return { success: false, error: this.error }
+      }
 
       try {
         const { data, error } = await supabase.auth.signInWithPassword({
@@ -89,7 +95,7 @@ export const useAuthStore = defineStore('auth', {
         if (error) throw error
 
         this.user = data.user
-        await this.fetchProfile()
+        await this.fetchProfile(supabase)
 
         return { success: true }
       } catch (error) {
@@ -102,17 +108,20 @@ export const useAuthStore = defineStore('auth', {
     },
 
     // Cerrar sesión
-    async signOut() {
-      const supabase = useSupabaseClient()
+    async signOut(supabase) {
+      if (!supabase) {
+        this.error = 'Cliente Supabase no disponible'
+        return
+      }
 
       try {
         const { error } = await supabase.auth.signOut()
-        
+
         if (error) throw error
 
         this.user = null
         this.profile = null
-        
+
         // Redirigir a home
         navigateTo('/')
       } catch (error) {
@@ -122,11 +131,15 @@ export const useAuthStore = defineStore('auth', {
     },
 
     // Registrar nuevo usuario (solo para admin)
-    async signUp(userData) {
+    async signUp(userData, supabase) {
       this.loading = true
       this.error = null
 
-      const supabase = useSupabaseClient()
+      if (!supabase) {
+        this.error = 'Cliente Supabase no disponible'
+        this.loading = false
+        return { success: false, error: this.error }
+      }
 
       try {
         const { data, error } = await supabase.auth.signUp({

@@ -61,6 +61,10 @@ import { useAuthStore } from '~/stores/auth'
 const authStore = useAuthStore()
 const { isAuthenticated, fullName } = storeToRefs(authStore)
 
+// Obtener cliente Supabase y config en el contexto del componente
+const supabase = useSupabaseClient()
+const config = useRuntimeConfig()
+
 // Estado del menú móvil
 const isMenuOpen = ref(false)
 
@@ -77,7 +81,7 @@ const closeMenu = () => {
 // Inicializar autenticación solo en cliente
 onMounted(async () => {
   try {
-    await authStore.initAuth()
+    await authStore.initAuth(supabase, config)
   } catch (err) {
     console.warn('Error al inicializar autenticación:', err)
   }

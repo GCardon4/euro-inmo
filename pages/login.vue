@@ -72,6 +72,10 @@ useHead({
 // Store de autenticación
 const authStore = useAuthStore()
 
+// Obtener cliente Supabase y config en el contexto del componente
+const supabase = useSupabaseClient()
+const config = useRuntimeConfig()
+
 // Datos del formulario
 const formData = ref({
   email: '',
@@ -90,7 +94,8 @@ const handleLogin = async () => {
   try {
     const result = await authStore.signIn(
       formData.value.email,
-      formData.value.password
+      formData.value.password,
+      supabase
     )
 
     if (result.success) {
@@ -109,8 +114,8 @@ const handleLogin = async () => {
 
 // Verificar si ya está autenticado
 onMounted(async () => {
-  await authStore.initAuth()
-  
+  await authStore.initAuth(supabase, config)
+
   if (authStore.isAuthenticated) {
     navigateTo('/admin/dashboard')
   }

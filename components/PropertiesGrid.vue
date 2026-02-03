@@ -89,29 +89,25 @@ const selectedFilter = ref('all')
 const propertiesPerPage = 6
 const currentPage = ref(1)
 
-// Cliente Supabase (sin requerir autenticación)
-const config = useRuntimeConfig()
-const supabase = useSupabaseClient()
-
-// Cargar propiedades desde Supabase
+// Cargar propiedades desde Supabase usando useAsyncData para SSR seguro
 const properties = ref([])
 const loading = ref(true)
 const error = ref(null)
 
-const fetchProperties = async () => {
-  try {
-    loading.value = true
-    error.value = null
-    
+// Usar useAsyncData para cargar datos de forma segura en SSR
+const { data: propertiesData, pending, error: fetchError } = await useAsyncData(
+  'featured-properties',
+  async () => {
+    const supabase = useSupabaseClient()
+    const config = useRuntimeConfig()
+
     // Verificar que las credenciales de Supabase estén disponibles
     if (!config.public.supabaseUrl || !config.public.supabaseKey) {
       console.warn('Configuración de Supabase no disponible')
-      properties.value = []
-      loading.value = false
-      return
+      return []
     }
-    
-    const { data, error: fetchError } = await supabase
+
+    const { data, error: supabaseError } = await supabase
       .from('properties')
       .select(`
         id,
@@ -127,20 +123,17 @@ const fetchProperties = async () => {
       .order('created_at', { ascending: false })
       .limit(12)
 
-    if (fetchError) {
-      console.error('Error de Supabase:', fetchError)
-      error.value = 'No se pudieron cargar las propiedades'
-      properties.value = []
-      return
+    if (supabaseError) {
+      console.error('Error de Supabase:', supabaseError)
+      throw new Error('No se pudieron cargar las propiedades')
     }
-    
+
     if (!data || data.length === 0) {
-      properties.value = []
-      return
+      return []
     }
-    
+
     // Mapear datos al formato esperado
-    properties.value = data.map(prop => ({
+    return data.map(prop => ({
       id: prop.id,
       code: prop.code,
       name: prop.name,
@@ -150,19 +143,24 @@ const fetchProperties = async () => {
       price: prop.price,
       imageUrl: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400' // Placeholder
     }))
-  } catch (err) {
-    console.error('Error cargando propiedades:', err)
-    error.value = 'Error al cargar propiedades'
-    properties.value = []
-  } finally {
-    loading.value = false
+  },
+  {
+    default: () => []
   }
-}
+)
 
-// Cargar propiedades al montar el componente
-onMounted(() => {
-  fetchProperties()
-})
+// Sincronizar los datos con las refs reactivas
+watch(propertiesData, (newData) => {
+  properties.value = newData || []
+}, { immediate: true })
+
+watch(pending, (isPending) => {
+  loading.value = isPending
+}, { immediate: true })
+
+watch(fetchError, (err) => {
+  error.value = err ? 'Error al cargar propiedades' : null
+}, { immediate: true })
 
 // Propiedades filtradas
 const filteredProperties = computed(() => {
