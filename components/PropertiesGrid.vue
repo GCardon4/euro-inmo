@@ -94,13 +94,15 @@ const properties = ref([])
 const loading = ref(true)
 const error = ref(null)
 
+// IMPORTANTE: Obtener composables FUERA del callback de useAsyncData
+// para evitar el error "nuxt instance unavailable"
+const supabase = useSupabaseClient()
+const config = useRuntimeConfig()
+
 // Usar useAsyncData para cargar datos de forma segura en SSR
 const { data: propertiesData, pending, error: fetchError } = await useAsyncData(
   'featured-properties',
   async () => {
-    const supabase = useSupabaseClient()
-    const config = useRuntimeConfig()
-
     // Verificar que las credenciales de Supabase estén disponibles
     if (!config.public.supabaseUrl || !config.public.supabaseKey) {
       console.warn('Configuración de Supabase no disponible')
