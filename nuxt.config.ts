@@ -43,7 +43,12 @@ export default defineNuxtConfig({
 
   // Configuración para producción
   nitro: {
-    preset: 'node-server'
+    preset: 'node-server',
+    moduleSideEffects: ['@nuxtjs/supabase']
+  },
+
+  alias: {
+    '#supabase/server': '@nuxtjs/supabase/dist/runtime/server/services/index.mjs'
   },
 
   runtimeConfig: {
