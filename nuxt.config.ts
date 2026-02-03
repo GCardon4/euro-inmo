@@ -38,12 +38,22 @@ export default defineNuxtConfig({
       login: '/login',
       callback: '/confirm',
       exclude: ['/', '/properties', '/about', '/contact', '/property-*']
+    },
+    // Configurar Supabase para solo cliente para evitar errores SSR
+    clientOptions: {
+      auth: {
+        flowType: 'pkce',
+        persistSession: true,
+        detectSessionInUrl: true
+      }
     }
   },
 
-  // Configuración para producción
+  // Configuración para producción - usar static para SPA
   nitro: {
-    preset: 'node-server'
+    preset: 'node-server',
+    // Habilitar logs detallados de errores
+    logLevel: 3
   },
 
   runtimeConfig: {
