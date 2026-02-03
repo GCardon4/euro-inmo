@@ -43,22 +43,7 @@ export default defineNuxtConfig({
 
   // Configuración para producción
   nitro: {
-    preset: 'node-server',
-    compressPublicAssets: false,
-    serveStatic: true,
-    routeRules: {
-      '/': { ssr: false },
-      '/properties': { ssr: false },
-      '/about': { ssr: false },
-      '/contact': { ssr: false },
-      '/property-*': { ssr: false },
-      '/admin/**': { ssr: true },
-      '/_nuxt/**': { headers: { 'cache-control': 'public, max-age=31536000, immutable' } },
-      '/favicon.ico': { headers: { 'cache-control': 'public, max-age=86400' } },
-      '/robots.txt': { headers: { 'cache-control': 'public, max-age=86400' } },
-      '/**/*.svg': { headers: { 'cache-control': 'public, max-age=86400' } },
-      '/**/*.png': { headers: { 'cache-control': 'public, max-age=86400' } }
-    }
+    preset: 'node-server'
   },
 
   runtimeConfig: {
@@ -68,12 +53,5 @@ export default defineNuxtConfig({
     }
   },
 
-  ssr: true,
-
-  // Optimizaciones de build
-  vite: {
-    build: {
-      cssMinify: 'esbuild'
-    }
-  }
+  ssr: true
 })
