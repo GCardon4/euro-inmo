@@ -33,13 +33,14 @@ export default defineNuxtConfig({
   },
 
   supabase: {
+    url: process.env.SUPABASE_URL || 'https://kpfvjnlclaucgmjkkyvh.supabase.co',
+    key: process.env.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwZnZqbmxjbGF1Y2dtamtreXZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcxMTM3OTcsImV4cCI6MjA4MjY4OTc5N30.wMF60RtnzbCLcL_WBa_9jHcUCfBDUecrXjUFmfx7wNY',
     redirect: false,
     redirectOptions: {
       login: '/login',
       callback: '/confirm',
       exclude: ['/', '/properties', '/about', '/contact', '/property-*']
     },
-    // Configurar Supabase para solo cliente para evitar errores SSR
     clientOptions: {
       auth: {
         flowType: 'pkce',
@@ -49,18 +50,9 @@ export default defineNuxtConfig({
     }
   },
 
-  // Configuración para producción - usar static para SPA
   nitro: {
     preset: 'node-server',
-    // Habilitar logs detallados de errores
     logLevel: 3
-  },
-
-  runtimeConfig: {
-    public: {
-      supabaseUrl: process.env.SUPABASE_URL || '',
-      supabaseKey: process.env.SUPABASE_KEY || ''
-    }
   },
 
   // Desactivar SSR temporalmente para resolver problemas de despliegue
