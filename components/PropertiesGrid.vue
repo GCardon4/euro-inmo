@@ -104,7 +104,7 @@ const { data: propertiesData, pending, error: fetchError } = await useAsyncData(
   'featured-properties',
   async () => {
     // Verificar que las credenciales de Supabase estén disponibles
-    if (!config.public.supabaseUrl || !config.public.supabaseKey) {
+    if (!config.public.supabase?.url || !config.public.supabase?.key) {
       console.warn('Configuración de Supabase no disponible')
       return []
     }

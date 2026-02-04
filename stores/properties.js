@@ -76,7 +76,7 @@ export const usePropertiesStore = defineStore('properties', {
     async fetchProperties() {
       const config = useRuntimeConfig()
       
-      if (!config.public.supabaseUrl || !config.public.supabaseKey) {
+      if (!config.public.supabase?.url || !config.public.supabase?.key) {
         console.warn('Supabase no configurado correctamente')
         this.properties = []
         this.featuredProperties = []
@@ -118,7 +118,7 @@ export const usePropertiesStore = defineStore('properties', {
     async fetchPropertyByCode(code) {
       const config = useRuntimeConfig()
       
-      if (!config.public.supabaseUrl || !config.public.supabaseKey) {
+      if (!config.public.supabase?.url || !config.public.supabase?.key) {
         console.warn('Supabase no configurado correctamente')
         return null
       }

@@ -12,8 +12,8 @@ export default defineEventHandler(() => {
       nodeEnv: process.env.NODE_ENV
     },
     runtimeConfig: {
-      supabaseUrl: config.public.supabaseUrl ? 'set' : 'empty',
-      supabaseNestedUrl: (config.public as any).supabase?.url ? 'set' : 'empty'
+      supabaseUrl: (config.public as any).supabase?.url ? 'set' : 'empty',
+      supabaseKey: (config.public as any).supabase?.key ? 'set' : 'empty'
     }
   }
 })

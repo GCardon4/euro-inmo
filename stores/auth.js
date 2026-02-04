@@ -33,7 +33,7 @@ export const useAuthStore = defineStore('auth', {
     // Recibe el cliente y config como parámetros para evitar problemas de contexto
     async initAuth(supabase, config) {
       // Verificar que las variables de entorno estén configuradas
-      if (!config?.public?.supabaseUrl || !config?.public?.supabaseKey) {
+      if (!config?.public?.supabase?.url || !config?.public?.supabase?.key) {
         console.warn('Supabase no configurado correctamente')
         return
       }
