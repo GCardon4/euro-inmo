@@ -1,4 +1,5 @@
 export default defineEventHandler(() => {
+  const config = useRuntimeConfig()
   return {
     status: 'ok',
     timestamp: new Date().toISOString(),
@@ -6,9 +7,13 @@ export default defineEventHandler(() => {
     env: {
       hasSupabaseUrl: !!process.env.SUPABASE_URL,
       hasSupabaseKey: !!process.env.SUPABASE_KEY,
-      nodeEnv: process.env.NODE_ENV,
-      nitroHost: process.env.NITRO_HOST || 'not set',
-      nitroPort: process.env.NITRO_PORT || 'not set'
+      hasNuxtSupabaseUrl: !!process.env.NUXT_PUBLIC_SUPABASE_URL,
+      hasNuxtSupabaseKey: !!process.env.NUXT_PUBLIC_SUPABASE_KEY,
+      nodeEnv: process.env.NODE_ENV
+    },
+    runtimeConfig: {
+      supabaseUrl: config.public.supabaseUrl ? 'set' : 'empty',
+      supabaseNestedUrl: (config.public as any).supabase?.url ? 'set' : 'empty'
     }
   }
 })
