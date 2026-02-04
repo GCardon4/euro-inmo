@@ -128,6 +128,7 @@ const formData = ref({
   photo_url: '',
   description: ''
 })
+const { notify, confirmDialog } = useNotification()
 
 // Cargar agentes
 const loadAgents = async () => {
@@ -165,7 +166,7 @@ const saveAgent = async () => {
         .eq('id', editingAgent.value.id)
 
       if (error) throw error
-      alert('Agente actualizado exitosamente')
+      notify('Agente actualizado exitosamente')
     } else {
       // Crear
       const { error } = await supabase
@@ -173,14 +174,14 @@ const saveAgent = async () => {
         .insert([formData.value])
 
       if (error) throw error
-      alert('Agente creado exitosamente')
+      notify('Agente creado exitosamente')
     }
 
     closeModal()
     await loadAgents()
   } catch (error) {
     console.error('Error al guardar:', error)
-    alert('Error al guardar el agente')
+    notify('Error al guardar el agente', 'error')
   } finally {
     saving.value = false
   }
@@ -188,7 +189,8 @@ const saveAgent = async () => {
 
 // Eliminar agente
 const deleteAgent = async (agent) => {
-  if (!confirm(`¿Eliminar a ${agent.name}?`)) return
+  const ok = await confirmDialog(`¿Eliminar a ${agent.name}?`)
+  if (!ok) return
 
   try {
     const { error } = await supabase
@@ -197,11 +199,11 @@ const deleteAgent = async (agent) => {
       .eq('id', agent.id)
 
     if (error) throw error
-    alert('Agente eliminado exitosamente')
+    notify('Agente eliminado exitosamente')
     await loadAgents()
   } catch (error) {
     console.error('Error al eliminar:', error)
-    alert('Error al eliminar el agente')
+    notify('Error al eliminar el agente', 'error')
   }
 }
 

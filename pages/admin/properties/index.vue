@@ -116,6 +116,7 @@ const categories = ref([])
 const searchQuery = ref('')
 const filterStatus = ref('')
 const filterCategory = ref('')
+const { notify, confirmDialog } = useNotification()
 
 // Cargar propiedades
 const loadProperties = async () => {
@@ -134,7 +135,7 @@ const loadProperties = async () => {
     properties.value = data || []
   } catch (error) {
     console.error('Error al cargar propiedades:', error)
-    alert('Error al cargar propiedades')
+    notify('Error al cargar propiedades', 'error')
   } finally {
     loading.value = false
   }
@@ -195,7 +196,8 @@ const editProperty = (id) => {
 
 // Eliminar propiedad
 const deleteProperty = async (property) => {
-  if (!confirm(`¿Estás seguro de eliminar "${property.name}"?`)) return
+  const ok = await confirmDialog(`¿Estás seguro de eliminar "${property.name}"?`)
+  if (!ok) return
 
   try {
     const { error } = await supabase
@@ -205,11 +207,11 @@ const deleteProperty = async (property) => {
 
     if (error) throw error
 
-    alert('Propiedad eliminada exitosamente')
+    notify('Propiedad eliminada exitosamente')
     await loadProperties()
   } catch (error) {
     console.error('Error al eliminar:', error)
-    alert('Error al eliminar la propiedad')
+    notify('Error al eliminar la propiedad', 'error')
   }
 }
 

@@ -179,6 +179,7 @@ const editingZone = ref(null)
 const stateForm = ref({ name: '' })
 const cityForm = ref({ name: '', state_id: '' })
 const zoneForm = ref({ name: '', city_id: '' })
+const { notify, confirmDialog } = useNotification()
 
 // Cargar datos
 const loadStates = async () => {
@@ -209,16 +210,17 @@ const saveState = async () => {
     } else {
       await supabase.from('state').insert([stateForm.value])
     }
-    alert('Guardado exitosamente')
+    notify('Guardado exitosamente')
     closeModals()
     await loadStates()
   } catch (error) {
-    alert('Error al guardar')
+    notify('Error al guardar', 'error')
   }
 }
 
 const deleteState = async (item) => {
-  if (!confirm(`¿Eliminar "${item.name}"?`)) return
+  const ok = await confirmDialog(`¿Eliminar "${item.name}"?`)
+  if (!ok) return
   await supabase.from('state').delete().eq('id', item.id)
   await loadStates()
 }
@@ -236,16 +238,17 @@ const saveCity = async () => {
     } else {
       await supabase.from('city').insert([cityForm.value])
     }
-    alert('Guardado exitosamente')
+    notify('Guardado exitosamente')
     closeModals()
     await loadCities()
   } catch (error) {
-    alert('Error al guardar')
+    notify('Error al guardar', 'error')
   }
 }
 
 const deleteCity = async (item) => {
-  if (!confirm(`¿Eliminar "${item.name}"?`)) return
+  const ok = await confirmDialog(`¿Eliminar "${item.name}"?`)
+  if (!ok) return
   await supabase.from('city').delete().eq('id', item.id)
   await loadCities()
 }
@@ -263,16 +266,17 @@ const saveZone = async () => {
     } else {
       await supabase.from('zone').insert([zoneForm.value])
     }
-    alert('Guardado exitosamente')
+    notify('Guardado exitosamente')
     closeModals()
     await loadZones()
   } catch (error) {
-    alert('Error al guardar')
+    notify('Error al guardar', 'error')
   }
 }
 
 const deleteZone = async (item) => {
-  if (!confirm(`¿Eliminar "${item.name}"?`)) return
+  const ok = await confirmDialog(`¿Eliminar "${item.name}"?`)
+  if (!ok) return
   await supabase.from('zone').delete().eq('id', item.id)
   await loadZones()
 }

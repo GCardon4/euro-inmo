@@ -62,6 +62,7 @@ const categories = ref([])
 const showModal = ref(false)
 const editingItem = ref(null)
 const formData = ref({ name: '', description: '' })
+const { notify, confirmDialog } = useNotification()
 
 const loadCategories = async () => {
   loading.value = true
@@ -92,35 +93,36 @@ const saveCategory = async () => {
         .update(formData.value)
         .eq('id', editingItem.value.id)
       if (error) throw error
-      alert('Categoría actualizada')
+      notify('Categoría actualizada')
     } else {
       const { error } = await supabase
         .from('category')
         .insert([formData.value])
       if (error) throw error
-      alert('Categoría creada')
+      notify('Categoría creada')
     }
     closeModal()
     await loadCategories()
   } catch (error) {
     console.error('Error:', error)
-    alert('Error al guardar')
+    notify('Error al guardar', 'error')
   }
 }
 
 const deleteCategory = async (item) => {
-  if (!confirm(`¿Eliminar "${item.name}"?`)) return
+  const ok = await confirmDialog(`¿Eliminar "${item.name}"?`)
+  if (!ok) return
   try {
     const { error } = await supabase
       .from('category')
       .delete()
       .eq('id', item.id)
     if (error) throw error
-    alert('Categoría eliminada')
+    notify('Categoría eliminada')
     await loadCategories()
   } catch (error) {
     console.error('Error:', error)
-    alert('Error al eliminar')
+    notify('Error al eliminar', 'error')
   }
 }
 

@@ -210,6 +210,7 @@ definePageMeta({
 
 const supabase = useSupabaseClient()
 const router = useRouter()
+const { notify } = useNotification()
 
 // Estados
 const isSubmitting = ref(false)
@@ -419,12 +420,12 @@ const handleSubmit = async () => {
 
     if (error) throw error
 
-    alert('Propiedad creada exitosamente')
+    notify('Propiedad creada exitosamente')
     router.push('/admin/properties')
 
   } catch (error) {
     console.error('Error creando propiedad:', error)
-    alert('Error al crear la propiedad: ' + error.message)
+    notify('Error al crear la propiedad: ' + error.message, 'error')
   } finally {
     isSubmitting.value = false
   }

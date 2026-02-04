@@ -1,6 +1,8 @@
 <template>
   <ClientOnly>
-    <NuxtPage />
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
     <template #fallback>
       <div class="loading-app">
         <p>Cargando...</p>

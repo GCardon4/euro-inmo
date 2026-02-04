@@ -1,17 +1,11 @@
 <template>
   <div class="dashboard-page">
-    <!-- Header del Dashboard -->
-    <div class="dashboard-header">
-      <div class="header-content">
-        <div class="user-info">
-          <h1>Dashboard Administrativo</h1>
-          <p>Bienvenido, {{ authStore.full_name || 'Usuario' }}</p>
-        </div>
-      </div>
-    </div>
-
     <!-- Contenido del Dashboard -->
     <div class="dashboard-content">
+      <div class="page-title">
+        <h1>Dashboard Administrativo</h1>
+        <p>Bienvenido, {{ authStore.fullName || 'Usuario' }}</p>
+      </div>
       <!-- Estadísticas -->
       <div class="stats-grid">
         <div class="stat-card">
@@ -176,12 +170,17 @@ const loadStats = async () => {
 
     // Total usuarios (solo si es admin)
     if (authStore.isAdmin) {
-      const { count: usersCount, error: usersError } = await supabase
-        .from('profiles')
-        .select('id', { count: 'exact', head: true })
+      try {
+        const { count: usersCount, error: usersError } = await supabase
+          .from('profiles')
+          .select('id', { count: 'exact', head: true })
 
-      if (usersError) console.error('Error usuarios:', usersError)
-      stats.value.totalUsers = usersCount || 0
+        if (!usersError) {
+          stats.value.totalUsers = usersCount || 0
+        }
+      } catch {
+        // RLS puede bloquear esta consulta - no es crítico
+      }
     }
 
     // Propiedades más visitadas
@@ -229,36 +228,22 @@ onMounted(() => {
 
 <style scoped>
 .dashboard-page {
-  min-height: 100vh;
   background: #f3f4f6;
 }
 
-.dashboard-header {
-  background: white;
-  border-bottom: 1px solid #e5e7eb;
-  padding: 1.5rem 2rem;
+.dashboard-content {
+  width: 100%;
 }
 
-.header-content {
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-.user-info h1 {
-  font-size: 1.875rem;
+.page-title h1 {
+  font-size: 1.5rem;
   color: #111827;
   margin: 0 0 0.25rem 0;
 }
 
-.user-info p {
+.page-title p {
   color: #6b7280;
-  margin: 0;
-}
-
-.dashboard-content {
-  padding: 2rem;
-  max-width: 1400px;
-  margin: 0 auto;
+  margin: 0 0 1.5rem 0;
 }
 
 .stats-grid {

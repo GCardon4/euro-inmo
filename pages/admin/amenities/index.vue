@@ -57,6 +57,7 @@ const amenities = ref([])
 const showModal = ref(false)
 const editingItem = ref(null)
 const formData = ref({ name: '' })
+const { notify, confirmDialog } = useNotification()
 
 const loadAmenities = async () => {
   loading.value = true
@@ -87,35 +88,36 @@ const saveAmenity = async () => {
         .update(formData.value)
         .eq('id', editingItem.value.id)
       if (error) throw error
-      alert('Característica actualizada')
+      notify('Característica actualizada')
     } else {
       const { error } = await supabase
         .from('amenities')
         .insert([formData.value])
       if (error) throw error
-      alert('Característica creada')
+      notify('Característica creada')
     }
     closeModal()
     await loadAmenities()
   } catch (error) {
     console.error('Error:', error)
-    alert('Error al guardar')
+    notify('Error al guardar', 'error')
   }
 }
 
 const deleteAmenity = async (item) => {
-  if (!confirm(`¿Eliminar "${item.name}"?`)) return
+  const ok = await confirmDialog(`¿Eliminar "${item.name}"?`)
+  if (!ok) return
   try {
     const { error } = await supabase
       .from('amenities')
       .delete()
       .eq('id', item.id)
     if (error) throw error
-    alert('Característica eliminada')
+    notify('Característica eliminada')
     await loadAmenities()
   } catch (error) {
     console.error('Error:', error)
-    alert('Error al eliminar')
+    notify('Error al eliminar', 'error')
   }
 }
 
