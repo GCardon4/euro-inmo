@@ -122,15 +122,70 @@
             </select>
           </div>
         </div>
+      </div>
 
-        <div class="form-group">
-          <label for="address">Dirección</label>
-          <input 
-            v-model="formData.address" 
-            type="text" 
-            id="address" 
-            placeholder="Ej: Calle 50 # 45-32"
+      <!-- Detalles de la Propiedad -->
+      <div class="form-section">
+        <h2 class="section-title">Detalles de la Propiedad</h2>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="rooms">Habitaciones</label>
+            <input
+              v-model.number="formData.rooms"
+              type="number"
+              id="rooms"
+              placeholder="Ej: 3"
+              min="0"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="bathrooms">Baños</label>
+            <input
+              v-model.number="formData.bathrooms"
+              type="number"
+              id="bathrooms"
+              placeholder="Ej: 2"
+              min="0"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="area">Área (m²)</label>
+            <input
+              v-model.number="formData.area"
+              type="number"
+              id="area"
+              placeholder="Ej: 120"
+              min="0"
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- Comodidades -->
+      <div class="form-section">
+        <h2 class="section-title">Comodidades</h2>
+
+        <div v-if="amenitiesLoading" class="loading-text">Cargando comodidades...</div>
+        <div v-else-if="amenities.length === 0" class="empty-text">No hay comodidades registradas</div>
+        <div v-else class="amenities-grid">
+          <label
+            v-for="amenity in amenities"
+            :key="amenity.id"
+            class="amenity-checkbox"
           >
+            <input
+              type="checkbox"
+              :value="amenity.id"
+              v-model="selectedAmenities"
+            >
+            <span class="amenity-label">
+              <span v-if="amenity.icon" class="material-icons amenity-icon">{{ amenity.icon }}</span>
+              {{ amenity.name }}
+            </span>
+          </label>
         </div>
       </div>
 
@@ -168,9 +223,9 @@
         </div>
       </div>
 
-      <!-- Características Adicionales -->
+      <!-- Opciones Adicionales -->
       <div class="form-section">
-        <h2 class="section-title">Características</h2>
+        <h2 class="section-title">Opciones Adicionales</h2>
         
         <div class="form-group">
           <label>
@@ -179,12 +234,6 @@
           </label>
         </div>
 
-        <div class="form-group">
-          <label>
-            <input type="checkbox" v-model="formData.is_featured">
-            Propiedad Destacada
-          </label>
-        </div>
       </div>
 
       <!-- Botones de acción -->
@@ -222,6 +271,9 @@ const zones = ref([])
 const selectedFiles = ref([])
 const uploadedImages = ref([])
 const fileInput = ref(null)
+const amenities = ref([])
+const amenitiesLoading = ref(false)
+const selectedAmenities = ref([])
 
 // Formulario
 const formData = ref({
@@ -234,9 +286,10 @@ const formData = ref({
   state_id: '',
   city_id: '',
   zone_id: '',
-  address: '',
-  is_active: true,
-  is_featured: false
+  rooms: null,
+  bathrooms: null,
+  area: null,
+  is_active: true
 })
 
 // Cargar datos iniciales
@@ -244,7 +297,8 @@ onMounted(async () => {
   await Promise.all([
     loadCategories(),
     loadStatuses(),
-    loadStates()
+    loadStates(),
+    loadAmenities()
   ])
 })
 
@@ -340,6 +394,25 @@ const loadZones = async () => {
   formData.value.zone_id = ''
 }
 
+// Cargar comodidades disponibles
+const loadAmenities = async () => {
+  amenitiesLoading.value = true
+
+  const { data, error } = await supabase
+    .from('amenities')
+    .select('*')
+    .order('name')
+
+  if (error) {
+    console.error('Error cargando comodidades:', error)
+    amenitiesLoading.value = false
+    return
+  }
+
+  amenities.value = data || []
+  amenitiesLoading.value = false
+}
+
 // Manejar selección de archivos
 const handleFileSelect = (event) => {
   const files = Array.from(event.target.files)
@@ -405,10 +478,10 @@ const handleSubmit = async () => {
       state_id: formData.value.state_id,
       city_id: formData.value.city_id,
       zone_id: formData.value.zone_id || null,
-      address: formData.value.address || null,
-      is_active: formData.value.is_active,
-      is_featured: formData.value.is_featured,
-      images: imageUrls
+      rooms: formData.value.rooms || null,
+      bathrooms: formData.value.bathrooms || null,
+      area: formData.value.area || null,
+      is_active: formData.value.is_active
     }
 
     // 3. Insertar propiedad
@@ -419,6 +492,22 @@ const handleSubmit = async () => {
       .single()
 
     if (error) throw error
+
+    // 4. Guardar comodidades seleccionadas
+    if (selectedAmenities.value.length > 0 && data) {
+      const amenityRows = selectedAmenities.value.map(amenityId => ({
+        property_id: data.id,
+        amenity_id: amenityId
+      }))
+
+      const { error: amenityError } = await supabase
+        .from('property_amenities')
+        .insert(amenityRows)
+
+      if (amenityError) {
+        console.error('Error guardando comodidades:', amenityError)
+      }
+    }
 
     notify('Propiedad creada exitosamente')
     router.push('/admin/properties')
@@ -558,6 +647,62 @@ const handleSubmit = async () => {
   align-items: center;
   font-weight: 500;
   cursor: pointer;
+}
+
+/* Comodidades */
+.amenities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
+
+.amenity-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.amenity-checkbox:hover {
+  border-color: var(--color-secondary);
+  background: #f8fbfd;
+}
+
+.amenity-checkbox:has(input:checked) {
+  border-color: var(--color-primary);
+  background: #eef7fb;
+}
+
+.amenity-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--color-primary);
+}
+
+.amenity-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  color: var(--color-text);
+}
+
+.amenity-icon {
+  font-size: 1.1rem;
+  color: var(--color-primary);
+}
+
+.loading-text,
+.empty-text {
+  color: var(--color-text-light);
+  font-size: 0.95rem;
+  padding: 1rem 0;
 }
 
 /* Galería de imágenes */

@@ -50,11 +50,19 @@ export interface Database {
           category_id: number
           city_id: number
           zone_id: number | null
-          bedrooms: number | null
+          rooms: number | null
           bathrooms: number | null
           area: number | null
           created_at: string
           updated_at: string
+        }
+      }
+      property_amenities: {
+        Row: {
+          id: number
+          property_id: number
+          amenity_id: number
+          created_at: string
         }
       }
       categorias: {

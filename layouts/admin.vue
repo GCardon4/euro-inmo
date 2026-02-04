@@ -31,7 +31,7 @@
         </NuxtLink>
         <NuxtLink to="/admin/amenities" class="header-nav-item">
           <span class="material-icons">star</span>
-          <span class="nav-label">Amenidades</span>
+          <span class="nav-label">Comodidades</span>
         </NuxtLink>
         <NuxtLink to="/admin/locations" class="header-nav-item">
           <span class="material-icons">place</span>
@@ -76,7 +76,7 @@
       </NuxtLink>
       <NuxtLink to="/admin/amenities" class="mobile-nav-item" @click="closeSidebar">
         <span class="material-icons">star</span>
-        <span>Amenidades</span>
+        <span>Comodidades</span>
       </NuxtLink>
       <NuxtLink to="/admin/locations" class="mobile-nav-item" @click="closeSidebar">
         <span class="material-icons">place</span>

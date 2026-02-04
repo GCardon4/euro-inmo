@@ -65,8 +65,8 @@
 
           <NuxtLink to="/admin/amenities" class="action-card">
             <span class="action-icon">✨</span>
-            <h3>Características</h3>
-            <p>Gestionar características de inmuebles</p>
+            <h3>Comodidades</h3>
+            <p>Gestionar comodidades de inmuebles</p>
           </NuxtLink>
 
           <NuxtLink to="/admin/locations" class="action-card">
@@ -91,7 +91,7 @@
           <div v-for="property in topProperties" :key="property.id" class="property-item">
             <div class="property-info">
               <h4>{{ property.name }}</h4>
-              <p>{{ property.city?.name }} - {{ property.status }}</p>
+              <p>{{ property.city?.name }} - {{ property.status?.name }}</p>
             </div>
             <div class="property-stats">
               <span class="views">👁️ {{ property.views_count || 0 }} vistas</span>

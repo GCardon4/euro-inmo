@@ -2,12 +2,12 @@
   <div class="amenities-page">
     <div class="page-header">
       <div>
-        <h1>Características de Propiedades</h1>
-        <p>Gestiona las características: Piscina, Jardín, Parqueadero, etc.</p>
+        <h1>Comodidades de Propiedades</h1>
+        <p>Gestiona las comodidades: Piscina, Jardín, Parqueadero, etc.</p>
       </div>
       <button @click="showModal = true" class="btn-primary">
         <span>➕</span>
-        <span>Nueva Característica</span>
+        <span>Nueva Comodidad</span>
       </button>
     </div>
 
@@ -27,7 +27,7 @@
     <!-- Modal -->
     <div v-if="showModal || editingItem" class="modal-overlay" @click="closeModal">
       <div class="modal-content" @click.stop>
-        <h2>{{ editingItem ? 'Editar Característica' : 'Nueva Característica' }}</h2>
+        <h2>{{ editingItem ? 'Editar Comodidad' : 'Nueva Comodidad' }}</h2>
         <form @submit.prevent="saveAmenity">
           <div class="form-group">
             <label>Nombre*</label>
@@ -49,7 +49,7 @@ definePageMeta({
   layout: 'admin'
 })
 
-useHead({ title: 'Características - Admin' })
+useHead({ title: 'Comodidades - Admin' })
 
 const supabase = useSupabaseClient()
 const loading = ref(false)
@@ -88,13 +88,13 @@ const saveAmenity = async () => {
         .update(formData.value)
         .eq('id', editingItem.value.id)
       if (error) throw error
-      notify('Característica actualizada')
+      notify('Comodidad actualizada')
     } else {
       const { error } = await supabase
         .from('amenities')
         .insert([formData.value])
       if (error) throw error
-      notify('Característica creada')
+      notify('Comodidad creada')
     }
     closeModal()
     await loadAmenities()
@@ -113,7 +113,7 @@ const deleteAmenity = async (item) => {
       .delete()
       .eq('id', item.id)
     if (error) throw error
-    notify('Característica eliminada')
+    notify('Comodidad eliminada')
     await loadAmenities()
   } catch (error) {
     console.error('Error:', error)
