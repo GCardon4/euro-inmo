@@ -43,12 +43,21 @@
         <div class="form-group">
           <label for="description">Descripción *</label>
           <textarea 
-            v-model="formData.description" 
+            v-model="description" 
             id="description" 
             rows="5"
             required
             placeholder="Describe las características principales de la propiedad..."
-          ></textarea>
+          >
+        </textarea>
+          <AudioTextInput v-model="description" showPreview />
+        </div>
+
+        <div class="form-row">
+          <ClientOnly>
+            <textarea v-model="description" rows="4" />
+          <AudioTextInput v-model="description" />
+        </ClientOnly>
         </div>
 
         <div class="form-row">
@@ -234,6 +243,7 @@
           </label>
         </div>
 
+
       </div>
 
       <!-- Botones de acción -->
@@ -252,6 +262,8 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
+
 definePageMeta({
   middleware: 'auth',
   layout: 'admin'
@@ -274,6 +286,7 @@ const fileInput = ref(null)
 const amenities = ref([])
 const amenitiesLoading = ref(false)
 const selectedAmenities = ref([])
+const description = ref('')
 
 // Formulario
 const formData = ref({
