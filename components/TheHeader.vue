@@ -5,7 +5,7 @@
       <div class="logo">
         <NuxtLink to="/" class="logo-link">
           <img src="/logotipo-euro.svg" alt="EuroInmobiliaria Logo" class="logo-img" />
-          <span class="logo-text">EuroInmobiliaria</span>
+          <span class="logo-text">Euro Inmobiliaria</span>
         </NuxtLink>
       </div>
 

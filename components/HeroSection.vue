@@ -15,7 +15,7 @@
 
     <!-- Contenido del Hero -->
     <div class="hero-content">
-      <h1 class="hero-title">Encuentra Tu Hogar Ideal</h1>
+      <h1 class="hero-title">Invertir SEGURO, empieza aquí</h1>
       <p class="hero-subtitle">
         Las mejores propiedades del Oriente Antioqueño en un solo lugar
       </p>
@@ -176,12 +176,34 @@ const startSlider = () => {
 
 // Manejar búsqueda
 const handleSearch = () => {
-  const filters = {
-    status: selectedStatus.value,
-    ...searchFilters.value
+  // Construir objeto de filtros, excluyendo valores vacíos
+  const filters = {}
+  
+  if (selectedStatus.value) {
+    filters.status = selectedStatus.value
   }
-  console.log('Buscando con filtros:', filters)
-  // TODO: Implementar navegación con filtros
+  
+  if (searchFilters.value.categoryId) {
+    filters.categoryId = searchFilters.value.categoryId
+  }
+  
+  if (searchFilters.value.cityId) {
+    filters.cityId = searchFilters.value.cityId
+  }
+  
+  if (searchFilters.value.minPrice) {
+    filters.minPrice = searchFilters.value.minPrice
+  }
+  
+  if (searchFilters.value.maxPrice) {
+    filters.maxPrice = searchFilters.value.maxPrice
+  }
+  
+  if (process.client) {
+    console.log('🔍 Buscando con filtros:', filters)
+  }
+  
+  // Navegar a página de propiedades con los filtros
   navigateTo({
     path: '/properties',
     query: filters

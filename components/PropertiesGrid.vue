@@ -73,15 +73,6 @@
 </template>
 
 <script setup>
-// Filtros rápidos
-const quickFilters = [
-  { label: 'Todas', value: 'all', icon: 'home_work' },
-  { label: 'Apartamentos', value: 'apartamento', icon: 'apartment' },
-  { label: 'Casas', value: 'casa', icon: 'home' },
-  { label: 'Fincas', value: 'finca', icon: 'landscape' },
-  { label: 'Lotes', value: 'lote', icon: 'grid_on' }
-]
-
 // Estado de filtro seleccionado
 const selectedFilter = ref('all')
 
@@ -93,11 +84,100 @@ const currentPage = ref(1)
 const properties = ref([])
 const loading = ref(true)
 const error = ref(null)
+const quickFilters = ref([])
 
 // IMPORTANTE: Obtener composables FUERA del callback de useAsyncData
 // para evitar el error "nuxt instance unavailable"
 const supabase = useSupabaseClient()
 const config = useRuntimeConfig()
+const route = useRoute()
+const { parseURLFilters } = usePropertyFilters()
+
+// Cargar categorías de Supabase
+const loadCategories = async () => {
+  try {
+    const { data: categories, error: catError } = await supabase
+      .from('category')
+      .select('id, name')
+      .order('name', { ascending: true })
+
+    if (catError) {
+      console.error('❌ Error al cargar categorías:', catError)
+      return []
+    }
+
+    // Mapear categorías a filtros
+    const categoryFilters = (categories || []).map(cat => ({
+      label: cat.name,
+      value: cat.name.toLowerCase().trim(),
+      icon: getCategoryIcon(cat.name.toLowerCase())
+    }))
+
+    // Agregar filtro "Todas" al principio
+    quickFilters.value = [
+      { label: 'Todas', value: 'all', icon: 'home_work' },
+      ...categoryFilters
+    ]
+
+    if (process.client) {
+      console.log('✅ Categorías cargadas:', quickFilters.value.map(f => `${f.label} (${f.value})`))
+    }
+
+    return categoryFilters
+  } catch (err) {
+    console.error('❌ Error en loadCategories:', err)
+    return []
+  }
+}
+
+// Obtener icono según categoría
+const getCategoryIcon = (categoryName) => {
+  const icons = {
+    'apartamento': 'apartment',
+    'apartamentos': 'apartment',
+    'casa': 'home',
+    'casas': 'home',
+    'finca': 'landscape',
+    'fincas': 'landscape',
+    'lote': 'grid_on',
+    'lotes': 'grid_on',
+    'local': 'store',
+    'locales': 'store'
+  }
+  return icons[categoryName] || 'home_work'
+}
+
+// Cargar categorías al montar el componente
+onMounted(async () => {
+  const loadedFilters = await loadCategories()
+  
+  // Si no se cargaron categorías, usar valores por defecto
+  if (loadedFilters.length === 0) {
+    console.warn('⚠️ No se cargaron categorías, usando valores por defecto')
+    quickFilters.value = [
+      { label: 'Todas', value: 'all', icon: 'home_work' },
+      { label: 'Apartamentos', value: 'apartamentos', icon: 'apartment' },
+      { label: 'Casas', value: 'casas', icon: 'home' },
+      { label: 'Fincas', value: 'fincas', icon: 'landscape' },
+      { label: 'Lotes', value: 'lotes', icon: 'grid_on' }
+    ]
+  }
+  
+  // Aplicar filtros de URL si existen
+  const urlFilters = parseURLFilters()
+  if (urlFilters.selectedStatus) {
+    // Si hay status en URL, el componente mostrará un filtro especial
+    if (process.client) {
+      console.log('🔍 Filtros desde URL aplicados:', urlFilters)
+    }
+  }
+  
+  // Si hay categoría en la URL, aplicar ese filtro
+  if (urlFilters.selectedCategory) {
+    selectedFilter.value = urlFilters.selectedCategory
+  }
+})
+
 
 // Usar useAsyncData para cargar datos de forma segura en SSR
 const { data: propertiesData, pending, error: fetchError } = await useAsyncData(
@@ -126,13 +206,17 @@ const { data: propertiesData, pending, error: fetchError } = await useAsyncData(
       .limit(12)
 
     if (supabaseError) {
-      console.error('Error de Supabase:', supabaseError)
+      console.error('❌ Error de Supabase:', supabaseError)
       throw new Error('No se pudieron cargar las propiedades')
     }
 
     if (!data || data.length === 0) {
+      console.warn('⚠️ No hay propiedades en la base de datos')
       return []
     }
+
+    console.log('✅ Propiedades cargadas:', data.length)
+    console.log('✅ Categorías encontradas:', data.map(p => `${p.code} -> ${p.category?.name}`))
 
     // Obtener imagenes destacadas para cada propiedad
     const propertiesWithImages = await Promise.all(
@@ -166,7 +250,10 @@ const { data: propertiesData, pending, error: fetchError } = await useAsyncData(
 
 // Sincronizar los datos con las refs reactivas
 watch(propertiesData, (newData) => {
-  properties.value = newData || []
+  if (newData && newData.length > 0) {
+    properties.value = newData
+    console.log('✅ PropertiesGrid: Datos sincronizados -', newData.length, 'propiedades')
+  }
 }, { immediate: true })
 
 watch(pending, (isPending) => {
@@ -175,6 +262,9 @@ watch(pending, (isPending) => {
 
 watch(fetchError, (err) => {
   error.value = err ? 'Error al cargar propiedades' : null
+  if (err) {
+    console.error('❌ PropertiesGrid: Error -', err)
+  }
 }, { immediate: true })
 
 // Propiedades filtradas
@@ -182,9 +272,18 @@ const filteredProperties = computed(() => {
   if (selectedFilter.value === 'all') {
     return properties.value
   }
-  return properties.value.filter(
-    p => p.category.toLowerCase() === selectedFilter.value
-  )
+  
+  const filtered = properties.value.filter(prop => {
+    const categoryName = prop.category.toLowerCase().trim()
+    const filterValue = selectedFilter.value.toLowerCase().trim()
+    return categoryName === filterValue
+  })
+  
+  if (process.client) {
+    console.log(`🔍 Filtro: "${selectedFilter.value}" -> ${filtered.length} propiedades`)
+  }
+  
+  return filtered
 })
 
 // Propiedades mostradas según paginación
