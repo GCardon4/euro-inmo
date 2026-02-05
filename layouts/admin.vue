@@ -21,6 +21,10 @@
           <span class="material-icons">home_work</span>
           <span class="nav-label">Propiedades</span>
         </NuxtLink>
+        <NuxtLink to="/admin/projects" class="header-nav-item">
+          <span class="material-icons">apartment</span>
+          <span class="nav-label">Proyectos</span>
+        </NuxtLink>
         <NuxtLink to="/admin/agents" class="header-nav-item">
           <span class="material-icons">groups</span>
           <span class="nav-label">Agentes</span>
@@ -65,6 +69,10 @@
       <NuxtLink to="/admin/properties" class="mobile-nav-item" @click="closeSidebar">
         <span class="material-icons">home_work</span>
         <span>Propiedades</span>
+      </NuxtLink>
+      <NuxtLink to="/admin/projects" class="mobile-nav-item" @click="closeSidebar">
+        <span class="material-icons">apartment</span>
+        <span>Proyectos</span>
       </NuxtLink>
       <NuxtLink to="/admin/agents" class="mobile-nav-item" @click="closeSidebar">
         <span class="material-icons">groups</span>

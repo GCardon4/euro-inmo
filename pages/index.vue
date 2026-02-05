@@ -14,6 +14,9 @@
     <!-- Información de la Empresa -->
     <AboutSection />
 
+    <!-- Sección de Proyectos -->
+    <ProjectSection />
+
     <!-- Sección de Agentes -->
     <AgentsSection />
 

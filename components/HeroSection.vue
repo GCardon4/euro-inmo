@@ -116,6 +116,7 @@
 const propertyStatuses = [
   { label: 'Venta', value: 'venta' },
   { label: 'Arriendo', value: 'arriendo' },
+  { label: 'Proyectos', value: 'proyectos' },
   { label: 'Ambos', value: '' }
 ]
 

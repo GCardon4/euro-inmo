@@ -51,6 +51,12 @@
             <p>Administrar inmuebles y propiedades</p>
           </NuxtLink>
 
+          <NuxtLink to="/admin/projects" class="action-card">
+            <span class="action-icon">🏗️</span>
+            <h3>Proyectos</h3>
+            <p>Gestionar proyectos inmobiliarios</p>
+          </NuxtLink>
+
           <NuxtLink to="/admin/agents" class="action-card">
             <span class="action-icon">👥</span>
             <h3>Agentes</h3>

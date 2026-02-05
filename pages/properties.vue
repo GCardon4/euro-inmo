@@ -17,7 +17,7 @@
           </span>
           <div class="filters-list">
             <span v-if="activeFilters.status" class="filter-chip">
-              {{ formatFilterLabel('status') }}: {{ activeFilters.status === 'venta' ? 'Venta' : 'Arriendo' }}
+              {{ formatFilterLabel('status') }}: {{ formatStatusName(activeFilters.status) }}
               <button @click="clearFilter('status')" class="close-btn">✕</button>
             </span>
             <span v-if="activeFilters.categoryId" class="filter-chip">
@@ -125,6 +125,16 @@ const formatFilterLabel = (key) => {
     'maxPrice': 'Precio máximo'
   }
   return labels[key] || key
+}
+
+// Formatear nombre de status
+const formatStatusName = (status) => {
+  const statusNames = {
+    'venta': 'Venta',
+    'arriendo': 'Arriendo',
+    'proyectos': 'Proyectos'
+  }
+  return statusNames[status] || status
 }
 
 // Formatear precio

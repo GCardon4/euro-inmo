@@ -6,12 +6,12 @@
         <div class="about-image">
           <img 
             src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=600" 
-            alt="Oficina Euro Inmo"
+            alt="Oficina Euro Inmobiliaria"
             class="main-image"
           >
           <div class="image-badge">
             <div class="badge-content">
-              <span class="badge-number">10+</span>
+              <span class="badge-number">14+</span>
               <span class="badge-text">Años de Experiencia</span>
             </div>
           </div>
@@ -22,7 +22,7 @@
           <span class="about-label">Sobre Nosotros</span>
           <h2 class="about-title">Tu Aliado en Bienes Raíces del Oriente Antioqueño</h2>
           <p class="about-description">
-            En <strong>Euro Inmo</strong> somos expertos en el mercado inmobiliario del Oriente Antioqueño. 
+            En <strong>Euro Inmobiliaria</strong> somos expertos en el mercado inmobiliario del Oriente Antioqueño. 
             Con más de una década de experiencia, hemos ayudado a cientos de familias a encontrar 
             su hogar ideal y a inversionistas a hacer realidad sus proyectos.
           </p>
