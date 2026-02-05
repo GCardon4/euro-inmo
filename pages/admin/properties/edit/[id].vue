@@ -1,9 +1,9 @@
 <template>
-  <div class="create-property-page">
+  <div class="edit-property-page">
     <div class="page-header">
       <div>
-        <h1>Crear Nueva Propiedad</h1>
-        <p class="subtitle">Completa la información de la propiedad</p>
+        <h1>Editar Propiedad</h1>
+        <p class="subtitle">Actualiza la información de la propiedad</p>
       </div>
       <NuxtLink to="/admin/properties" class="btn-back">
         <Icon name="arrow_back" />
@@ -11,7 +11,7 @@
       </NuxtLink>
     </div>
 
-    <form @submit.prevent="handleSubmit" class="property-form">
+    <form @submit.prevent="handleSubmit" class="property-form" v-if="!isLoading">
       <!-- Información básica -->
       <div class="form-section">
         <h2 class="section-title">Información Básica</h2>
@@ -42,18 +42,13 @@
 
         <div class="form-group">
           <label for="description">Descripción *</label>
-          <div class="description-input-wrapper">
-            <textarea 
-              v-model="formData.description" 
-              id="description" 
-              rows="5"
-              required
-              placeholder="Describe las características principales de la propiedad..."
-            ></textarea>
-            <ClientOnly>
-              <AudioTextInput v-model="formData.description" showPreview />
-            </ClientOnly>
-          </div>
+          <textarea 
+            v-model="formData.description" 
+            id="description" 
+            rows="5"
+            required
+            placeholder="Describe las características principales de la propiedad..."
+          ></textarea>
         </div>
 
         <div class="form-row">
@@ -198,6 +193,19 @@
       <div class="form-section">
         <h2 class="section-title">Galería de Imágenes</h2>
         
+        <div v-if="existingImages.length > 0" class="existing-images">
+          <h3 class="gallery-subtitle">Imágenes Existentes</h3>
+          <div class="image-gallery">
+            <div v-for="(image, index) in existingImages" :key="`existing-${image.id}`" class="image-item">
+              <img :src="image.url_image" :alt="`Imagen existente ${index + 1}`">
+              <div v-if="image.main" class="badge-main">Principal</div>
+              <button type="button" @click="removeExistingImage(index)" class="btn-remove" title="Eliminar imagen">
+                <Icon name="delete" />
+              </button>
+            </div>
+          </div>
+        </div>
+
         <div class="image-upload-area">
           <input 
             type="file" 
@@ -218,13 +226,15 @@
           </div>
         </div>
 
-        <div v-if="uploadedImages.length > 0" class="image-gallery">
-          <div v-for="(image, index) in uploadedImages" :key="index" class="image-item">
-            <img :src="image.url" :alt="`Imagen ${index + 1}`">
-            <div v-if="image.isMain" class="badge-main">Principal</div>
-            <button type="button" @click="removeImage(index)" class="btn-remove">
-              <Icon name="delete" />
-            </button>
+        <div v-if="newImages.length > 0" class="new-images">
+          <h3 class="gallery-subtitle">Nuevas Imágenes</h3>
+          <div class="image-gallery">
+            <div v-for="(image, index) in newImages" :key="`new-${index}`" class="image-item">
+              <img :src="image.url" :alt="`Imagen nueva ${index + 1}`">
+              <button type="button" @click="removeNewImage(index)" class="btn-remove" title="Eliminar imagen">
+                <Icon name="delete" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -239,8 +249,6 @@
             Propiedad Activa
           </label>
         </div>
-
-
       </div>
 
       <!-- Botones de acción -->
@@ -248,13 +256,22 @@
         <button type="button" @click="$router.push('/admin/properties')" class="btn-cancel">
           Cancelar
         </button>
+        <button type="button" @click="handleDelete" class="btn-delete" :disabled="isSubmitting">
+          <Icon name="delete" />
+          Eliminar
+        </button>
         <button type="submit" class="btn-submit" :disabled="isSubmitting">
           <Icon v-if="!isSubmitting" name="save" />
           <Icon v-else name="refresh" custom-class="spinning" />
-          {{ isSubmitting ? 'Guardando...' : 'Guardar Propiedad' }}
+          {{ isSubmitting ? 'Guardando...' : 'Actualizar Propiedad' }}
         </button>
       </div>
     </form>
+
+    <div v-else class="loading-state">
+      <Icon name="refresh" custom-class="spinning-large" />
+      <p>Cargando propiedad...</p>
+    </div>
   </div>
 </template>
 
@@ -266,11 +283,16 @@ definePageMeta({
   layout: 'admin'
 })
 
+const route = useRoute()
 const supabase = useSupabaseClient()
 const router = useRouter()
 const { notify } = useNotification()
 
+// Obtener ID de la propiedad desde la ruta
+const propertyId = route.params.id
+
 // Estados
+const isLoading = ref(true)
 const isSubmitting = ref(false)
 const categories = ref([])
 const statuses = ref([])
@@ -278,11 +300,13 @@ const states = ref([])
 const cities = ref([])
 const zones = ref([])
 const selectedFiles = ref([])
-const uploadedImages = ref([])
+const newImages = ref([])
+const existingImages = ref([])
 const fileInput = ref(null)
 const amenities = ref([])
 const amenitiesLoading = ref(false)
 const selectedAmenities = ref([])
+const imagesToDelete = ref([])
 
 // Formulario
 const formData = ref({
@@ -303,13 +327,91 @@ const formData = ref({
 
 // Cargar datos iniciales
 onMounted(async () => {
-  await Promise.all([
-    loadCategories(),
-    loadStatuses(),
-    loadStates(),
-    loadAmenities()
-  ])
+  try {
+    await Promise.all([
+      loadCategories(),
+      loadStatuses(),
+      loadStates(),
+      loadAmenities(),
+      loadProperty()
+    ])
+  } catch (error) {
+    console.error('Error cargando datos:', error)
+    notify('Error cargando la propiedad', 'error')
+    router.push('/admin/properties')
+  } finally {
+    isLoading.value = false
+  }
 })
+
+// Cargar propiedad existente
+const loadProperty = async () => {
+  const { data, error } = await supabase
+    .from('properties')
+    .select('*')
+    .eq('id', propertyId)
+    .single()
+
+  if (error) {
+    console.error('Error cargando propiedad:', error)
+    throw error
+  }
+
+  // Llenar formulario con datos existentes
+  formData.value = {
+    code: data.code,
+    name: data.name,
+    description: data.description,
+    price: data.price,
+    category_id: data.category_id,
+    status_id: data.status_id,
+    state_id: data.state_id,
+    city_id: data.city_id,
+    zone_id: data.zone_id,
+    rooms: data.rooms,
+    bathrooms: data.bathrooms,
+    area: data.area,
+    is_active: data.is_active
+  }
+
+  // Guardar valores de ciudad y zona antes de cargar
+  const savedCityId = data.city_id
+  const savedZoneId = data.zone_id
+
+  // Cargar ciudades y zonas según ubicación actual
+  if (data.state_id) {
+    await loadCities()
+    // Restaurar city_id después de cargar
+    formData.value.city_id = savedCityId
+  }
+  
+  if (savedCityId) {
+    await loadZones()
+    // Restaurar zone_id después de cargar
+    formData.value.zone_id = savedZoneId
+  }
+
+  // Cargar imágenes existentes desde properties_images
+  const { data: imagesData, error: imagesError } = await supabase
+    .from('properties_images')
+    .select('*')
+    .eq('property_id', propertyId)
+    .order('main', { ascending: false })
+
+  if (!imagesError && imagesData) {
+    existingImages.value = imagesData
+  }
+
+  // Cargar comodidades seleccionadas
+  const { data: amenityData, error: amenityError } = await supabase
+    .from('property_amenities')
+    .select('amenity_id')
+    .eq('property_id', propertyId)
+
+  if (!amenityError && amenityData) {
+    selectedAmenities.value = amenityData.map(a => a.amenity_id)
+  }
+}
 
 // Cargar categorías
 const loadCategories = async () => {
@@ -376,7 +478,7 @@ const loadCities = async () => {
   }
   
   cities.value = data || []
-  formData.value.city_id = ''
+  // Solo resetear zona si cambió el departamento
   formData.value.zone_id = ''
 }
 
@@ -427,28 +529,40 @@ const handleFileSelect = (event) => {
   const files = Array.from(event.target.files)
   selectedFiles.value = files
   
-  // Generar vista previa
   files.forEach((file) => {
     const reader = new FileReader()
     reader.onload = (e) => {
-      uploadedImages.value.push({
+      newImages.value.push({
         file,
         url: e.target.result,
-        isMain: uploadedImages.value.length === 0
+        isMain: false
       })
     }
     reader.readAsDataURL(file)
   })
 }
 
-// Subir imágenes a Supabase Storage con estructura de carpetas por código
-const uploadImages = async (propertyCode) => {
-  if (uploadedImages.value.length === 0) return []
+// Remover imagen nueva
+const removeNewImage = (index) => {
+  newImages.value.splice(index, 1)
+  selectedFiles.value.splice(index, 1)
+}
+
+// Remover imagen existente
+const removeExistingImage = (index) => {
+  const imageToDelete = existingImages.value[index]
+  imagesToDelete.value.push(imageToDelete)
+  existingImages.value.splice(index, 1)
+}
+
+// Subir nuevas imágenes a Supabase Storage
+const uploadNewImages = async (propertyCode) => {
+  if (newImages.value.length === 0) return []
 
   const uploadedUrls = []
 
-  for (let i = 0; i < uploadedImages.value.length; i++) {
-    const imageData = uploadedImages.value[i]
+  for (let i = 0; i < newImages.value.length; i++) {
+    const imageData = newImages.value[i]
     const file = imageData.file
     const fileExt = file.name.split('.').pop()
     const fileName = `${Date.now()}_${i}.${fileExt}`
@@ -481,23 +595,95 @@ const uploadImages = async (propertyCode) => {
   return uploadedUrls
 }
 
-// Remover imagen y ajustar imagen principal
-const removeImage = (index) => {
-  uploadedImages.value.splice(index, 1)
-  // Si hay imágenes, la primera es principal
-  if (uploadedImages.value.length > 0) {
-    uploadedImages.value.forEach((img, idx) => {
-      img.isMain = idx === 0
-    })
+// Eliminar imágenes de Supabase Storage y BD
+const deleteImages = async () => {
+  if (imagesToDelete.value.length === 0) return
+
+  for (const imageRecord of imagesToDelete.value) {
+    // Eliminar del storage
+    try {
+      // URL contiene: https://domain/storage/v1/object/properties/public/{code}/{filename}
+      const pathMatch = imageRecord.url_image.match(/\/storage\/v1\/object\/properties\/(.+)/)
+      if (pathMatch) {
+        const filePath = pathMatch[1]
+        await supabase.storage
+          .from('properties')
+          .remove([filePath])
+      }
+    } catch (error) {
+      console.error('Error eliminando imagen de storage:', error)
+    }
+
+    // Eliminar del registro de BD
+    const { error } = await supabase
+      .from('properties_images')
+      .delete()
+      .eq('id', imageRecord.id)
+
+    if (error) {
+      console.error('Error eliminando registro de imagen:', error)
+    }
   }
 }
 
-// Enviar formulario
+// Actualizar comodidades
+const updateAmenities = async () => {
+  // Eliminar comodidades previas
+  const { error: deleteError } = await supabase
+    .from('property_amenities')
+    .delete()
+    .eq('property_id', propertyId)
+
+  if (deleteError) {
+    console.error('Error eliminando comodidades previas:', deleteError)
+  }
+
+  // Insertar nuevas comodidades
+  if (selectedAmenities.value.length > 0) {
+    const amenityRows = selectedAmenities.value.map(amenityId => ({
+      property_id: propertyId,
+      amenity_id: amenityId
+    }))
+
+    const { error: insertError } = await supabase
+      .from('property_amenities')
+      .insert(amenityRows)
+
+    if (insertError) {
+      console.error('Error guardando comodidades:', insertError)
+    }
+  }
+}
+
+// Enviar formulario (actualizar)
 const handleSubmit = async () => {
   isSubmitting.value = true
 
   try {
-    // 1. Preparar datos de la propiedad
+    // 1. Eliminar imágenes marcadas para eliminar
+    await deleteImages()
+
+    // 2. Subir nuevas imágenes a storage y guardar en properties_images
+    const newImageUrls = await uploadNewImages(formData.value.code)
+    
+    if (newImageUrls.length > 0) {
+      const newImageRecords = newImageUrls.map(imageData => ({
+        property_id: propertyId,
+        url_image: imageData.url,
+        main: imageData.isMain,
+        code: formData.value.code
+      }))
+
+      const { error: imageError } = await supabase
+        .from('properties_images')
+        .insert(newImageRecords)
+
+      if (imageError) {
+        console.error('Error guardando nuevas imágenes:', imageError)
+      }
+    }
+
+    // 3. Preparar datos de la propiedad
     const propertyData = {
       code: formData.value.code,
       name: formData.value.name,
@@ -514,57 +700,68 @@ const handleSubmit = async () => {
       is_active: formData.value.is_active
     }
 
-    // 2. Insertar propiedad
-    const { data, error } = await supabase
+    // 4. Actualizar propiedad
+    const { error } = await supabase
       .from('properties')
-      .insert([propertyData])
-      .select()
-      .single()
+      .update(propertyData)
+      .eq('id', propertyId)
 
     if (error) throw error
 
-    // 3. Subir imágenes a storage y guardar registros en properties_images
-    const imageUrls = await uploadImages(formData.value.code)
-    
-    if (imageUrls.length > 0) {
-      const imageRecords = imageUrls.map(imageData => ({
-        property_id: data.id,
-        url_image: imageData.url,
-        main: imageData.isMain,
-        code: formData.value.code
-      }))
+    // 5. Actualizar comodidades
+    await updateAmenities()
 
-      const { error: imageError } = await supabase
-        .from('properties_images')
-        .insert(imageRecords)
-
-      if (imageError) {
-        console.error('Error guardando imágenes:', imageError)
-      }
-    }
-
-    // 4. Guardar comodidades seleccionadas
-    if (selectedAmenities.value.length > 0) {
-      const amenityRows = selectedAmenities.value.map(amenityId => ({
-        property_id: data.id,
-        amenity_id: amenityId
-      }))
-
-      const { error: amenityError } = await supabase
-        .from('property_amenities')
-        .insert(amenityRows)
-
-      if (amenityError) {
-        console.error('Error guardando comodidades:', amenityError)
-      }
-    }
-
-    notify('Propiedad creada exitosamente')
+    notify('Propiedad actualizada exitosamente')
     router.push('/admin/properties')
 
   } catch (error) {
-    console.error('Error creando propiedad:', error)
-    notify('Error al crear la propiedad: ' + error.message, 'error')
+    console.error('Error actualizando propiedad:', error)
+    notify('Error al actualizar la propiedad: ' + error.message, 'error')
+  } finally {
+    isSubmitting.value = false
+  }
+}
+
+// Eliminar propiedad
+const handleDelete = async () => {
+  if (!confirm('¿Estás seguro de que deseas eliminar esta propiedad? Esta acción no se puede deshacer.')) {
+    return
+  }
+
+  isSubmitting.value = true
+
+  try {
+    // 1. Eliminar todas las imágenes de properties_images y del storage
+    const { data: allImages } = await supabase
+      .from('properties_images')
+      .select('*')
+      .eq('property_id', propertyId)
+
+    if (allImages && allImages.length > 0) {
+      imagesToDelete.value = allImages
+      await deleteImages()
+    }
+
+    // 2. Eliminar comodidades asociadas
+    await supabase
+      .from('property_amenities')
+      .delete()
+      .eq('property_id', propertyId)
+
+    // 3. Eliminar propiedad
+    const { error } = await supabase
+      .from('properties')
+      .delete()
+      .eq('id', propertyId)
+
+    if (error) throw error
+
+    notify('Propiedad eliminada exitosamente')
+    router.push('/admin/properties')
+
+  } catch (error) {
+    console.error('Error eliminando propiedad:', error)
+    notify('Error al eliminar la propiedad: ' + error.message, 'error')
   } finally {
     isSubmitting.value = false
   }
@@ -572,7 +769,7 @@ const handleSubmit = async () => {
 </script>
 
 <style scoped>
-.create-property-page {
+.edit-property-page {
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
@@ -651,17 +848,6 @@ const handleSubmit = async () => {
   gap: 0.5rem;
 }
 
-.description-input-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.description-input-wrapper textarea {
-  resize: vertical;
-  min-height: 120px;
-}
-
 .form-group label {
   font-weight: 600;
   color: var(--color-text);
@@ -689,6 +875,7 @@ const handleSubmit = async () => {
 .form-group textarea {
   resize: vertical;
   font-family: inherit;
+  min-height: 120px;
 }
 
 .form-group select:disabled {
@@ -767,6 +954,21 @@ const handleSubmit = async () => {
 }
 
 /* Galería de imágenes */
+.existing-images {
+  margin-bottom: 2rem;
+}
+
+.gallery-subtitle {
+  color: var(--color-text);
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+}
+
+.new-images {
+  margin-top: 2rem;
+}
+
 .image-upload-area {
   display: flex;
   flex-direction: column;
@@ -869,7 +1071,8 @@ const handleSubmit = async () => {
 }
 
 .btn-cancel,
-.btn-submit {
+.btn-submit,
+.btn-delete {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -891,6 +1094,15 @@ const handleSubmit = async () => {
   background: #d1d5db;
 }
 
+.btn-delete {
+  background: #fecaca;
+  color: #7f1d1d;
+}
+
+.btn-delete:hover:not(:disabled) {
+  background: #fca5a5;
+}
+
 .btn-submit {
   background: var(--color-primary);
   color: white;
@@ -901,13 +1113,30 @@ const handleSubmit = async () => {
   transform: translateY(-2px);
 }
 
-.btn-submit:disabled {
+.btn-cancel:disabled,
+.btn-submit:disabled,
+.btn-delete:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
 .spinning {
   animation: spin 1s linear infinite;
+}
+
+.spinning-large {
+  font-size: 3rem;
+  animation: spin 1s linear infinite;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 1rem;
+  color: var(--color-text-light);
 }
 
 @keyframes spin {
@@ -917,7 +1146,7 @@ const handleSubmit = async () => {
 
 /* Responsive */
 @media (max-width: 768px) {
-  .create-property-page {
+  .edit-property-page {
     padding: 1rem;
   }
 
@@ -939,7 +1168,8 @@ const handleSubmit = async () => {
   }
 
   .btn-cancel,
-  .btn-submit {
+  .btn-submit,
+  .btn-delete {
     width: 100%;
     justify-content: center;
   }

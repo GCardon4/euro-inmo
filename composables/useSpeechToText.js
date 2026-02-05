@@ -1,9 +1,11 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 
+// Composable para convertir audio a texto usando Web Speech API
 export function useSpeechToText(options = {}) {
   const {
     lang = 'es-CO',
-    continuous = true
+    continuous = true,
+    interimResults = true
   } = options
 
   const isRecording = ref(false)
@@ -14,12 +16,16 @@ export function useSpeechToText(options = {}) {
 
   let recognition = null
 
+  // Iniciar grabación de voz
   const start = () => {
     if (!recognition || isRecording.value) return
     recognition.start()
     isRecording.value = true
+    interimText.value = ''
+    finalText.value = ''
   }
 
+  // Detener grabación de voz
   const stop = () => {
     if (!recognition || !isRecording.value) return
     recognition.stop()
@@ -40,37 +46,51 @@ export function useSpeechToText(options = {}) {
     recognition = new SpeechRecognition()
     recognition.lang = lang
     recognition.continuous = continuous
-    recognition.interimResults = true // ✅ clave
+    recognition.interimResults = interimResults
 
+    // Procesar resultados de reconocimiento
     recognition.onresult = (event) => {
       let interim = ''
       let final = ''
 
       for (let i = event.resultIndex; i < event.results.length; i++) {
-        const result = event.results[i]
-        if (result.isFinal) {
-          final += result[0].transcript + ' '
+        const transcript = event.results[i][0].transcript
+
+        if (event.results[i].isFinal) {
+          final += transcript + ' '
         } else {
-          interim += result[0].transcript
+          interim += transcript
         }
       }
 
       interimText.value = interim.trim()
 
+      // Emitir texto final cuando se confirme
       if (final.trim()) {
         finalText.value = final.trim()
-        interimText.value = '' // limpia interim al confirmar
+        interimText.value = ''
       }
     }
 
+    // Manejar errores
+    recognition.onerror = (event) => {
+      console.error('Error de reconocimiento de voz:', event.error)
+      isRecording.value = false
+    }
+
+    // Limpiar estado cuando termina la grabación
     recognition.onend = () => {
       isRecording.value = false
       interimText.value = ''
     }
   })
 
+  // Limpiar al desmontar el componente
   onBeforeUnmount(() => {
-    if (recognition) recognition.stop()
+    if (recognition) {
+      recognition.stop()
+      recognition = null
+    }
   })
 
   return {
