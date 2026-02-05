@@ -71,7 +71,7 @@
           <input
             id="contact"
             v-model="formData.contact"
-            type="tel"
+            type="text"
             placeholder="Ej: +57 300 1234567"
             class="form-input"
           >

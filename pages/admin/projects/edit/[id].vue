@@ -76,7 +76,7 @@
           <input
             id="contact"
             v-model="formData.contact"
-            type="tel"
+            type="text"
             placeholder="Ej: +57 300 1234567"
             class="form-input"
           >
@@ -449,7 +449,7 @@ const submitForm = async () => {
         description: formData.value.description.trim(),
         slogan: formData.value.slogan.trim(),
         information: formData.value.information.trim(),
-        contact: formData.value.contact.trim(),
+        contact: formData.value.contact ? formData.value.contact.trim() : null,
         is_active: formData.value.is_active
       })
       .eq('id', projectId)
