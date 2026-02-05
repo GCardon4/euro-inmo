@@ -28,12 +28,12 @@
 <script setup lang="ts">
 // Configuración SEO para la página principal con useSeoMeta (mejor para Nuxt 3)
 useSeoMeta({
-  title: 'EuroInmobiliaria - Propiedades en el Oriente Antioqueño',
-  description: 'Encuentra tu hogar ideal en el Oriente Antioqueño. Casas, apartamentos, fincas y más. Más de 10 años de experiencia en bienes raíces.',
-  ogTitle: 'EuroInmobiliaria - Propiedades en el Oriente Antioqueño',
-  ogDescription: 'Las mejores propiedades del Oriente Antioqueño. Compra, venta y arriendo.',
+  title: 'Euro Inmobiliaria - Con más de 14 años de experiencia en el Oriente Antioqueño',
+  description: 'Invertir SEGURO, empieza aquí con Euro Inmobiliaria. Casas, apartamentos, fincas y más. Más de 14 años de experiencia en bienes raíces.',
+  ogTitle: 'Euro Inmobiliaria - Con más de 14 años de experiencia en el Oriente Antioqueño',
+  ogDescription: 'Invertir SEGURO, empieza aquí con Euro Inmobiliaria. Compra, venta y arriendo.',
   ogType: 'website',
-  ogUrl: 'https://euro-inmo.com',
+  ogUrl: 'https://euroinmobiliaria.com.co',
   ogImage: '/og-image.jpg',
   twitterCard: 'summary_large_image'
 })
@@ -46,7 +46,7 @@ useHead({
   link: [
     {
       rel: 'canonical',
-      href: 'https://euro-inmo.com'
+      href: 'https://euroinmobiliaria.com.co'
     }
   ]
 })

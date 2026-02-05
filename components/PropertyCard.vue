@@ -86,7 +86,7 @@ const formattedPrice = computed(() => {
 // Navegar a detalle de propiedad
 const goToProperty = () => {
   if (props.property.code) {
-    navigateTo(`/property-${props.property.code}/${props.property.code}`)
+    navigateTo(`/property-${props.property.code}`)
   }
 }
 </script>

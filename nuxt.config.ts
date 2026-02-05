@@ -14,9 +14,9 @@ export default defineNuxtConfig({
     head: {
       charset: 'utf-8',
       viewport: 'width=device-width, initial-scale=1',
-      title: 'Euro Inmo - Bienes Raíces Oriente Antioqueño',
+      title: 'Euro Inmobiliaria - Con más de 14 años de experiencia en el Oriente Antioqueño',
       meta: [
-        { name: 'description', content: 'Encuentra tu hogar ideal en el Oriente Antioqueño' }
+        { name: 'description', content: 'Invertir SEGURO, empieza aquí con Euro Inmobiliaria' }
       ],
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
