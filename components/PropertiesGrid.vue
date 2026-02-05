@@ -134,17 +134,30 @@ const { data: propertiesData, pending, error: fetchError } = await useAsyncData(
       return []
     }
 
-    // Mapear datos al formato esperado
-    return data.map(prop => ({
-      id: prop.id,
-      code: prop.code,
-      name: prop.name,
-      category: prop.category?.name || 'Sin categoría',
-      status: prop.status?.name || 'Disponible',
-      location: prop.zone ? `${prop.zone.name}, ${prop.city.name}` : (prop.city?.name || 'Sin ubicación'),
-      price: prop.price,
-      imageUrl: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400' // Placeholder
-    }))
+    // Obtener imagenes destacadas para cada propiedad
+    const propertiesWithImages = await Promise.all(
+      data.map(async (prop) => {
+        const { data: imageData } = await supabase
+          .from('properties_images')
+          .select('url_image')
+          .eq('property_id', prop.id)
+          .eq('main', true)
+          .single()
+
+        return {
+          id: prop.id,
+          code: prop.code,
+          name: prop.name,
+          category: prop.category?.name || 'Sin categoría',
+          status: prop.status?.name || 'Disponible',
+          location: prop.zone ? `${prop.zone.name}, ${prop.city.name}` : (prop.city?.name || 'Sin ubicación'),
+          price: prop.price,
+          imageUrl: imageData?.url_image || '/property-img.jpg'
+        }
+      })
+    )
+
+    return propertiesWithImages
   },
   {
     default: () => []

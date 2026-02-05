@@ -64,7 +64,7 @@ const props = defineProps({
 })
 
 // Imagen placeholder
-const placeholderImage = 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400'
+const placeholderImage = '/property-img.jpg'
 
 // Clase CSS según el estado
 const statusClass = computed(() => {
