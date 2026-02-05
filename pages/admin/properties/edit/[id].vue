@@ -199,6 +199,26 @@
             <div v-for="(image, index) in existingImages" :key="`existing-${image.id}`" class="image-item">
               <img :src="image.url_image" :alt="`Imagen existente ${index + 1}`">
               <div v-if="image.main" class="badge-main">Principal</div>
+              <div class="image-actions">
+                <button 
+                  v-if="!image.main"
+                  type="button" 
+                  @click="setMainImage(index)" 
+                  class="btn-action btn-main" 
+                  title="Marcar como principal"
+                >
+                  <Icon name="star_outline" />
+                </button>
+                <button 
+                  v-else
+                  type="button" 
+                  class="btn-action btn-main active" 
+                  title="Imagen principal"
+                  disabled
+                >
+                  <Icon name="star" />
+                </button>
+              </div>
               <button type="button" @click="removeExistingImage(index)" class="btn-remove" title="Eliminar imagen">
                 <Icon name="delete" />
               </button>
@@ -626,6 +646,40 @@ const deleteImages = async () => {
   }
 }
 
+// Marcar imagen como principal
+const setMainImage = async (index) => {
+  try {
+    const selectedImage = existingImages.value[index]
+    
+    // Actualizar todas las imágenes de esta propiedad a main: false
+    const { error: updateAllError } = await supabase
+      .from('properties_images')
+      .update({ main: false })
+      .eq('property_id', propertyId)
+
+    if (updateAllError) throw updateAllError
+
+    // Establecer la imagen seleccionada como principal
+    const { error: updateSelectedError } = await supabase
+      .from('properties_images')
+      .update({ main: true })
+      .eq('id', selectedImage.id)
+
+    if (updateSelectedError) throw updateSelectedError
+
+    // Actualizar el estado local
+    existingImages.value.forEach(img => {
+      img.main = false
+    })
+    selectedImage.main = true
+
+    notify('Imagen marcada como principal', 'success')
+  } catch (error) {
+    console.error('Error marcando imagen como principal:', error)
+    notify('Error al marcar imagen como principal', 'error')
+  }
+}
+
 // Actualizar comodidades
 const updateAmenities = async () => {
   // Eliminar comodidades previas
@@ -1029,13 +1083,17 @@ const handleDelete = async () => {
   position: absolute;
   bottom: 0.5rem;
   left: 0.5rem;
-  background: rgba(102, 126, 234, 0.95);
+  background: rgba(34, 197, 94, 0.95);
   color: white;
-  padding: 0.25rem 0.75rem;
+  padding: 0.35rem 0.75rem;
   border-radius: 0.25rem;
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 0.7rem;
+  font-weight: 700;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
 }
 
 .btn-remove {
@@ -1142,6 +1200,54 @@ const handleDelete = async () => {
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+/* Image action buttons */
+.image-actions {
+  display: flex;
+  gap: 0.5rem;
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.5rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.image-item:hover .image-actions {
+  opacity: 1;
+}
+
+.btn-action {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.2rem;
+}
+
+.btn-main {
+  background: rgba(251, 146, 60, 0.9);
+  color: white;
+}
+
+.btn-main:hover:not(:disabled) {
+  background: rgb(251, 146, 60);
+  transform: scale(1.1);
+}
+
+.btn-main.active {
+  background: rgba(34, 197, 94, 0.9);
+  cursor: default;
+}
+
+.btn-main:disabled {
+  cursor: default;
+  opacity: 0.8;
 }
 
 /* Responsive */
