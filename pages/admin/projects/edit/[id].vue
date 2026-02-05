@@ -45,6 +45,43 @@
           </div>
         </div>
 
+        <!-- Slogan -->
+        <div class="form-group">
+          <label for="slogan">Slogan del Proyecto</label>
+          <input
+            id="slogan"
+            v-model="formData.slogan"
+            type="text"
+            placeholder="Ej: Tu hogar, tu estilo de vida"
+            class="form-input"
+          >
+        </div>
+
+        <!-- Información (Bullets) -->
+        <div class="form-group">
+          <label for="information">Información del Proyecto (separada por comas o |)</label>
+          <textarea
+            id="information"
+            v-model="formData.information"
+            placeholder="Ej: Piscina, Gym, Zonas verdes, Seguridad 24/7"
+            class="form-textarea"
+            rows="4"
+          ></textarea>
+          <small class="form-hint">Escribe cada característica separada por coma (,) o barra (|)</small>
+        </div>
+
+        <!-- Contacto -->
+        <div class="form-group">
+          <label for="contact">Teléfono de Contacto</label>
+          <input
+            id="contact"
+            v-model="formData.contact"
+            type="tel"
+            placeholder="Ej: +57 300 1234567"
+            class="form-input"
+          >
+        </div>
+
         <!-- Activo -->
         <div class="form-group">
           <label for="is_active">
@@ -58,35 +95,80 @@
           </label>
         </div>
 
-        <!-- Imagen -->
+        <!-- Imágenes (Galería) -->
         <div class="form-group">
-          <label for="images">Imagen Principal</label>
+          <label for="images">Imágenes del Proyecto</label>
           <div class="image-upload-area">
             <input
               id="images"
               ref="fileInput"
               type="file"
               accept="image/*"
+              multiple
               class="file-input"
               @change="handleFileSelect"
             >
             <div class="upload-zone" @click="$refs.fileInput.click()">
-              <div v-if="!preview && currentImage" class="preview-content">
-                <img :src="currentImage" :alt="formData.name" class="preview-image">
-                <button type="button" @click.stop="removeImage" class="btn-remove-image">
-                  ✕ Cambiar imagen
-                </button>
+              <Icon name="cloud_upload" custom-class="upload-icon" />
+              <p>Haz clic o arrastra imágenes aquí</p>
+              <span class="upload-hint">PNG, JPG, GIF (máx. 5MB c/u)</span>
+            </div>
+          </div>
+
+          <!-- Imágenes existentes -->
+          <div v-if="existingImages.length > 0" class="images-preview">
+            <h4 class="preview-title">Imágenes actuales ({{ existingImages.length }})</h4>
+            <div class="image-grid">
+              <div v-for="(image, index) in existingImages" :key="image.id" class="image-item">
+                <img :src="image.url_image" :alt="formData.name" class="image-thumbnail">
+                <div class="image-actions">
+                  <button 
+                    v-if="image.main"
+                    type="button" 
+                    disabled 
+                    class="btn-action btn-main active"
+                    title="Imagen principal"
+                  >
+                    <Icon name="star" />
+                  </button>
+                  <button 
+                    v-else
+                    type="button" 
+                    @click="setMainImage(index)"
+                    class="btn-action btn-main"
+                    title="Establecer como principal"
+                  >
+                    <Icon name="star_outline" />
+                  </button>
+                  <button 
+                    type="button" 
+                    @click="removeExistingImage(index)"
+                    class="btn-action btn-delete"
+                    title="Eliminar"
+                  >
+                    <Icon name="delete" />
+                  </button>
+                </div>
               </div>
-              <div v-else-if="preview" class="preview-content">
-                <img :src="preview" :alt="formData.name" class="preview-image">
-                <button type="button" @click.stop="removeImage" class="btn-remove-image">
-                  ✕ Remover imagen
-                </button>
-              </div>
-              <div v-else class="upload-content">
-                <Icon name="cloud_upload" custom-class="upload-icon" />
-                <p>Haz clic o arrastra una imagen aquí</p>
-                <span class="upload-hint">PNG, JPG, GIF (máx. 5MB)</span>
+            </div>
+          </div>
+
+          <!-- Preview de nuevas imágenes -->
+          <div v-if="newImages.length > 0" class="images-preview">
+            <h4 class="preview-title">Imágenes nuevas ({{ newImages.length }})</h4>
+            <div class="image-grid">
+              <div v-for="(image, index) in newImages" :key="index" class="image-item">
+                <img :src="image.url" :alt="formData.name" class="image-thumbnail">
+                <div class="image-actions">
+                  <button 
+                    type="button" 
+                    @click="removeNewImage(index)"
+                    class="btn-action btn-delete"
+                    title="Eliminar"
+                  >
+                    <Icon name="delete" />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -119,6 +201,7 @@
 const supabase = useSupabaseClient()
 const router = useRouter()
 const route = useRoute()
+const { notify } = useNotification()
 
 // Estado reactivo
 const project = ref(null)
@@ -127,12 +210,15 @@ const loading = ref(true)
 const formData = ref({
   name: '',
   description: '',
+  slogan: '',
+  information: '',
+  contact: '',
   is_active: true
 })
 
-const currentImage = ref(null)
-const selectedFile = ref(null)
-const preview = ref(null)
+const existingImages = ref([])
+const newImages = ref([])
+const imagesToDelete = ref([])
 const submitting = ref(false)
 const fileInput = ref(null)
 
@@ -143,7 +229,7 @@ const loadProject = async () => {
   try {
     const { data: projectData, error: projectError } = await supabase
       .from('projects')
-      .select('id, name, description, is_active')
+      .select('id, name, description, slogan, information, contact, is_active')
       .eq('id', projectId)
       .single()
 
@@ -158,19 +244,21 @@ const loadProject = async () => {
     formData.value = {
       name: projectData.name,
       description: projectData.description,
+      slogan: projectData.slogan || '',
+      information: projectData.information || '',
+      contact: projectData.contact || '',
       is_active: projectData.is_active
     }
 
-    // Cargar imagen actual
-    const { data: imageData } = await supabase
+    // Cargar imágenes existentes
+    const { data: imagesData, error: imagesError } = await supabase
       .from('projects_images')
-      .select('url_image')
+      .select('*')
       .eq('project_id', projectId)
-      .eq('main', true)
-      .single()
+      .order('main', { ascending: false })
 
-    if (imageData) {
-      currentImage.value = imageData.url_image
+    if (!imagesError && imagesData) {
+      existingImages.value = imagesData
     }
 
     console.log('✅ Proyecto cargado:', projectData.name)
@@ -181,125 +269,200 @@ const loadProject = async () => {
   }
 }
 
-// Manejar selección de archivo
+// Manejar selección de archivos (múltiples)
 const handleFileSelect = (event) => {
-  const file = event.target.files?.[0]
-  if (!file) return
+  const files = Array.from(event.target.files || [])
+  
+  files.forEach((file) => {
+    // Validar tamaño
+    if (file.size > 5 * 1024 * 1024) {
+      notify(`${file.name} es demasiado grande (máx. 5MB)`, 'error')
+      return
+    }
 
-  // Validar tamaño
-  if (file.size > 5 * 1024 * 1024) {
-    alert('El archivo es demasiado grande (máx. 5MB)')
-    return
-  }
-
-  // Crear preview
-  const reader = new FileReader()
-  reader.onload = (e) => {
-    preview.value = e.target?.result
-  }
-  reader.readAsDataURL(file)
-
-  selectedFile.value = file
+    // Crear preview
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      newImages.value.push({
+        file,
+        url: e.target?.result,
+        isMain: false
+      })
+    }
+    reader.readAsDataURL(file)
+  })
 }
 
-// Remover imagen
-const removeImage = () => {
-  selectedFile.value = null
-  preview.value = null
-  if (fileInput.value) {
-    fileInput.value.value = ''
+// Establecer imagen existente como principal
+const setMainImage = (index) => {
+  const selectedImage = existingImages.value[index]
+  
+  // Actualizar en estado local
+  existingImages.value.forEach(img => {
+    img.main = false
+  })
+  selectedImage.main = true
+}
+
+// Remover imagen nueva
+const removeNewImage = (index) => {
+  newImages.value.splice(index, 1)
+}
+
+// Remover imagen existente
+const removeExistingImage = (index) => {
+  const imageToDelete = existingImages.value[index]
+  imagesToDelete.value.push(imageToDelete)
+  existingImages.value.splice(index, 1)
+}
+
+// Subir nuevas imágenes
+const uploadNewImages = async (projectCode) => {
+  if (newImages.value.length === 0) return []
+
+  const uploadedUrls = []
+
+  for (let i = 0; i < newImages.value.length; i++) {
+    const imageData = newImages.value[i]
+    const file = imageData.file
+    const fileExt = file.name.split('.').pop()
+    const fileName = `${Date.now()}_${i}.${fileExt}`
+    const filePath = `public/${projectCode}/${fileName}`
+
+    const { data, error } = await supabase.storage
+      .from('projects')
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false
+      })
+
+    if (error) {
+      console.error('❌ Error subiendo imagen:', error)
+      notify(`Error al subir ${file.name}`, 'error')
+      continue
+    }
+
+    // Obtener URL pública
+    const { data: urlData } = supabase.storage
+      .from('projects')
+      .getPublicUrl(filePath)
+
+    uploadedUrls.push({
+      url: urlData.publicUrl,
+      isMain: imageData.isMain
+    })
+  }
+
+  return uploadedUrls
+}
+
+// Eliminar imágenes de storage y BD
+const deleteImages = async () => {
+  if (imagesToDelete.value.length === 0) return
+
+  for (const imageRecord of imagesToDelete.value) {
+    // Eliminar del storage
+    try {
+      const pathMatch = imageRecord.url_image.match(/\/storage\/v1\/object\/projects\/(.+)/)
+      if (pathMatch) {
+        const filePath = pathMatch[1]
+        await supabase.storage
+          .from('projects')
+          .remove([filePath])
+      }
+    } catch (error) {
+      console.error('Error eliminando imagen de storage:', error)
+    }
+
+    // Eliminar del registro de BD
+    const { error } = await supabase
+      .from('projects_images')
+      .delete()
+      .eq('id', imageRecord.id)
+
+    if (error) {
+      console.error('Error eliminando registro de imagen:', error)
+    }
   }
 }
 
-// Enviar formulario
+// Enviar formulario (actualizar)
 const submitForm = async () => {
   // Validaciones
   if (!formData.value.name.trim()) {
-    alert('El nombre del proyecto es requerido')
+    notify('El nombre del proyecto es requerido', 'error')
     return
   }
 
   if (!formData.value.description.trim()) {
-    alert('La descripción del proyecto es requerida')
+    notify('La descripción del proyecto es requerida', 'error')
     return
   }
 
   if (formData.value.description.length > 1000) {
-    alert('La descripción no puede exceder 1000 caracteres')
+    notify('La descripción no puede exceder 1000 caracteres', 'error')
     return
   }
 
   submitting.value = true
 
   try {
-    // 1. Actualizar proyecto
-    const { error: updateError } = await supabase
+    // 1. Eliminar imágenes marcadas para eliminar
+    await deleteImages()
+
+    // 2. Subir nuevas imágenes
+    const newImageUrls = await uploadNewImages(projectId)
+    
+    if (newImageUrls.length > 0) {
+      const newImageRecords = newImageUrls.map(imageData => ({
+        project_id: projectId,
+        url_image: imageData.url,
+        main: false
+      }))
+
+      const { error: imageError } = await supabase
+        .from('projects_images')
+        .insert(newImageRecords)
+
+      if (imageError) {
+        console.error('Error guardando nuevas imágenes:', imageError)
+      }
+    }
+
+    // 3. Actualizar imágenes principales
+    if (imagesToDelete.value.length === 0 && existingImages.value.length > 0) {
+      // Si no hemos eliminado la principal, actualizar si cambió
+      const mainImage = existingImages.value.find(img => img.main)
+      if (mainImage) {
+        await supabase
+          .from('projects_images')
+          .update({ main: true })
+          .eq('id', mainImage.id)
+      }
+    }
+
+    // 4. Actualizar proyecto
+    const { error } = await supabase
       .from('projects')
       .update({
         name: formData.value.name.trim(),
         description: formData.value.description.trim(),
+        slogan: formData.value.slogan.trim(),
+        information: formData.value.information.trim(),
+        contact: formData.value.contact.trim(),
         is_active: formData.value.is_active
       })
       .eq('id', projectId)
 
-    if (updateError) {
-      console.error('❌ Error al actualizar proyecto:', updateError)
-      alert('Error al actualizar el proyecto')
-      return
-    }
+    if (error) throw error
 
+    notify('Proyecto actualizado exitosamente', 'success')
     console.log('✅ Proyecto actualizado')
-
-    // 2. Si hay imagen nueva, subirla
-    if (selectedFile.value) {
-      const fileExtension = selectedFile.value.name.split('.').pop()
-      const fileName = `${projectId}.${fileExtension}`
-      const filePath = `projects/public/${projectId}/${fileName}`
-
-      const { error: uploadError } = await supabase.storage
-        .from('projects')
-        .upload(filePath, selectedFile.value, {
-          cacheControl: '3600',
-          upsert: true
-        })
-
-      if (uploadError) {
-        console.error('❌ Error al subir imagen:', uploadError)
-        alert('Error al subir la imagen')
-        return
-      }
-
-      console.log('✅ Imagen subida:', filePath)
-
-      // 3. Obtener URL pública
-      const { data: { publicUrl } } = supabase.storage
-        .from('projects')
-        .getPublicUrl(filePath)
-
-      // 4. Actualizar projects_images
-      const { error: imageError } = await supabase
-        .from('projects_images')
-        .update({
-          url_image: publicUrl,
-          main: true
-        })
-        .eq('project_id', projectId)
-        .eq('main', true)
-
-      if (imageError) {
-        console.error('❌ Error al actualizar imagen:', imageError)
-        alert('Error al actualizar la imagen')
-        return
-      }
-
-      console.log('✅ Imagen actualizada')
-    }
-
-    alert('Proyecto actualizado exitosamente')
     router.push('/admin/projects')
+
   } catch (err) {
     console.error('❌ Error en submitForm:', err)
-    alert('Error al actualizar el proyecto')
+    notify('Error al actualizar el proyecto', 'error')
   } finally {
     submitting.value = false
   }
@@ -308,6 +471,11 @@ const submitForm = async () => {
 // Lifecycle
 onMounted(() => {
   loadProject()
+})
+
+// Configurar layout
+definePageMeta({
+  layout: 'admin'
 })
 
 // SEO
@@ -422,14 +590,11 @@ useSeoMeta({
   text-align: right;
 }
 
-.form-checkbox {
-  margin-right: 0.5rem;
-  cursor: pointer;
-}
-
-.form-group label span {
-  cursor: pointer;
-  user-select: none;
+.form-hint {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #6b7280;
 }
 
 .image-upload-area {
@@ -506,6 +671,115 @@ useSeoMeta({
 .btn-remove-image:hover {
   background: #991b1b;
   color: white;
+}
+
+/* Galería de imágenes */
+.images-preview {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 2px solid #e5e7eb;
+}
+
+.preview-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e1e1c;
+  margin: 0 0 1rem 0;
+}
+
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.image-item {
+  position: relative;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+}
+
+.image-thumbnail {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.image-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.5);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.image-item:hover .image-actions {
+  opacity: 1;
+}
+
+.image-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.5);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.image-item:hover .image-actions {
+  opacity: 1;
+}
+
+.btn-action {
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.9);
+  color: #374151;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-size: 1.125rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  height: 36px;
+  width: 100%;
+}
+
+.btn-action:hover:not(:disabled) {
+  background: white;
+  transform: scale(1.05);
+}
+
+.btn-action:disabled {
+  opacity: 0.9;
+  cursor: default;
+}
+
+.btn-main {
+  color: #f59e0b;
+}
+
+.btn-main.active {
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.2);
+}
+
+.btn-delete {
+  color: #ef4444;
 }
 
 .form-actions {

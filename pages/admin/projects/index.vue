@@ -94,6 +94,8 @@
 // Composables
 const supabase = useSupabaseClient()
 const router = useRouter()
+const { notify } = useNotification()
+const { confirmDialog } = useNotification()
 
 // Estado reactivo
 const projects = ref([])
@@ -176,9 +178,8 @@ const editProject = (projectId) => {
 
 // Eliminar proyecto
 const deleteProject = async (project) => {
-  if (!confirm(`¿Estás seguro de que deseas eliminar el proyecto "${project.name}"?`)) {
-    return
-  }
+  const ok = await confirmDialog(`¿Eliminar el proyecto "${project.name}"?`, 'Confirmar eliminación')
+  if (!ok) return
 
   try {
     // Eliminar imágenes primero
@@ -189,7 +190,7 @@ const deleteProject = async (project) => {
 
     if (imagesError) {
       console.error('❌ Error al eliminar imágenes:', imagesError)
-      alert('Error al eliminar las imágenes del proyecto')
+      notify('Error al eliminar las imágenes del proyecto', 'error')
       return
     }
 
@@ -201,22 +202,28 @@ const deleteProject = async (project) => {
 
     if (projectError) {
       console.error('❌ Error al eliminar proyecto:', projectError)
-      alert('Error al eliminar el proyecto')
+      notify('Error al eliminar el proyecto', 'error')
       return
     }
 
     // Actualizar lista
     projects.value = projects.value.filter(p => p.id !== project.id)
+    notify('Proyecto eliminado exitosamente')
     console.log('✅ Proyecto eliminado:', project.name)
   } catch (err) {
     console.error('❌ Error en deleteProject:', err)
-    alert('Error al eliminar el proyecto')
+    notify('Error al eliminar el proyecto', 'error')
   }
 }
 
 // Lifecycle
 onMounted(() => {
   loadProjects()
+})
+
+// Configurar layout
+definePageMeta({
+  layout: 'admin'
 })
 
 // SEO
