@@ -136,10 +136,10 @@
 
           <!-- Botón de contacto -->
           <div class="contact-section">
-            <NuxtLink to="/contact" class="btn-contact">
+            <a :href="whatsappLink" target="_blank" rel="noopener noreferrer" class="btn-contact">
               <Icon name="mail" />
-              Contactar
-            </NuxtLink>
+              Contactar por WhatsApp
+            </a>
           </div>
         </section>
       </div>
@@ -161,6 +161,9 @@ definePageMeta({
 
 const route = useRoute()
 const supabase = useSupabaseClient()
+
+// Número de WhatsApp (cambiar aquí)
+const whatsappNumber = '573001234567'
 
 // Estados
 const isLoading = ref(true)
@@ -188,6 +191,20 @@ const formattedPrice = computed(() => {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
   }).format(property.value.price)
+})
+
+// Link de WhatsApp con mensaje personalizado
+const whatsappLink = computed(() => {
+  if (!property.value) return '#'
+  
+  const tipoPropiedad = property.value.category?.name || 'Propiedad'
+  const zona = property.value.zone?.name || 'Sin especificar'
+  const codigo = property.value.code
+  
+  const mensaje = `Quiero saber acerca de ${tipoPropiedad}, en ${zona}, con el código ${codigo}, Muchas gracias`
+  const mensajeEncoded = encodeURIComponent(mensaje)
+  
+  return `https://wa.me/${whatsappNumber}?text=${mensajeEncoded}`
 })
 
 // Cargar datos de la propiedad
