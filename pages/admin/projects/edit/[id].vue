@@ -246,7 +246,7 @@ const loadProject = async () => {
       description: projectData.description,
       slogan: projectData.slogan || '',
       information: projectData.information || '',
-      contact: projectData.contact || '',
+      contact: projectData.contact != null ? String(projectData.contact) : '',
       is_active: projectData.is_active
     }
 
@@ -447,9 +447,9 @@ const submitForm = async () => {
       .update({
         name: formData.value.name.trim(),
         description: formData.value.description.trim(),
-        slogan: formData.value.slogan.trim(),
-        information: formData.value.information.trim(),
-        contact: formData.value.contact ? formData.value.contact.trim() : null,
+        slogan: formData.value.slogan ? String(formData.value.slogan).trim() : '',
+        information: formData.value.information ? String(formData.value.information).trim() : '',
+        contact: formData.value.contact ? String(formData.value.contact).trim() : null,
         is_active: formData.value.is_active
       })
       .eq('id', projectId)

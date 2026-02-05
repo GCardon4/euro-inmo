@@ -74,14 +74,13 @@
 
           <div class="form-group">
             <label for="price">Precio *</label>
-            <input 
-              v-model.number="formData.price" 
-              type="number" 
-              id="price" 
-              required
+            <input
+              v-model="formData.price"
+              type="number"
+              id="price"
               placeholder="1500000"
               min="0"
-              step="100000"
+              step="any"
             >
           </div>
         </div>
@@ -580,16 +579,24 @@ const addWatermark = async (file) => {
             ctx.drawImage(watermarkImg, x, y, watermarkWidth, watermarkHeight)
             ctx.globalAlpha = 1.0
             
-            // Convertir canvas a blob
+            // Convertir canvas a blob - usar siempre image/jpeg para consistencia
+            const outputType = 'image/jpeg'
+            const quality = 0.92
             canvas.toBlob((blob) => {
-              // Crear archivo con la marca de agua
+              if (!blob) {
+                console.error('Error: canvas.toBlob retornó null')
+                resolve(file) // Retorna archivo original si falla
+                return
+              }
+              // Crear archivo con la marca de agua - asegurar extensión .jpg
+              const baseName = file.name.replace(/\.(jpeg|jpg|png|webp)$/i, '')
               const watermarkedFile = new File(
                 [blob],
-                file.name,
-                { type: file.type }
+                `${baseName}.jpg`,
+                { type: outputType }
               )
               resolve(watermarkedFile)
-            }, file.type)
+            }, outputType, quality)
           }
           
           watermarkImg.onerror = () => {
@@ -648,19 +655,21 @@ const uploadNewImages = async (propertyCode) => {
   for (let i = 0; i < newImages.value.length; i++) {
     const imageData = newImages.value[i]
     let file = imageData.file
-    const fileExt = file.name.split('.').pop()
-    const fileName = `${Date.now()}_${i}.${fileExt}`
-    // Ruta: public/{code}/{filename} (según política RLS)
-    const filePath = `public/${propertyCode}/${fileName}`
 
-    // Agregar marca de agua a la imagen
+    // Agregar marca de agua a la imagen (convierte a .jpg)
     file = await addWatermark(file)
+
+    // Generar nombre después de watermark (ya que convierte a .jpg)
+    const fileName = `${Date.now()}_${i}.jpg`
+    // Ruta: public/{code}/{filename} — requerido por políticas RLS de storage
+    const filePath = `public/${propertyCode}/${fileName}`
 
     const { data, error } = await supabase.storage
       .from('properties')
       .upload(filePath, file, {
         cacheControl: '3600',
-        upsert: false
+        upsert: false,
+        contentType: 'image/jpeg'
       })
 
     if (error) {
@@ -805,11 +814,12 @@ const handleSubmit = async () => {
     }
 
     // 3. Preparar datos de la propiedad
+    const priceValue = parseFloat(formData.value.price) || 0
     const propertyData = {
       code: formData.value.code,
       name: formData.value.name,
       description: formData.value.description,
-      price: formData.value.price,
+      price: priceValue,
       category_id: formData.value.category_id,
       status_id: formData.value.status_id,
       state_id: formData.value.state_id,

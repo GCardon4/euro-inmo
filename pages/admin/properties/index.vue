@@ -200,6 +200,15 @@ const deleteProperty = async (property) => {
   if (!ok) return
 
   try {
+    // 1. Eliminar primero los amenities relacionados
+    const { error: amenitiesError } = await supabase
+      .from('property_amenities')
+      .delete()
+      .eq('property_id', property.id)
+
+    if (amenitiesError) throw amenitiesError
+
+    // 2. Luego eliminar la propiedad
     const { error } = await supabase
       .from('properties')
       .delete()

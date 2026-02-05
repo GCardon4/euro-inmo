@@ -298,9 +298,9 @@ const submitForm = async () => {
         {
           name: formData.value.name.trim(),
           description: formData.value.description.trim(),
-          slogan: formData.value.slogan.trim(),
-          information: formData.value.information.trim(),
-          contact: formData.value.contact.trim(),
+          slogan: formData.value.slogan ? String(formData.value.slogan).trim() : '',
+          information: formData.value.information ? String(formData.value.information).trim() : '',
+          contact: formData.value.contact ? String(formData.value.contact).trim() : null,
           is_active: formData.value.is_active
         }
       ])
