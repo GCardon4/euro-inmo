@@ -27,6 +27,7 @@
               :src="currentImage" 
               :alt="property.name"
               class="main-image"
+              @click="openModal"
             >
             <button 
               v-if="images.length > 1"
@@ -145,6 +146,37 @@
       </div>
     </div>
 
+    <!-- Modal para visualizar imagen en tamaño completo -->
+    <div v-if="isModalOpen" class="image-modal" @click.self="closeModal">
+      <div class="modal-content">
+        <button class="modal-close" @click="closeModal">
+          <Icon name="close" />
+        </button>
+        
+        <img :src="currentImage" :alt="property.name" class="modal-image">
+        
+        <div class="modal-info">
+          <span class="image-counter">{{ currentImageIndex + 1 }} / {{ images.length }}</span>
+        </div>
+        
+        <button 
+          v-if="images.length > 1"
+          class="modal-nav-button prev"
+          @click="previousImage"
+        >
+          <Icon name="chevron_left" />
+        </button>
+        
+        <button 
+          v-if="images.length > 1"
+          class="modal-nav-button next"
+          @click="nextImage"
+        >
+          <Icon name="chevron_right" />
+        </button>
+      </div>
+    </div>
+
     <!-- Footer -->
     <ClientOnly>
       <TheFooter />
@@ -172,6 +204,7 @@ const property = ref(null)
 const images = ref([])
 const amenities = ref([])
 const currentImageIndex = ref(0)
+const isModalOpen = ref(false)
 
 // Obtener código de la ruta
 const propertyCode = route.params.code
@@ -283,6 +316,17 @@ const previousImage = () => {
   currentImageIndex.value = (currentImageIndex.value - 1 + images.value.length) % images.value.length
 }
 
+// Funciones del modal
+const openModal = () => {
+  isModalOpen.value = true
+  document.body.style.overflow = 'hidden'
+}
+
+const closeModal = () => {
+  isModalOpen.value = false
+  document.body.style.overflow = 'auto'
+}
+
 // Cargar en mount
 onMounted(() => {
   loadProperty()
@@ -292,6 +336,7 @@ onMounted(() => {
 const handleKeydown = (event) => {
   if (event.key === 'ArrowRight') nextImage()
   if (event.key === 'ArrowLeft') previousImage()
+  if (event.key === 'Escape') closeModal()
 }
 
 onMounted(() => {
@@ -383,6 +428,12 @@ onUnmounted(() => {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.main-image-container:hover .main-image {
+  transform: scale(1.02);
 }
 
 .nav-button {
@@ -662,6 +713,120 @@ onUnmounted(() => {
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+/* Modal de imagen */
+.image-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  position: relative;
+  width: 90%;
+  height: 90%;
+  max-width: 1200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.modal-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  transition: all 0.3s ease;
+  z-index: 1001;
+}
+
+.modal-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+.modal-nav-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 56px;
+  height: 56px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  transition: all 0.3s ease;
+  z-index: 1001;
+}
+
+.modal-nav-button:hover {
+  background: rgba(255, 255, 255, 0.4);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.modal-nav-button.prev {
+  left: 20px;
+}
+
+.modal-nav-button.next {
+  right: 20px;
+}
+
+.modal-info {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  z-index: 1001;
+}
+
+.image-counter {
+  color: white;
+  font-size: 0.95rem;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* Responsive */

@@ -544,6 +544,70 @@ const loadAmenities = async () => {
   amenitiesLoading.value = false
 }
 
+// Agregar marca de agua a la imagen
+const addWatermark = async (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = async (e) => {
+      try {
+        const img = new Image()
+        img.onload = async () => {
+          const canvas = document.createElement('canvas')
+          canvas.width = img.width
+          canvas.height = img.height
+          const ctx = canvas.getContext('2d')
+          
+          // Dibujar imagen original
+          ctx.drawImage(img, 0, 0)
+          
+          // Cargar marca de agua
+          const watermarkImg = new Image()
+          watermarkImg.crossOrigin = 'anonymous'
+          watermarkImg.src = '/logotipo-euroinmo.png'
+          
+          watermarkImg.onload = () => {
+            // Calcular tamaño de la marca de agua (30% de la imagen)
+            const watermarkSize = Math.min(img.width, img.height) * 0.3
+            const watermarkWidth = watermarkImg.width * (watermarkSize / watermarkImg.height)
+            const watermarkHeight = watermarkSize
+            
+            // Posicionar en el centro
+            const x = (img.width - watermarkWidth) / 2
+            const y = (img.height - watermarkHeight) / 2
+            
+            // Aplicar opacidad (35%)
+            ctx.globalAlpha = 0.35
+            ctx.drawImage(watermarkImg, x, y, watermarkWidth, watermarkHeight)
+            ctx.globalAlpha = 1.0
+            
+            // Convertir canvas a blob
+            canvas.toBlob((blob) => {
+              // Crear archivo con la marca de agua
+              const watermarkedFile = new File(
+                [blob],
+                file.name,
+                { type: file.type }
+              )
+              resolve(watermarkedFile)
+            }, file.type)
+          }
+          
+          watermarkImg.onerror = () => {
+            // Si falla cargar la marca de agua, retorna el archivo original
+            resolve(file)
+          }
+        }
+        img.src = e.target.result
+      } catch (error) {
+        console.error('Error agregando marca de agua:', error)
+        resolve(file) // Retorna archivo original en caso de error
+      }
+    }
+    reader.onerror = () => reject(reader.error)
+    reader.readAsDataURL(file)
+  })
+}
+
 // Manejar selección de archivos
 const handleFileSelect = (event) => {
   const files = Array.from(event.target.files)
@@ -583,11 +647,14 @@ const uploadNewImages = async (propertyCode) => {
 
   for (let i = 0; i < newImages.value.length; i++) {
     const imageData = newImages.value[i]
-    const file = imageData.file
+    let file = imageData.file
     const fileExt = file.name.split('.').pop()
     const fileName = `${Date.now()}_${i}.${fileExt}`
     // Ruta: public/{code}/{filename} (según política RLS)
     const filePath = `public/${propertyCode}/${fileName}`
+
+    // Agregar marca de agua a la imagen
+    file = await addWatermark(file)
 
     const { data, error } = await supabase.storage
       .from('properties')
