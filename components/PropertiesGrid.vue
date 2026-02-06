@@ -189,6 +189,7 @@ const { data: propertiesData, pending, error: fetchError } = await useAsyncData(
       return []
     }
 
+    // Traer TODAS las propiedades activas sin límite para que el filtrado por categoría funcione correctamente
     const { data, error: supabaseError } = await supabase
       .from('properties')
       .select(`
@@ -212,8 +213,8 @@ const { data: propertiesData, pending, error: fetchError } = await useAsyncData(
         city!inner(name),
         zone(name)
       `)
+      .eq('is_active', true)
       .order('created_at', { ascending: false })
-      .limit(12)
 
     if (supabaseError) {
       console.error('❌ Error de Supabase:', supabaseError)
@@ -226,40 +227,44 @@ const { data: propertiesData, pending, error: fetchError } = await useAsyncData(
     }
 
     console.log('✅ Propiedades cargadas:', data.length)
-    console.log('✅ Categorías encontradas:', data.map(p => `${p.code} -> ${p.category?.name}`))
 
-    // Obtener imagenes destacadas para cada propiedad
-    const propertiesWithImages = await Promise.all(
-      data.map(async (prop) => {
-        const { data: imageData } = await supabase
-          .from('properties_images')
-          .select('url_image')
-          .eq('property_id', prop.id)
-          .eq('main', true)
-          .single()
+    // Obtener imágenes principales de todas las propiedades en una sola consulta
+    const propertyIds = data.map(p => p.id)
+    const { data: allImages } = await supabase
+      .from('properties_images')
+      .select('property_id, url_image')
+      .in('property_id', propertyIds)
+      .eq('main', true)
 
-        return {
-          id: prop.id,
-          code: prop.code,
-          name: prop.name,
-          category: prop.category?.name || 'Sin categoría',
-          status: prop.status?.name || 'Disponible',
-          location: prop.zone ? `${prop.zone.name}, ${prop.city.name}` : (prop.city?.name || 'Sin ubicación'),
-          price: prop.price,
-          bedrooms: prop.rooms,
-          bathrooms: prop.bathrooms,
-          area: prop.area,
-          kitchen: prop.kitchen,
-          hall: prop.hall,
-          dining: prop.dining,
-          closet: prop.closet,
-          clothing: prop.clothing,
-          gas: prop.gas,
-          dressing: prop.dressing,
-          imageUrl: imageData?.url_image || '/property-img.jpg'
-        }
+    // Crear mapa de imágenes para acceso rápido
+    const imageMap = {}
+    if (allImages) {
+      allImages.forEach(img => {
+        imageMap[img.property_id] = img.url_image
       })
-    )
+    }
+
+    // Mapear propiedades con sus imágenes
+    const propertiesWithImages = data.map(prop => ({
+      id: prop.id,
+      code: prop.code,
+      name: prop.name,
+      category: prop.category?.name || 'Sin categoría',
+      status: prop.status?.name || 'Disponible',
+      location: prop.zone ? `${prop.zone.name}, ${prop.city.name}` : (prop.city?.name || 'Sin ubicación'),
+      price: prop.price,
+      bedrooms: prop.rooms,
+      bathrooms: prop.bathrooms,
+      area: prop.area,
+      kitchen: prop.kitchen,
+      hall: prop.hall,
+      dining: prop.dining,
+      closet: prop.closet,
+      clothing: prop.clothing,
+      gas: prop.gas,
+      dressing: prop.dressing,
+      imageUrl: imageMap[prop.id] || '/property-img.jpg'
+    }))
 
     return propertiesWithImages
   },
