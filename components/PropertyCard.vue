@@ -30,7 +30,7 @@
       </p>
 
       <!-- Características principales -->
-      <div class="property-features" v-if="property.bedrooms || property.bathrooms || property.area">
+      <div class="property-features" v-if="property.bedrooms || property.bathrooms || property.area || property.kitchen || property.hall || property.dining || property.closet || property.clothing || property.gas || property.dressing">
         <span v-if="property.bedrooms" class="feature">
           <Icon name="bed" custom-class="icon" />
           <span>{{ property.bedrooms }} hab.</span>
@@ -42,6 +42,34 @@
         <span v-if="property.area" class="feature">
           <Icon name="square_foot" custom-class="icon" />
           <span>{{ property.area }} m²</span>
+        </span>
+        <span v-if="property.kitchen" class="feature">
+          <Icon name="countertops" custom-class="icon" />
+          <span>{{ property.kitchen }} cocina</span>
+        </span>
+        <span v-if="property.hall" class="feature">
+          <Icon name="weekend" custom-class="icon" />
+          <span>{{ property.hall }} sala</span>
+        </span>
+        <span v-if="property.dining" class="feature">
+          <Icon name="dining" custom-class="icon" />
+          <span>{{ property.dining }} comedor</span>
+        </span>
+        <span v-if="property.closet" class="feature">
+          <Icon name="shelves" custom-class="icon" />
+          <span>{{ property.closet }} closet</span>
+        </span>
+        <span v-if="property.clothing" class="feature">
+          <Icon name="local_laundry_service" custom-class="icon" />
+          <span>{{ property.clothing }} ropas</span>
+        </span>
+        <span v-if="property.gas" class="feature">
+          <Icon name="local_fire_department" custom-class="icon" />
+          <span>{{ property.gas }} gas</span>
+        </span>
+        <span v-if="property.dressing" class="feature">
+          <Icon name="checkroom" custom-class="icon" />
+          <span>{{ property.dressing }} vestier</span>
         </span>
       </div>
 

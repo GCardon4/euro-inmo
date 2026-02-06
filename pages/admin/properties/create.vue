@@ -166,6 +166,89 @@
             >
           </div>
         </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="kitchen">Cocina</label>
+            <input
+              v-model.number="formData.kitchen"
+              type="number"
+              id="kitchen"
+              placeholder="Ej: 1"
+              min="0"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="hall">Sala</label>
+            <input
+              v-model.number="formData.hall"
+              type="number"
+              id="hall"
+              placeholder="Ej: 1"
+              min="0"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="dining">Comedor</label>
+            <input
+              v-model.number="formData.dining"
+              type="number"
+              id="dining"
+              placeholder="Ej: 1"
+              min="0"
+            >
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="closet">Closet</label>
+            <input
+              v-model.number="formData.closet"
+              type="number"
+              id="closet"
+              placeholder="Ej: 2"
+              min="0"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="clothing">Zona de Ropas</label>
+            <input
+              v-model.number="formData.clothing"
+              type="number"
+              id="clothing"
+              placeholder="Ej: 1"
+              min="0"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="gas">Red de Gas</label>
+            <input
+              v-model.number="formData.gas"
+              type="number"
+              id="gas"
+              placeholder="Ej: 1"
+              min="0"
+            >
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="dressing">Vestier</label>
+            <input
+              v-model.number="formData.dressing"
+              type="number"
+              id="dressing"
+              placeholder="Ej: 1"
+              min="0"
+            >
+          </div>
+        </div>
       </div>
 
       <!-- Comodidades -->
@@ -297,6 +380,13 @@ const formData = ref({
   rooms: null,
   bathrooms: null,
   area: null,
+  kitchen: null,
+  hall: null,
+  dining: null,
+  closet: null,
+  clothing: null,
+  gas: null,
+  dressing: null,
   is_active: true
 })
 
@@ -588,6 +678,13 @@ const handleSubmit = async () => {
       rooms: formData.value.rooms || null,
       bathrooms: formData.value.bathrooms || null,
       area: formData.value.area || null,
+      kitchen: formData.value.kitchen || null,
+      hall: formData.value.hall || null,
+      dining: formData.value.dining || null,
+      closet: formData.value.closet || null,
+      clothing: formData.value.clothing || null,
+      gas: formData.value.gas || null,
+      dressing: formData.value.dressing || null,
       is_active: formData.value.is_active
     }
 

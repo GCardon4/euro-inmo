@@ -117,6 +117,55 @@
                 <p>{{ property.category.name }}</p>
               </div>
             </div>
+            <div v-if="property.kitchen" class="detail-item">
+              <Icon name="countertops" />
+              <div>
+                <span class="label">Cocina</span>
+                <p>{{ property.kitchen }}</p>
+              </div>
+            </div>
+            <div v-if="property.hall" class="detail-item">
+              <Icon name="weekend" />
+              <div>
+                <span class="label">Sala</span>
+                <p>{{ property.hall }}</p>
+              </div>
+            </div>
+            <div v-if="property.dining" class="detail-item">
+              <Icon name="dining" />
+              <div>
+                <span class="label">Comedor</span>
+                <p>{{ property.dining }}</p>
+              </div>
+            </div>
+            <div v-if="property.closet" class="detail-item">
+              <Icon name="shelves" />
+              <div>
+                <span class="label">Closet</span>
+                <p>{{ property.closet }}</p>
+              </div>
+            </div>
+            <div v-if="property.clothing" class="detail-item">
+              <Icon name="local_laundry_service" />
+              <div>
+                <span class="label">Zona de Ropas</span>
+                <p>{{ property.clothing }}</p>
+              </div>
+            </div>
+            <div v-if="property.gas" class="detail-item">
+              <Icon name="local_fire_department" />
+              <div>
+                <span class="label">Red de Gas</span>
+                <p>{{ property.gas }}</p>
+              </div>
+            </div>
+            <div v-if="property.dressing" class="detail-item">
+              <Icon name="checkroom" />
+              <div>
+                <span class="label">Vestier</span>
+                <p>{{ property.dressing }}</p>
+              </div>
+            </div>
           </div>
 
           <!-- Descripción -->
@@ -255,6 +304,13 @@ const loadProperty = async () => {
         rooms,
         bathrooms,
         area,
+        kitchen,
+        hall,
+        dining,
+        closet,
+        clothing,
+        gas,
+        dressing,
         is_active,
         category(id, name),
         status(id, name),

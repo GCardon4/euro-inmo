@@ -53,6 +53,13 @@ export interface Database {
           rooms: number | null
           bathrooms: number | null
           area: number | null
+          kitchen: number | null
+          hall: number | null
+          dining: number | null
+          closet: number | null
+          clothing: number | null
+          gas: number | null
+          dressing: number | null
           created_at: string
           updated_at: string
         }
