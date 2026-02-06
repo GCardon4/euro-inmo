@@ -4,21 +4,21 @@
       <!-- Columna 1: Información de la empresa -->
       <div class="footer-column">
         <div class="footer-logo">
-          <img src="/logotipo-euro.svg" alt="Euro Inmo Logo" class="footer-logo-img" />
-          <h3 class="footer-title">Euro Inmo</h3>
+          <img src="/logo-euro-white.png" alt="Euro Inmobiliaria Logo" class="footer-logo-img" />
+          <h3 class="footer-title">Euro Inmobiliaria</h3>
         </div>
         <p class="footer-text">
           Líder en bienes raíces del Oriente Antioqueño. 
-          Más de 10 años conectando personas con sus hogares ideales.
+          Más de 14 años conectando personas con sus hogares ideales.
         </p>
         <div class="social-links">
-          <a href="#" class="social-link" aria-label="Facebook">
+          <a href="#" class="social-link" target="_blank" aria-label="Facebook">
             <Icon name="facebook" />
           </a>
-          <a href="#" class="social-link" aria-label="Instagram">
-            <Icon name="photo_camera" />
+          <a href="#" class="social-link" target="_blank" aria-label="Instagram">
+            <Icon name="instagram" />
           </a>
-          <a href="#" class="social-link" aria-label="WhatsApp">
+          <a href="#" class="social-link" target="_blank" aria-label="WhatsApp">
             <Icon name="chat" />
           </a>
         </div>
@@ -53,15 +53,15 @@
         <ul class="footer-contact">
           <li>
             <Icon name="location_on" custom-class="icon" />
-            <span>Oriente Antioqueño, Colombia</span>
+            <span>Marinilla - Antioquia</span>
           </li>
           <li>
             <Icon name="phone" custom-class="icon" />
-            <span>+57 (604) 123 4567</span>
+            <span>+57 301 242 1919</span>
           </li>
           <li>
             <Icon name="email" custom-class="icon" />
-            <span>info@euroinmo.com</span>
+            <span>euroinmobiliaria2012@gmail.com</span>
           </li>
           <li>
             <Icon name="schedule" custom-class="icon" />
@@ -116,7 +116,6 @@ const currentYear = new Date().getFullYear()
 .footer-logo-img {
   height: 50px;
   width: auto;
-  filter: brightness(0) invert(1);
 }
 
 .footer-title {
@@ -213,6 +212,11 @@ const currentYear = new Date().getFullYear()
 
 .social-link .material-icons {
   font-size: 20px;
+}
+
+.social-link .social-svg-icon {
+  width: 20px;
+  height: 20px;
 }
 
 .social-link:hover {

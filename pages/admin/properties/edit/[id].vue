@@ -671,8 +671,8 @@ const addWatermark = async (file) => {
             const x = (img.width - watermarkWidth) / 2
             const y = (img.height - watermarkHeight) / 2
             
-            // Aplicar opacidad (35%)
-            ctx.globalAlpha = 0.35
+            // Aplicar opacidad (22%)
+            ctx.globalAlpha = 0.22
             ctx.drawImage(watermarkImg, x, y, watermarkWidth, watermarkHeight)
             ctx.globalAlpha = 1.0
             

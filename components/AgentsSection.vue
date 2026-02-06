@@ -23,19 +23,7 @@
               :alt="agent.name"
               class="agent-photo"
             >
-            <div class="agent-overlay">
-              <div class="agent-social">
-                <a :href="agent.whatsapp" class="social-icon" aria-label="WhatsApp">
-                  <span>💬</span>
-                </a>
-                <a :href="agent.email" class="social-icon" aria-label="Email">
-                  <Icon name="email" />
-                </a>
-                <a :href="agent.phone" class="social-icon" aria-label="Teléfono">
-                  <Icon name="phone" />
-                </a>
-              </div>
-            </div>
+
           </div>
 
           <div class="agent-info">
@@ -55,7 +43,7 @@
 
             <p class="agent-description">{{ agent.description }}</p>
 
-            <a :href="agent.whatsapp" class="btn-contact">
+            <a :href="agent.whatsapp" target="_blank" class="btn-contact">
               Contactar Asesor
             </a>
           </div>
@@ -79,39 +67,43 @@
 const agents = ref([
   {
     id: 1,
-    name: 'María García',
-    role: 'Asesora Senior',
-    photo: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400',
+    name: 'Valentina Florez',
+    role: 'Asesora Inmobiliaria',
+    photo: '/asesores/asesor-01.jpeg',
     properties: 45,
     rating: '4.9',
     description: 'Especialista en propiedades residenciales del Oriente Antioqueño con 8 años de experiencia.',
-    whatsapp: 'https://wa.me/573001234567',
-    email: 'mailto:maria@euroinmo.com',
-    phone: 'tel:+573001234567'
+    whatsapp: 'https://wa.me/573012421919'
   },
   {
     id: 2,
-    name: 'Carlos Rodríguez',
-    role: 'Asesor Comercial',
-    photo: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400',
+    name: 'Mayerly Martínez',
+    role: 'Asesora Inmobiliaria',
+    photo: '/asesores/asesor-02.jpeg',
     properties: 38,
     rating: '4.8',
     description: 'Experto en fincas y propiedades rurales. Conocimiento profundo del mercado regional.',
-    whatsapp: 'https://wa.me/573007654321',
-    email: 'mailto:carlos@euroinmo.com',
-    phone: 'tel:+573007654321'
+    whatsapp: 'https://wa.me/573236536666'
   },
   {
     id: 3,
-    name: 'Ana Martínez',
+    name: 'Leidy Gil',
     role: 'Asesora Inmobiliaria',
-    photo: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400',
+    photo: '/asesores/asesor-03.jpeg',
     properties: 52,
     rating: '5.0',
     description: 'Líder en ventas de apartamentos y locales comerciales. Atención personalizada garantizada.',
-    whatsapp: 'https://wa.me/573009876543',
-    email: 'mailto:ana@euroinmo.com',
-    phone: 'tel:+573009876543'
+    whatsapp: 'https://wa.me/573012421919'
+  },
+   {
+    id: 4,
+    name: 'Natalia López',
+    role: 'Asesora Inmobiliaria',
+    photo: '/asesores/asesor-04.jpeg',
+    properties: 28,
+    rating: '4.7',
+    description: 'Líder en ventas de apartamentos y locales comerciales. Atención personalizada garantizada.',
+    whatsapp: 'https://wa.me/573507776633'
   }
 ])
 </script>
@@ -327,7 +319,7 @@ const agents = ref([
 }
 
 .agents-cta {
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  background: #0b6182;
   padding: 4rem 2rem;
   border-radius: 1.5rem;
   text-align: center;
@@ -339,6 +331,7 @@ const agents = ref([
   font-size: 2rem;
   font-weight: 800;
   margin: 0 0 1rem 0;
+  color: white;
 }
 
 .agents-cta p {

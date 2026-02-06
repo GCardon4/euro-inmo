@@ -19,7 +19,7 @@
               </div>
               <div class="detail-content">
                 <h4>Ubicación</h4>
-                <p>Calle Principal #123<br>Rionegro, Antioquia</p>
+                <p>Calle 29 N° 29-15<br>Marinilla, Antioquia</p>
               </div>
             </div>
 
@@ -28,8 +28,8 @@
                 <Icon name="phone" />
               </div>
               <div class="detail-content">
-                <h4>Teléfono</h4>
-                <p>+57 (604) 123 4567<br>+57 300 123 4567</p>
+                <h4>Teléfonos</h4>
+                <p>+57 301 242 1919<br>+57 350 777 6633</p>
               </div>
             </div>
 
@@ -39,7 +39,7 @@
               </div>
               <div class="detail-content">
                 <h4>Email</h4>
-                <p>info@euroinmo.com<br>ventas@euroinmo.com</p>
+                <p>euroinmobiliaria2012@gmail.com</p>
               </div>
             </div>
 
@@ -58,18 +58,16 @@
           <div class="social-section">
             <h4>Síguenos</h4>
             <div class="social-links">
-              <a href="#" class="social-link" aria-label="Facebook">
+              <a target="_blank" href="https://www.facebook.com/euroinmobiliaria.sas" class="social-link" aria-label="Facebook">
                 <Icon name="facebook" />
               </a>
-              <a href="#" class="social-link" aria-label="Instagram">
-                <Icon name="photo_camera" />
+              <a target="_blank" href="https://www.instagram.com/euro_inmobiliaria" class="social-link" aria-label="Instagram">
+                <Icon name="instagram" />
               </a>
-              <a href="#" class="social-link" aria-label="WhatsApp">
+              <a target="_blank" href="https://wa.me/573012421919" class="social-link" aria-label="WhatsApp">
                 <Icon name="chat" />
               </a>
-              <a href="#" class="social-link" aria-label="LinkedIn">
-                <Icon name="business_center" />
-              </a>
+
             </div>
           </div>
         </div>
@@ -349,6 +347,11 @@ const handleSubmit = async () => {
 
 .social-link .material-icons {
   font-size: 24px;
+}
+
+.social-link .social-svg-icon {
+  width: 24px;
+  height: 24px;
 }
 
 .social-link:hover {

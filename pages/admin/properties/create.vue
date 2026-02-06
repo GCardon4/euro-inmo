@@ -374,7 +374,7 @@ const formData = ref({
   price: 0,
   category_id: '',
   status_id: '',
-  state_id: '',
+  state_id: 1,
   city_id: '',
   zone_id: '',
   rooms: null,
@@ -398,6 +398,8 @@ onMounted(async () => {
     loadStates(),
     loadAmenities()
   ])
+  // Cargar ciudades de Antioquia por defecto
+  await loadCities()
 })
 
 // Cargar categorías
@@ -542,8 +544,8 @@ const addWatermark = async (file) => {
             const x = (img.width - watermarkWidth) / 2
             const y = (img.height - watermarkHeight) / 2
             
-            // Aplicar opacidad (35%)
-            ctx.globalAlpha = 0.35
+            // Aplicar opacidad (22%)
+            ctx.globalAlpha = 0.22
             ctx.drawImage(watermarkImg, x, y, watermarkWidth, watermarkHeight)
             ctx.globalAlpha = 1.0
             
