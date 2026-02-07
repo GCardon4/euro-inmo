@@ -294,21 +294,28 @@ watch(fetchError, (err) => {
 
 // Propiedades filtradas
 const filteredProperties = computed(() => {
-  if (selectedFilter.value === 'all') {
-    return properties.value
+  let result = properties.value
+
+  // Filtrar por status desde la URL (sincronizado con HeroSection)
+  const statusFilter = route.query.status || ''
+  if (statusFilter) {
+    result = result.filter(prop => {
+      return prop.status.toLowerCase().trim() === statusFilter.toLowerCase().trim()
+    })
   }
-  
-  const filtered = properties.value.filter(prop => {
-    const categoryName = prop.category.toLowerCase().trim()
-    const filterValue = selectedFilter.value.toLowerCase().trim()
-    return categoryName === filterValue
-  })
-  
+
+  // Filtrar por categoría
+  if (selectedFilter.value !== 'all') {
+    result = result.filter(prop => {
+      return prop.category.toLowerCase().trim() === selectedFilter.value.toLowerCase().trim()
+    })
+  }
+
   if (process.client) {
-    console.log(`🔍 Filtro: "${selectedFilter.value}" -> ${filtered.length} propiedades`)
+    console.log(`🔍 Filtro: status="${statusFilter}", categoría="${selectedFilter.value}" -> ${result.length} propiedades`)
   }
-  
-  return filtered
+
+  return result
 })
 
 // Propiedades mostradas según paginación
@@ -323,6 +330,11 @@ const loadMore = () => {
 
 // Resetear paginación al cambiar filtro
 watch(selectedFilter, () => {
+  currentPage.value = 1
+})
+
+// Resetear paginación al cambiar status desde la URL
+watch(() => route.query.status, () => {
   currentPage.value = 1
 })
 </script>

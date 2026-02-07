@@ -22,9 +22,26 @@
 
       <!-- Filtros de búsqueda -->
       <div class="search-filters">
+        <div class="status-toggle">
+          <button
+            class="status-toggle-btn"
+            :class="{ active: selectedStatus === 'arriendo' }"
+            @click="selectedStatus = selectedStatus === 'arriendo' ? '' : 'arriendo'"
+          >
+            Arriendos
+          </button>
+          <button
+            class="status-toggle-btn"
+            :class="{ active: selectedStatus === 'venta' }"
+            @click="selectedStatus = selectedStatus === 'venta' ? '' : 'venta'"
+          >
+            Ventas
+          </button>
+        </div>
+
         <div class="filter-tabs">
-          <button 
-            v-for="status in propertyStatuses" 
+          <button
+            v-for="status in propertyStatuses"
             :key="status.value"
             class="filter-tab"
             :class="{ active: selectedStatus === status.value }"
@@ -112,16 +129,29 @@
 </template>
 
 <script setup>
+const router = useRouter()
+const route = useRoute()
+
 // Estados de la propiedad (arriendo/venta)
 const propertyStatuses = [
   { label: 'Venta', value: 'venta' },
   { label: 'Arriendo', value: 'arriendo' },
-  { label: 'Proyectos', value: 'proyectos' },
-  { label: 'Ambos', value: '' }
+  { label: 'Proyectos', value: 'proyectos' }
 ]
 
 // Estado del filtro de búsqueda
 const selectedStatus = ref('')
+
+// Sincronizar selectedStatus con la URL para que PropertiesGrid reaccione
+watch(selectedStatus, (newStatus) => {
+  const query = { ...route.query }
+  if (newStatus) {
+    query.status = newStatus
+  } else {
+    delete query.status
+  }
+  router.replace({ query })
+})
 const searchFilters = ref({
   categoryId: '',
   cityId: '',
@@ -301,19 +331,53 @@ onUnmounted(() => {
   margin: 0 auto;
 }
 
-.filter-tabs {
+.status-toggle {
   display: flex;
   justify-content: center;
   gap: 1rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.25rem;
 }
 
-.filter-tab {
-  padding: 0.75rem 2rem;
+.status-toggle-btn {
+  padding: 1rem 3rem;
   border: 2px solid #e5e7eb;
   background: white;
   color: #585857;
+  font-weight: 700;
+  font-size: 1.15rem;
+  border-radius: 2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.status-toggle-btn:hover {
+  border-color: #0b6182;
+  color: #0b6182;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(11, 97, 130, 0.15);
+}
+
+.status-toggle-btn.active {
+  background: linear-gradient(135deg, #0b6182 0%, #094d68 100%);
+  color: white;
+  border-color: #0b6182;
+  box-shadow: 0 4px 16px rgba(11, 97, 130, 0.3);
+}
+
+.filter-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.filter-tab {
+  padding: 0.5rem 1.25rem;
+  border: 1px solid #e5e7eb;
+  background: white;
+  color: #585857;
   font-weight: 600;
+  font-size: 0.85rem;
   border-radius: 0.5rem;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -498,8 +562,13 @@ onUnmounted(() => {
     grid-template-columns: 1fr;
   }
 
+  .status-toggle-btn {
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+  }
+
   .filter-tabs {
-    flex-direction: column;
+    flex-wrap: wrap;
   }
 
   .slider-nav {
