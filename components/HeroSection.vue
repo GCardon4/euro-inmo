@@ -39,16 +39,21 @@
           </button>
         </div>
 
-        <div class="filter-tabs">
-          <button
+        <div class="filter-checks">
+          <label
             v-for="status in propertyStatuses"
             :key="status.value"
-            class="filter-tab"
-            :class="{ active: selectedStatus === status.value }"
-            @click="selectedStatus = status.value"
+            class="filter-check"
           >
-            {{ status.label }}
-          </button>
+            <input
+              type="radio"
+              name="statusCheck"
+              :value="status.value"
+              v-model="selectedStatus"
+              class="filter-check-input"
+            >
+            <span class="filter-check-label">{{ status.label }}</span>
+          </label>
         </div>
 
         <form class="search-form" @submit.prevent="handleSearch">
@@ -364,34 +369,38 @@ onUnmounted(() => {
   box-shadow: 0 4px 16px rgba(11, 97, 130, 0.3);
 }
 
-.filter-tabs {
+.filter-checks {
   display: flex;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 1.25rem;
   margin-bottom: 1.25rem;
 }
 
-.filter-tab {
-  padding: 0.5rem 1.25rem;
-  border: 1px solid #e5e7eb;
-  background: white;
+.filter-check {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  font-size: 0.9rem;
   color: #585857;
   font-weight: 600;
-  font-size: 0.85rem;
-  border-radius: 0.5rem;
+  user-select: none;
+}
+
+.filter-check-input {
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: #0b6182;
   cursor: pointer;
-  transition: all 0.3s ease;
+  margin: 0;
 }
 
-.filter-tab:hover {
-  border-color: #0b6182;
+.filter-check-label {
+  transition: color 0.2s ease;
+}
+
+.filter-check:hover .filter-check-label {
   color: #0b6182;
-}
-
-.filter-tab.active {
-  background: #0b6182;
-  color: white;
-  border-color: #0b6182;
 }
 
 .search-form {
@@ -567,8 +576,8 @@ onUnmounted(() => {
     font-size: 1rem;
   }
 
-  .filter-tabs {
-    flex-wrap: wrap;
+  .filter-checks {
+    gap: 1rem;
   }
 
   .slider-nav {
