@@ -15,7 +15,14 @@
 
     <!-- Contenido del Hero -->
     <div class="hero-content">
-      <h1 class="hero-title">Invertir SEGURO, empieza aquí</h1>
+      <div class="hero-heading">
+        <h1 class="hero-title">Invertir SEGURO, empieza aquí</h1>
+        <img
+          src="/label-euro.png"
+          alt="Euro Inmobiliaria - 14 años acompañando familias"
+          class="hero-label"
+        >
+      </div>
       <p class="hero-subtitle">
         Las mejores propiedades del Oriente Antioqueño en un solo lugar
       </p>
@@ -330,13 +337,29 @@ onUnmounted(() => {
   text-align: center;
 }
 
+.hero-heading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+  animation: fadeInUp 0.8s ease-out;
+}
+
 .hero-title {
   font-size: 3.5rem;
   font-weight: 800;
-  margin: 0 0 1rem 0;
+  margin: 0;
   color: white;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-  animation: fadeInUp 0.8s ease-out;
+}
+
+.hero-label {
+  width: 160px;
+  height: 160px;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.5));
+  flex-shrink: 0;
 }
 
 .hero-subtitle {
@@ -556,6 +579,11 @@ onUnmounted(() => {
     font-size: 2.5rem;
   }
 
+  .hero-label {
+    width: 130px;
+    height: 130px;
+  }
+
   .hero-subtitle {
     font-size: 1.2rem;
   }
@@ -573,6 +601,16 @@ onUnmounted(() => {
 
   .hero-content {
     padding: 4rem 1rem 2rem;
+  }
+
+  .hero-heading {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .hero-label {
+    width: 110px;
+    height: 110px;
   }
 
   .hero-title {

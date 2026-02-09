@@ -8,9 +8,14 @@
           <h3 class="footer-title">Euro Inmobiliaria</h3>
         </div>
         <p class="footer-text">
-          Líder en bienes raíces del Oriente Antioqueño. 
+          Líder en bienes raíces del Oriente Antioqueño.
           Más de 14 años conectando personas con sus hogares ideales.
         </p>
+        <img
+          src="/label-euro.png"
+          alt="Euro Inmobiliaria - 14 años acompañando familias"
+          class="footer-label"
+        >
         <div class="social-links">
           <a href="#" class="social-link" target="_blank" aria-label="Facebook">
             <Icon name="facebook" />
@@ -136,6 +141,13 @@ const currentYear = new Date().getFullYear()
   color: rgba(255, 255, 255, 0.9);
   line-height: 1.6;
   margin: 0;
+}
+
+.footer-label {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
 }
 
 .footer-links {

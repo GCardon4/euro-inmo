@@ -10,10 +10,11 @@
             class="main-image"
           >
           <div class="image-badge">
-            <div class="badge-content">
-              <span class="badge-number">14+</span>
-              <span class="badge-text">Años de Experiencia</span>
-            </div>
+            <img
+              src="/label-euro.png"
+              alt="Euro Inmobiliaria - 14 años acompañando familias"
+              class="badge-image"
+            >
           </div>
         </div>
 
@@ -136,30 +137,13 @@
   position: absolute;
   bottom: 2rem;
   right: 2rem;
-  background: linear-gradient(135deg, #0b6182 0%, #082f3d 100%);
-  padding: 2rem;
-  border-radius: 1rem;
-  color: white;
-  box-shadow: 0 10px 30px rgba(11, 97, 130, 0.4);
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.3));
 }
 
-.badge-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.badge-number {
-  font-size: 3rem;
-  font-weight: 800;
-  line-height: 1;
-}
-
-.badge-text {
-  font-size: 0.875rem;
-  font-weight: 600;
-  margin-top: 0.5rem;
+.badge-image {
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
 }
 
 .about-content {
@@ -320,11 +304,11 @@
   .image-badge {
     bottom: 1rem;
     right: 1rem;
-    padding: 1.5rem;
   }
 
-  .badge-number {
-    font-size: 2rem;
+  .badge-image {
+    width: 110px;
+    height: 110px;
   }
 
   .about-title {
