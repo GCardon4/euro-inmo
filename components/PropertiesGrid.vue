@@ -210,7 +210,7 @@ const { data: propertiesData, pending, error: fetchError } = await useAsyncData(
         dressing,
         category!inner(name),
         status!inner(name),
-        city!inner(name),
+        city!inner(id, name),
         zone(name)
       `)
       .eq('is_active', true)
@@ -251,6 +251,7 @@ const { data: propertiesData, pending, error: fetchError } = await useAsyncData(
       name: prop.name,
       category: prop.category?.name || 'Sin categoría',
       status: prop.status?.name || 'Disponible',
+      cityId: prop.city?.id || null,
       location: prop.zone ? `${prop.zone.name}, ${prop.city.name}` : (prop.city?.name || 'Sin ubicación'),
       price: prop.price,
       bedrooms: prop.rooms,
@@ -304,6 +305,14 @@ const filteredProperties = computed(() => {
     })
   }
 
+  // Filtrar por ciudad desde la URL
+  const cityFilter = route.query.cityId || ''
+  if (cityFilter) {
+    result = result.filter(prop => {
+      return String(prop.cityId) === String(cityFilter)
+    })
+  }
+
   // Filtrar por categoría
   if (selectedFilter.value !== 'all') {
     result = result.filter(prop => {
@@ -311,8 +320,20 @@ const filteredProperties = computed(() => {
     })
   }
 
+  // Filtrar por precio mínimo
+  const minPrice = route.query.minPrice ? parseInt(route.query.minPrice) : null
+  if (minPrice) {
+    result = result.filter(prop => prop.price >= minPrice)
+  }
+
+  // Filtrar por precio máximo
+  const maxPrice = route.query.maxPrice ? parseInt(route.query.maxPrice) : null
+  if (maxPrice) {
+    result = result.filter(prop => prop.price <= maxPrice)
+  }
+
   if (process.client) {
-    console.log(`🔍 Filtro: status="${statusFilter}", categoría="${selectedFilter.value}" -> ${result.length} propiedades`)
+    console.log(`🔍 Filtro: status="${statusFilter}", ciudad="${cityFilter}", categoría="${selectedFilter.value}", precio=[${minPrice || '-'}, ${maxPrice || '-'}] -> ${result.length} propiedades`)
   }
 
   return result
@@ -333,8 +354,20 @@ watch(selectedFilter, () => {
   currentPage.value = 1
 })
 
-// Resetear paginación al cambiar status desde la URL
+// Resetear paginación al cambiar filtros desde la URL
 watch(() => route.query.status, () => {
+  currentPage.value = 1
+})
+
+watch(() => route.query.cityId, () => {
+  currentPage.value = 1
+})
+
+watch(() => route.query.minPrice, () => {
+  currentPage.value = 1
+})
+
+watch(() => route.query.maxPrice, () => {
   currentPage.value = 1
 })
 </script>

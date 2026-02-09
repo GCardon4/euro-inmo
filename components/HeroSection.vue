@@ -75,11 +75,9 @@
             <label for="location">Ubicación</label>
             <select v-model="searchFilters.cityId" id="location" class="form-select">
               <option value="">Todas las ciudades</option>
-              <option value="1">Rionegro</option>
-              <option value="2">La Ceja</option>
-              <option value="3">El Retiro</option>
-              <option value="4">Marinilla</option>
-              <option value="5">Guarne</option>
+              <option v-for="city in cities" :key="city.id" :value="city.id">
+                {{ city.name }}
+              </option>
             </select>
           </div>
 
@@ -136,6 +134,27 @@
 <script setup>
 const router = useRouter()
 const route = useRoute()
+const supabase = useSupabaseClient()
+
+// Ciudades desde Supabase
+const cities = ref([])
+
+const loadCities = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('city')
+      .select('id, name')
+      .order('name', { ascending: true })
+
+    if (error) {
+      console.error('❌ Error al cargar ciudades:', error)
+      return
+    }
+    cities.value = data || []
+  } catch (err) {
+    console.error('❌ Error en loadCities:', err)
+  }
+}
 
 // Estados de la propiedad (arriendo/venta)
 const propertyStatuses = [
@@ -249,6 +268,7 @@ const handleSearch = () => {
 // Lifecycle
 onMounted(() => {
   startSlider()
+  loadCities()
 })
 
 onUnmounted(() => {
