@@ -57,8 +57,10 @@
         <h4 class="footer-subtitle">Contacto</h4>
         <ul class="footer-contact">
           <li>
-            <Icon name="location_on" custom-class="icon" />
-            <span>Calle 29 N° 29-15<br>Marinilla, Antioquia</span>
+            <a href="https://www.google.com/maps/place/Euro+Inmobiliaria/@6.1725905,-75.3330971,17.75z/data=!4m6!3m5!1s0x8e46a100b9912197:0xf93f9e5cb4ac9fb!8m2!3d6.1724591!4d-75.3345397!16s%2Fg%2F11j8rn2pfm" target="_blank" rel="noopener noreferrer" class="footer-location-link">
+              <Icon name="location_on" custom-class="icon" />
+              <span>Calle 29 N° 29-15<br>Marinilla, Antioquia</span>
+            </a>
           </li>
           <li>
             <Icon name="phone" custom-class="icon" />
@@ -201,6 +203,19 @@ const currentYear = new Date().getFullYear()
   white-space: nowrap;
   word-wrap: normal;
   direction: ltr;
+}
+
+.footer-location-link {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer-location-link:hover {
+  color: #82bad3;
 }
 
 .social-links {
