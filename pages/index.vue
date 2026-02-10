@@ -8,19 +8,23 @@
     <!-- Hero con Slider y Filtros -->
     <HeroSection />
 
-    <!-- Enlace a todos los inmuebles -->
-    <section class="all-properties-section">
-      <NuxtLink to="/properties" class="link-all-properties">
-        <h2 class="all-properties-title">Todos los Inmuebles</h2>
-        <span class="material-icons all-properties-icon">home_work</span>
+    <!-- Enlaces a inmuebles por tipo -->
+    <section class="properties-links-section">
+      <NuxtLink to="/properties?status=arriendo" class="property-link-card link-arriendo">
+        <span class="material-icons property-link-icon">vpn_key</span>
+        <h2 class="property-link-title">Inmuebles Arriendo</h2>
+      </NuxtLink>
+      <NuxtLink to="/properties?status=venta" class="property-link-card link-venta">
+        <span class="material-icons property-link-icon">sell</span>
+        <h2 class="property-link-title">Inmuebles Venta</h2>
       </NuxtLink>
     </section>
 
-    <!-- Información de la Empresa -->
-    <AboutSection />
-
     <!-- Sección de Proyectos -->
     <ProjectSection />
+
+    <!-- Información de la Empresa -->
+    <AboutSection />
 
     <!-- Sección de Agentes -->
     <AgentsSection />
@@ -68,13 +72,16 @@ useHead({
   background-color: #ffffff;
 }
 
-.all-properties-section {
+.properties-links-section {
   display: flex;
   justify-content: center;
+  gap: 2rem;
   padding: 3rem 2rem;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
-.link-all-properties {
+.property-link-card {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -83,23 +90,52 @@ useHead({
   border: 2px solid #0b6182;
   border-radius: 0.75rem;
   padding: 2rem 3rem;
+  flex: 1;
+  max-width: 400px;
+  background: white;
+  color: #0b6182;
   transition: all 0.3s ease;
 }
 
-.link-all-properties:hover {
+.property-link-card:hover {
   transform: translateY(-3px);
   opacity: 0.85;
 }
 
-.all-properties-title {
+.property-link-icon {
+  font-size: 56px;
+  color: #0b6182;
+}
+
+.property-link-title {
   margin: 0;
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 800;
   color: #0b6182;
 }
 
-.all-properties-icon {
-  font-size: 56px;
-  color: #0b6182;
+@media (max-width: 600px) {
+  .properties-links-section {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 2rem 1rem;
+  }
+
+  .property-link-card {
+    width: 100%;
+    max-width: 100%;
+    padding: 1.5rem 2rem;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .property-link-icon {
+    font-size: 36px;
+  }
+
+  .property-link-title {
+    font-size: 1.25rem;
+  }
 }
 </style>
