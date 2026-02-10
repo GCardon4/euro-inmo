@@ -60,17 +60,18 @@ const categoryNames = ref({})
 const cityNames = ref({})
 const loadingNames = ref(true)
 
-// Parsear filtros de URL
-const parsedFilters = parseURLFilters()
-const hasActiveFilters = ref(parsedFilters.hasFilters)
-
-// Objeto con filtros activos
-const activeFilters = ref({
+// Filtros activos reactivos a la URL
+const activeFilters = computed(() => ({
   status: route.query.status || '',
   categoryId: route.query.categoryId || '',
   cityId: route.query.cityId || '',
   minPrice: route.query.minPrice ? parseInt(route.query.minPrice) : null,
   maxPrice: route.query.maxPrice ? parseInt(route.query.maxPrice) : null
+}))
+
+const hasActiveFilters = computed(() => {
+  const f = activeFilters.value
+  return Boolean(f.status || f.categoryId || f.cityId || f.minPrice || f.maxPrice)
 })
 
 // Cargar nombres de categorías y ciudades
@@ -106,8 +107,13 @@ const loadFilterNames = async () => {
 }
 
 // Obtener nombre de categoría
-const getCategoryName = (id) => {
-  return categoryNames.value[id] || id
+const getCategoryName = (value) => {
+  // Si es un nombre (nuevo formato), capitalizar
+  if (value && isNaN(value)) {
+    return value.charAt(0).toUpperCase() + value.slice(1)
+  }
+  // Si es un ID (formato antiguo), buscar en el mapa
+  return categoryNames.value[value] || value
 }
 
 // Obtener nombre de ciudad

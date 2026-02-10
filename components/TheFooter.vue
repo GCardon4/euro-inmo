@@ -17,13 +17,13 @@
           class="footer-label"
         >
         <div class="social-links">
-          <a href="#" class="social-link" target="_blank" aria-label="Facebook">
+          <a href="https://www.facebook.com/euroinmobiliaria.sas" class="social-link" target="_blank" aria-label="Facebook">
             <Icon name="facebook" />
           </a>
-          <a href="#" class="social-link" target="_blank" aria-label="Instagram">
+          <a href="https://www.instagram.com/euro_inmobiliaria" class="social-link" target="_blank" aria-label="Instagram">
             <Icon name="instagram" />
           </a>
-          <a href="#" class="social-link" target="_blank" aria-label="WhatsApp">
+          <a href="https://wa.me/573012421919" class="social-link" target="_blank" aria-label="WhatsApp">
             <Icon name="chat" />
           </a>
         </div>

@@ -69,11 +69,9 @@
             <label for="category">Tipo de Propiedad</label>
             <select v-model="searchFilters.categoryId" id="category" class="form-select">
               <option value="">Todas las categorías</option>
-              <option value="1">Apartamento</option>
-              <option value="2">Casa</option>
-              <option value="3">Finca</option>
-              <option value="4">Lote</option>
-              <option value="5">Local</option>
+              <option v-for="cat in categories" :key="cat.id" :value="cat.name.toLowerCase()">
+                {{ cat.name }}
+              </option>
             </select>
           </div>
 
@@ -164,6 +162,26 @@ const loadCities = async () => {
     cities.value = data || []
   } catch (err) {
     console.error('❌ Error en loadCities:', err)
+  }
+}
+
+// Categorías desde Supabase
+const categories = ref([])
+
+const loadCategories = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('category')
+      .select('id, name')
+      .order('name', { ascending: true })
+
+    if (error) {
+      console.error('❌ Error al cargar categorías:', error)
+      return
+    }
+    categories.value = data || []
+  } catch (err) {
+    console.error('❌ Error en loadCategories:', err)
   }
 }
 
@@ -302,6 +320,7 @@ const handleSearch = () => {
 onMounted(() => {
   startSlider()
   loadCities()
+  loadCategories()
 })
 
 onUnmounted(() => {

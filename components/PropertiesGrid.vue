@@ -313,10 +313,12 @@ const filteredProperties = computed(() => {
     })
   }
 
-  // Filtrar por categoría
-  if (selectedFilter.value !== 'all') {
+  // Filtrar por categoría (desde quick filters o desde URL)
+  const categoryFilter = route.query.categoryId || ''
+  const activeCategoryFilter = selectedFilter.value !== 'all' ? selectedFilter.value : categoryFilter
+  if (activeCategoryFilter) {
     result = result.filter(prop => {
-      return prop.category.toLowerCase().trim() === selectedFilter.value.toLowerCase().trim()
+      return prop.category.toLowerCase().trim() === activeCategoryFilter.toLowerCase().trim()
     })
   }
 
@@ -361,6 +363,16 @@ watch(() => route.query.status, () => {
 
 watch(() => route.query.cityId, () => {
   currentPage.value = 1
+})
+
+watch(() => route.query.categoryId, (newVal) => {
+  currentPage.value = 1
+  // Sincronizar selectedFilter al remover/cambiar categoría desde URL
+  if (!newVal) {
+    selectedFilter.value = 'all'
+  } else {
+    selectedFilter.value = newVal
+  }
 })
 
 watch(() => route.query.minPrice, () => {

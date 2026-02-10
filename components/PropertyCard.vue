@@ -73,10 +73,17 @@
         </span>
       </div>
 
-      <!-- Precio -->
-      <div class="property-price">
-        <span class="price">{{ formattedPrice }}</span>
-        <span v-if="property.status === 'Arriendo'" class="price-period">/mes</span>
+      <!-- Precio y Compartir -->
+      <div class="property-bottom">
+        <div class="property-price">
+          <span class="price">{{ formattedPrice }}</span>
+          <span v-if="property.status === 'Arriendo'" class="price-period">/mes</span>
+        </div>
+        <div class="share-icons">
+          <button class="share-icon-btn" @click.stop="shareWhatsApp" title="Compartir inmueble">
+            <img src="/white-whatsapp.png" alt="WhatsApp" class="share-wa-icon">
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -110,6 +117,19 @@ const formattedPrice = computed(() => {
     maximumFractionDigits: 0
   }).format(props.property.price)
 })
+
+// Generar texto para compartir
+const getShareText = () => {
+  const url = `${window.location.origin}/property-${props.property.code}`
+  const desc = props.property.description ? `\n${props.property.description}` : ''
+  return `${props.property.name}\nCódigo: ${props.property.code}${desc}\n\nVer inmueble: ${url}`
+}
+
+// Compartir por WhatsApp
+const shareWhatsApp = () => {
+  const text = getShareText()
+  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank')
+}
 
 // Navegar a detalle de propiedad
 const goToProperty = () => {
@@ -268,11 +288,17 @@ const goToProperty = () => {
   direction: ltr;
 }
 
+.property-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+}
+
 .property-price {
   display: flex;
   align-items: baseline;
   gap: 0.5rem;
-  margin-top: auto;
 }
 
 .price {
@@ -284,6 +310,37 @@ const goToProperty = () => {
 .price-period {
   color: #585857;
   font-size: 0.9rem;
+}
+
+.share-icons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.share-icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #0b6182;
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.share-icon-btn:hover {
+  background: #094d68;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(11, 97, 130, 0.3);
+}
+
+.share-wa-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
 }
 
 /* Responsive */

@@ -3,8 +3,7 @@
     <div class="container">
       <!-- Encabezado de la sección -->
       <div class="section-header">
-        <span class="section-label">Nuestros Proyectos</span>
-        <h2 class="section-title">Desarrollos Inmobiliarios de Calidad</h2>
+        <h2 class="section-title">Proyectos Sobre Planos</h2>
         <p class="section-subtitle">
           Proyectos innovadores y diseñados para mejorar tu estilo de vida
         </p>
@@ -1055,3 +1054,4 @@ onMounted(() => {
   }
 }
 </style>
+g

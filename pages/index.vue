@@ -8,8 +8,13 @@
     <!-- Hero con Slider y Filtros -->
     <HeroSection />
 
-    <!-- Grid de Propiedades Destacadas -->
-    <PropertiesGrid />
+    <!-- Enlace a todos los inmuebles -->
+    <section class="all-properties-section">
+      <NuxtLink to="/properties" class="link-all-properties">
+        <h2 class="all-properties-title">Todos los Inmuebles</h2>
+        <span class="material-icons all-properties-icon">home_work</span>
+      </NuxtLink>
+    </section>
 
     <!-- Información de la Empresa -->
     <AboutSection />
@@ -61,5 +66,40 @@ useHead({
   display: flex;
   flex-direction: column;
   background-color: #ffffff;
+}
+
+.all-properties-section {
+  display: flex;
+  justify-content: center;
+  padding: 3rem 2rem;
+}
+
+.link-all-properties {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-decoration: none;
+  border: 2px solid #0b6182;
+  border-radius: 0.75rem;
+  padding: 2rem 3rem;
+  transition: all 0.3s ease;
+}
+
+.link-all-properties:hover {
+  transform: translateY(-3px);
+  opacity: 0.85;
+}
+
+.all-properties-title {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #0b6182;
+}
+
+.all-properties-icon {
+  font-size: 56px;
+  color: #0b6182;
 }
 </style>

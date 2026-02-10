@@ -184,6 +184,17 @@
             </div>
           </div>
 
+          <!-- Compartir inmueble -->
+          <div class="share-section">
+            <h3>Compartir inmueble</h3>
+            <div class="share-buttons">
+              <button class="btn-share" @click="shareWhatsApp">
+                <img src="/white-whatsapp.png" alt="WhatsApp" class="share-wa-icon">
+                <span>Compartir inmueble</span>
+              </button>
+            </div>
+          </div>
+
           <!-- Botón de contacto -->
           <div class="contact-section">
             <a :href="whatsappLink" target="_blank" rel="noopener noreferrer" class="btn-contact">
@@ -288,6 +299,20 @@ const whatsappLink = computed(() => {
   
   return `https://wa.me/${whatsappNumber}?text=${mensajeEncoded}`
 })
+
+// Generar texto para compartir
+const getShareText = () => {
+  if (!property.value) return ''
+  const url = `${window.location.origin}/property-${property.value.code}`
+  const desc = property.value.description ? `\n${property.value.description}` : ''
+  return `${property.value.name}\nCódigo: ${property.value.code}${desc}\n\nVer inmueble: ${url}`
+}
+
+// Compartir por WhatsApp
+const shareWhatsApp = () => {
+  const text = getShareText()
+  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank')
+}
 
 // Cargar datos de la propiedad
 const loadProperty = async () => {
@@ -737,6 +762,50 @@ onUnmounted(() => {
   color: var(--color-text);
   font-weight: 500;
   font-size: 0.95rem;
+}
+
+/* Compartir */
+.share-section {
+  padding: 1.5rem;
+  background: #f9fafb;
+  border-radius: 0.75rem;
+}
+
+.share-section h3 {
+  margin: 0 0 1rem 0;
+  color: var(--color-text);
+}
+
+.share-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.btn-share {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: #0b6182;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-share:hover {
+  background: #094d68;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(11, 97, 130, 0.3);
+}
+
+.share-wa-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
 }
 
 /* Contacto */

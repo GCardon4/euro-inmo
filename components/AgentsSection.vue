@@ -68,7 +68,7 @@ const agents = ref([
   {
     id: 1,
     name: 'Valentina Florez',
-    role: 'Asesora Inmobiliaria',
+    role: 'Asesora Arriendos',
     photo: '/asesores/asesor-01.jpeg',
     properties: 45,
     rating: '4.9',
@@ -78,7 +78,7 @@ const agents = ref([
   {
     id: 2,
     name: 'Mayerly Martínez',
-    role: 'Asesora Inmobiliaria',
+    role: 'Contabilidad',
     photo: '/asesores/asesor-02.jpeg',
     properties: 38,
     rating: '4.8',
@@ -88,7 +88,7 @@ const agents = ref([
   {
     id: 3,
     name: 'Leidy Gil',
-    role: 'Asesora Inmobiliaria',
+    role: 'Asesora Ventas',
     photo: '/asesores/asesor-03.jpeg',
     properties: 52,
     rating: '5.0',

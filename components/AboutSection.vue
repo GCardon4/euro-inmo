@@ -20,7 +20,6 @@
 
         <!-- Columna derecha: Información -->
         <div class="about-content">
-          <span class="about-label">Sobre Nosotros</span>
           <h2 class="about-title">Tu aliado en bienes raíces del Oriente Antioqueño</h2>
           <p class="about-description">
             En <strong>Euro Inmobiliaria</strong> somos expertos en el mercado inmobiliario del Oriente Antioqueño. 
@@ -87,12 +86,7 @@
             </div>
           </div>
 
-          <!-- Botón CTA -->
-          <div class="about-cta">
-            <NuxtLink to="/about" class="btn-primary">
-              Conoce Más Sobre Nosotros
-            </NuxtLink>
-          </div>
+
         </div>
       </div>
     </div>

@@ -4,7 +4,6 @@
       <div class="contact-grid">
         <!-- Columna izquierda: Información -->
         <div class="contact-info">
-          <span class="contact-label">Contáctanos</span>
           <h2 class="contact-title">¿Listo para encontrar tu propiedad ideal?</h2>
           <p class="contact-description">
             Estamos aquí para ayudarte. Completa el formulario y uno de nuestros 
@@ -258,7 +257,7 @@ const handleSubmit = async () => {
 }
 
 .contact-title {
-  font-size: 2.5rem;
+  font-size: 1.5rem;
   font-weight: 800;
   color: #1e1e1c;
   line-height: 1.2;
