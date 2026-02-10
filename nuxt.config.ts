@@ -74,7 +74,5 @@ export default defineNuxtConfig({
     logLevel: 3
   },
 
-  // Desactivar SSR temporalmente para resolver problemas de despliegue
-  // TODO: Reactivar SSR y resolver issues de "nuxt instance unavailable"
-  ssr: false
+  ssr: true
 })

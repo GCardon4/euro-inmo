@@ -245,8 +245,6 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-
 definePageMeta({
   layout: 'default'
 })
@@ -254,22 +252,71 @@ definePageMeta({
 const route = useRoute()
 const supabase = useSupabaseClient()
 
-// Número de WhatsApp (cambiar aquí)
 const whatsappNumber = '573001234567'
+const propertyCode = route.params.code
 
-// Estados
-const isLoading = ref(true)
-const error = ref(null)
-const property = ref(null)
-const images = ref([])
-const amenities = ref([])
+// Cargar datos en servidor (SSR) para que los meta OG estén disponibles
+const { data: propertyData, error: fetchError, pending: isLoading } = await useAsyncData(
+  `property-${propertyCode}`,
+  async () => {
+    const { data: prop, error: propError } = await supabase
+      .from('properties')
+      .select(`
+        id, code, name, description, price, rooms, bathrooms, area,
+        kitchen, hall, dining, closet, clothing, gas, dressing, is_active,
+        category(id, name), status(id, name), state(id, name),
+        city(id, name), zone(id, name)
+      `)
+      .eq('code', propertyCode)
+      .single()
+
+    if (propError) throw new Error('Propiedad no encontrada')
+
+    const { data: imagesData } = await supabase
+      .from('properties_images')
+      .select('url_image')
+      .eq('property_id', prop.id)
+      .order('main', { ascending: false })
+
+    const { data: amenitiesData } = await supabase
+      .from('property_amenities')
+      .select('amenity_id, amenities!inner(id, name)')
+      .eq('property_id', prop.id)
+
+    const imgs = imagesData?.map(img => img.url_image) || []
+
+    return {
+      property: prop,
+      images: imgs.length > 0 ? imgs : ['/property-img.jpg'],
+      amenities: amenitiesData?.filter(item => item.amenities).map(item => item.amenities) || []
+    }
+  }
+)
+
+// Datos reactivos
+const property = computed(() => propertyData.value?.property || null)
+const images = computed(() => propertyData.value?.images || ['/property-img.jpg'])
+const amenities = computed(() => propertyData.value?.amenities || [])
+const error = computed(() => fetchError.value?.message || null)
+
+// OG Meta tags para compartir en WhatsApp / redes sociales
+useSeoMeta({
+  title: () => property.value ? `${property.value.name} - Euro Inmobiliaria` : 'Euro Inmobiliaria',
+  description: () => property.value?.description || 'Propiedad disponible en Euro Inmobiliaria',
+  ogTitle: () => property.value?.name || 'Euro Inmobiliaria',
+  ogDescription: () => property.value?.description || 'Propiedad disponible en Euro Inmobiliaria',
+  ogImage: () => {
+    const img = images.value[0] || '/property-img.jpg'
+    return img.startsWith('/') ? `https://euroinmobiliaria.com.co${img}` : img
+  },
+  ogUrl: () => `https://euroinmobiliaria.com.co/property-${propertyCode}`,
+  ogType: 'website',
+})
+
+// Estado de galería
 const currentImageIndex = ref(0)
 const isModalOpen = ref(false)
 
-// Obtener código de la ruta
-const propertyCode = route.params.code
-
-// Imagen actual
 const currentImage = computed(() => {
   return images.value[currentImageIndex.value] || '/property-img.jpg'
 })
@@ -277,7 +324,6 @@ const currentImage = computed(() => {
 // Precio formateado
 const formattedPrice = computed(() => {
   if (!property.value?.price) return 'Precio a consultar'
-  
   return new Intl.NumberFormat('es-CO', {
     style: 'currency',
     currency: 'COP',
@@ -286,21 +332,17 @@ const formattedPrice = computed(() => {
   }).format(property.value.price)
 })
 
-// Link de WhatsApp con mensaje personalizado
+// Link de WhatsApp
 const whatsappLink = computed(() => {
   if (!property.value) return '#'
-  
   const tipoPropiedad = property.value.category?.name || 'Propiedad'
   const zona = property.value.zone?.name || 'Sin especificar'
   const codigo = property.value.code
-  
   const mensaje = `Quiero saber acerca de ${tipoPropiedad}, en ${zona}, con el código ${codigo}, Muchas gracias`
-  const mensajeEncoded = encodeURIComponent(mensaje)
-  
-  return `https://wa.me/${whatsappNumber}?text=${mensajeEncoded}`
+  return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(mensaje)}`
 })
 
-// Generar texto para compartir
+// Compartir por WhatsApp
 const getShareText = () => {
   if (!property.value) return ''
   const url = `${window.location.origin}/property-${property.value.code}`
@@ -308,87 +350,12 @@ const getShareText = () => {
   return `${property.value.name}\nCódigo: ${property.value.code}${desc}\n\nVer inmueble: ${url}`
 }
 
-// Compartir por WhatsApp
 const shareWhatsApp = () => {
   const text = getShareText()
   window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank')
 }
 
-// Cargar datos de la propiedad
-const loadProperty = async () => {
-  try {
-    // Cargar propiedad principal
-    const { data: propertyData, error: propertyError } = await supabase
-      .from('properties')
-      .select(`
-        id,
-        code,
-        name,
-        description,
-        price,
-        rooms,
-        bathrooms,
-        area,
-        kitchen,
-        hall,
-        dining,
-        closet,
-        clothing,
-        gas,
-        dressing,
-        is_active,
-        category(id, name),
-        status(id, name),
-        state(id, name),
-        city(id, name),
-        zone(id, name)
-      `)
-      .eq('code', propertyCode)
-      .single()
-
-    if (propertyError) {
-      throw new Error('Propiedad no encontrada')
-    }
-
-    property.value = propertyData
-
-    // Cargar imágenes
-    const { data: imagesData, error: imagesError } = await supabase
-      .from('properties_images')
-      .select('url_image')
-      .eq('property_id', propertyData.id)
-      .order('main', { ascending: false })
-
-    if (!imagesError && imagesData) {
-      images.value = imagesData.map(img => img.url_image)
-    }
-
-    // Si no hay imágenes, usar la por defecto
-    if (images.value.length === 0) {
-      images.value = ['/property-img.jpg']
-    }
-
-    // Cargar comodidades
-    const { data: amenitiesData, error: amenitiesError } = await supabase
-      .from('property_amenities')
-      .select('amenity_id, amenities!inner(id, name)')
-      .eq('property_id', propertyData.id)
-
-    if (!amenitiesError && amenitiesData) {
-      amenities.value = amenitiesData
-        .filter(item => item.amenities)
-        .map(item => item.amenities)
-    }
-
-  } catch (err) {
-    console.error('Error cargando propiedad:', err)
-    error.value = err.message || 'Error al cargar la propiedad'
-  } finally {
-    isLoading.value = false
-  }
-}
-
-// Funciones de navegación de imágenes
+// Navegación de imágenes
 const nextImage = () => {
   currentImageIndex.value = (currentImageIndex.value + 1) % images.value.length
 }
@@ -397,7 +364,7 @@ const previousImage = () => {
   currentImageIndex.value = (currentImageIndex.value - 1 + images.value.length) % images.value.length
 }
 
-// Funciones del modal
+// Modal
 const openModal = () => {
   isModalOpen.value = true
   document.body.style.overflow = 'hidden'
@@ -408,12 +375,7 @@ const closeModal = () => {
   document.body.style.overflow = 'auto'
 }
 
-// Cargar en mount
-onMounted(() => {
-  loadProperty()
-})
-
-// Navegar con teclado
+// Teclado (solo cliente)
 const handleKeydown = (event) => {
   if (event.key === 'ArrowRight') nextImage()
   if (event.key === 'ArrowLeft') previousImage()
