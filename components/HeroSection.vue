@@ -596,7 +596,9 @@ onUnmounted(() => {
 @media (max-width: 768px) {
   .hero {
     height: auto;
-    min-height: 100vh;
+    min-height: auto;
+    max-height: none;
+    overflow: visible;
   }
 
   .hero-content {
@@ -619,14 +621,22 @@ onUnmounted(() => {
 
   .hero-subtitle {
     font-size: 1rem;
+    margin-bottom: 1.5rem;
   }
 
   .search-filters {
-    padding: 1.5rem;
+    padding: 1.25rem;
   }
 
   .search-form {
     grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .btn-search {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.1rem;
   }
 
   .status-toggle-btn {
