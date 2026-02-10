@@ -694,17 +694,7 @@ onUnmounted(() => {
   }
 
   .slider-nav {
-    width: 40px;
-    height: 40px;
-    font-size: 1.5rem;
-  }
-
-  .slider-nav.prev {
-    left: 1rem;
-  }
-
-  .slider-nav.next {
-    right: 1rem;
+    display: none;
   }
 }
 </style>

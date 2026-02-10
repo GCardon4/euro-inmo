@@ -162,7 +162,12 @@
 
             <!-- Mensaje de éxito -->
             <div v-if="showSuccess" class="success-message">
-              ✓ ¡Mensaje enviado con éxito! Nos pondremos en contacto pronto.
+              ¡Mensaje enviado con éxito! Nos pondremos en contacto pronto.
+            </div>
+
+            <!-- Mensaje de error -->
+            <div v-if="errorMessage" class="error-message">
+              {{ errorMessage }}
             </div>
           </form>
         </div>
@@ -172,6 +177,8 @@
 </template>
 
 <script setup>
+const config = useRuntimeConfig()
+
 // Datos del formulario
 const formData = ref({
   name: '',
@@ -185,21 +192,51 @@ const formData = ref({
 // Estados del formulario
 const isSubmitting = ref(false)
 const showSuccess = ref(false)
+const errorMessage = ref('')
+
+// Obtener token de reCAPTCHA v3
+const getRecaptchaToken = () => {
+  return new Promise((resolve, reject) => {
+    const siteKey = config.public.recaptchaSiteKey
+    if (!window.grecaptcha) {
+      reject(new Error('reCAPTCHA no cargado'))
+      return
+    }
+    window.grecaptcha.ready(() => {
+      window.grecaptcha
+        .execute(siteKey, { action: 'contact_form' })
+        .then(resolve)
+        .catch(reject)
+    })
+  })
+}
 
 // Manejar envío del formulario
 const handleSubmit = async () => {
   isSubmitting.value = true
-  
+  errorMessage.value = ''
+  showSuccess.value = false
+
   try {
-    // TODO: Implementar envío a API/Supabase
-    console.log('Datos del formulario:', formData.value)
-    
-    // Simular envío
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    
+    // Obtener token reCAPTCHA
+    const recaptchaToken = await getRecaptchaToken()
+
+    // Enviar al API
+    await $fetch('/api/contact', {
+      method: 'POST',
+      body: {
+        name: formData.value.name,
+        email: formData.value.email,
+        phone: formData.value.phone,
+        interest: formData.value.interest,
+        message: formData.value.message,
+        recaptchaToken
+      }
+    })
+
     // Mostrar mensaje de éxito
     showSuccess.value = true
-    
+
     // Resetear formulario
     formData.value = {
       name: '',
@@ -209,15 +246,16 @@ const handleSubmit = async () => {
       message: '',
       acceptPrivacy: false
     }
-    
+
     // Ocultar mensaje después de 5 segundos
     setTimeout(() => {
       showSuccess.value = false
     }, 5000)
-    
+
   } catch (error) {
     console.error('Error al enviar formulario:', error)
-    alert('Hubo un error al enviar el mensaje. Por favor intenta nuevamente.')
+    errorMessage.value = error?.data?.statusMessage
+      || 'Hubo un error al enviar el mensaje. Por favor intenta nuevamente.'
   } finally {
     isSubmitting.value = false
   }
@@ -487,6 +525,16 @@ const handleSubmit = async () => {
   padding: 1rem;
   background: #d1fae5;
   color: #065f46;
+  border-radius: 0.5rem;
+  text-align: center;
+  font-weight: 600;
+  animation: slideInUp 0.3s ease-out;
+}
+
+.error-message {
+  padding: 1rem;
+  background: #fee2e2;
+  color: #991b1b;
   border-radius: 0.5rem;
   text-align: center;
   font-weight: 600;

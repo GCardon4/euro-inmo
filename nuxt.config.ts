@@ -27,13 +27,23 @@ export default defineNuxtConfig({
           rel: 'stylesheet',
           href: 'https://fonts.googleapis.com/icon?family=Material+Icons'
         }
+      ],
+      script: [
+        {
+          src: 'https://www.google.com/recaptcha/api.js?render=explicit',
+          async: true,
+          defer: true
+        }
       ]
     },
     pageTransition: { name: 'page', mode: 'out-in' }
   },
 
   runtimeConfig: {
+    resendApiKey: '',
+    recaptchaSecretKey: '',
     public: {
+      recaptchaSiteKey: '',
       supabase: {
         url: 'https://kpfvjnlclaucgmjkkyvh.supabase.co',
         key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtwZnZqbmxjbGF1Y2dtamtreXZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcxMTM3OTcsImV4cCI6MjA4MjY4OTc5N30.wMF60RtnzbCLcL_WBa_9jHcUCfBDUecrXjUFmfx7wNY'
