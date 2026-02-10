@@ -91,23 +91,27 @@
           <!-- Rango de precio -->
           <div class="form-group">
             <label for="minPrice">Precio Mínimo</label>
-            <input 
-              v-model.number="searchFilters.minPrice" 
-              type="number" 
-              id="minPrice" 
+            <input
+              :value="displayMinPrice"
+              @input="onMinPriceInput"
+              type="text"
+              inputmode="numeric"
+              id="minPrice"
               class="form-input"
-              placeholder="Ej: 100000000"
+              placeholder="Ej: 100.000.000"
             >
           </div>
 
           <div class="form-group">
             <label for="maxPrice">Precio Máximo</label>
-            <input 
-              v-model.number="searchFilters.maxPrice" 
-              type="number" 
-              id="maxPrice" 
+            <input
+              :value="displayMaxPrice"
+              @input="onMaxPriceInput"
+              type="text"
+              inputmode="numeric"
+              id="maxPrice"
               class="form-input"
-              placeholder="Ej: 500000000"
+              placeholder="Ej: 500.000.000"
             >
           </div>
 
@@ -189,6 +193,28 @@ const searchFilters = ref({
   minPrice: null,
   maxPrice: null
 })
+
+// Formateo de precios con puntos de miles (COP)
+const formatCOP = (value) => {
+  if (!value && value !== 0) return ''
+  return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+}
+
+const parseCOP = (formatted) => {
+  const cleaned = formatted.replace(/\./g, '').replace(/\D/g, '')
+  return cleaned ? parseInt(cleaned) : null
+}
+
+const displayMinPrice = computed(() => formatCOP(searchFilters.value.minPrice))
+const displayMaxPrice = computed(() => formatCOP(searchFilters.value.maxPrice))
+
+const onMinPriceInput = (e) => {
+  searchFilters.value.minPrice = parseCOP(e.target.value)
+}
+
+const onMaxPriceInput = (e) => {
+  searchFilters.value.maxPrice = parseCOP(e.target.value)
+}
 
 // Imágenes del slider (placeholders)
 const heroImages = [

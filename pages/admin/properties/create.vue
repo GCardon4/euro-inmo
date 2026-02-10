@@ -80,12 +80,12 @@
           <div class="form-group">
             <label for="price">Precio *</label>
             <input
-              v-model="formData.price"
-              type="number"
+              :value="displayPrice"
+              @input="onPriceInput"
+              type="text"
+              inputmode="numeric"
               id="price"
-              placeholder="1500000"
-              min="0"
-              step="any"
+              placeholder="Ej: 1.500.000"
             >
           </div>
         </div>
@@ -365,6 +365,23 @@ const fileInput = ref(null)
 const amenities = ref([])
 const amenitiesLoading = ref(false)
 const selectedAmenities = ref([])
+
+// Formateo de precio COP con puntos de miles
+const formatCOP = (value) => {
+  if (!value && value !== 0) return ''
+  return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+}
+
+const parseCOP = (formatted) => {
+  const cleaned = formatted.replace(/\./g, '').replace(/\D/g, '')
+  return cleaned ? parseInt(cleaned) : 0
+}
+
+const displayPrice = computed(() => formatCOP(formData.value.price))
+
+const onPriceInput = (e) => {
+  formData.value.price = parseCOP(e.target.value)
+}
 
 // Formulario
 const formData = ref({
