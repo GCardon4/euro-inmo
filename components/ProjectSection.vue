@@ -143,8 +143,7 @@
             </div>
 
             <button class="btn-modal-whatsapp" @click="contactProject(selectedProject)">
-              <Icon name="whatsapp" />
-              <span>Contactar este proyecto</span>
+              <img src="/whatsapp-button.png" alt="Contactar por WhatsApp" class="whatsapp-btn-img">
             </button>
           </div>
         </div>
@@ -278,8 +277,7 @@ const closeGallery = () => {
 
 // Contactar sobre el proyecto por WhatsApp
 const contactProject = (project) => {
-  // Si hay teléfono de contacto, usarlo; sino usar número por defecto
-  const phone = project.contact ? project.contact.replace(/\D/g, '') : '573001234567'
+  const phone = project.contact ? '57' + String(project.contact).replace(/\D/g, '') : '573001234567'
   const message = encodeURIComponent(
     `Hola, me interesa saber más sobre el proyecto "${project.name}". Muchas gracias.`
   )
@@ -375,10 +373,17 @@ onMounted(() => {
   background: #f0f0f0;
 }
 
+.image-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
 .project-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center center;
   cursor: pointer;
   transition: transform 0.3s ease;
 }
@@ -669,6 +674,7 @@ onMounted(() => {
   width: auto;
   height: auto;
   object-fit: contain;
+  object-position: center center;
 }
 
 .image-counter {
@@ -858,33 +864,27 @@ onMounted(() => {
 }
 
 .btn-modal-whatsapp {
-  width: 60px;
-  max-width: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 0.75rem;
-  padding: 1rem 1.75rem;
-  background: linear-gradient(135deg, #25D366 0%, #20BA5A 100%);
-  color: white;
+  background: none;
   border: none;
-  border-radius: 0.75rem;
   cursor: pointer;
-  text-align: left;
-  font-weight: 700;
-  font-size: 0.95rem;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25);
+  padding: 0;
   margin-top: auto;
+  transition: transform 0.3s ease;
+}
+
+.whatsapp-btn-img {
+  width: 100%;
+  max-width: 80px;
+  height: auto;
+  object-fit: contain;
 }
 
 .btn-modal-whatsapp:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(37, 211, 102, 0.4);
+  transform: scale(1.03);
 }
 
 .btn-modal-whatsapp:active {
-  transform: translateY(-1px);
+  transform: scale(0.98);
 }
 
 @keyframes fadeIn {
@@ -1050,9 +1050,8 @@ onMounted(() => {
     gap: 1rem;
   }
 
-  .btn-modal-whatsapp {
-    padding: 1rem 1.25rem;
-    font-size: 0.95rem;
+  .whatsapp-btn-img {
+    max-width: 70px;
   }
 }
 </style>

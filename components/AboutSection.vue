@@ -21,7 +21,7 @@
         <!-- Columna derecha: Información -->
         <div class="about-content">
           <span class="about-label">Sobre Nosotros</span>
-          <h2 class="about-title">Tu Aliado en Bienes Raíces del Oriente Antioqueño</h2>
+          <h2 class="about-title">Tu aliado en bienes raíces del Oriente Antioqueño</h2>
           <p class="about-description">
             En <strong>Euro Inmobiliaria</strong> somos expertos en el mercado inmobiliario del Oriente Antioqueño. 
             Con más de una década de experiencia, hemos ayudado a cientos de familias a encontrar 

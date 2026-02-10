@@ -93,7 +93,7 @@ const agents = ref([
     properties: 52,
     rating: '5.0',
     description: 'Líder en ventas de apartamentos y locales comerciales. Atención personalizada garantizada.',
-    whatsapp: 'https://wa.me/573012421919'
+    whatsapp: 'https://wa.me/573507776633'
   },
    {
     id: 4,
@@ -103,7 +103,7 @@ const agents = ref([
     properties: 28,
     rating: '4.7',
     description: 'Líder en ventas de apartamentos y locales comerciales. Atención personalizada garantizada.',
-    whatsapp: 'https://wa.me/573507776633'
+    whatsapp: 'https://wa.me/573236536666'
   }
 ])
 </script>

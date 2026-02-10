@@ -22,8 +22,9 @@
       >
       <select v-model="filterStatus" class="filter-select">
         <option value="">Todos los estados</option>
-        <option value="Venta">Venta</option>
-        <option value="Arriendo">Arriendo</option>
+        <option v-for="st in statuses" :key="st.id" :value="st.id">
+          {{ st.name }}
+        </option>
       </select>
       <select v-model="filterCategory" class="filter-select">
         <option value="">Todas las categorías</option>
@@ -60,8 +61,8 @@
             <td>{{ property.category?.name || '-' }}</td>
             <td>{{ property.city?.name || '-' }}</td>
             <td>
-              <span class="badge" :class="property.status === 'Venta' ? 'badge-sale' : 'badge-rent'">
-                {{ property.status }}
+              <span class="badge" :class="property.status?.name === 'Venta' ? 'badge-sale' : 'badge-rent'">
+                {{ property.status?.name || '-' }}
               </span>
             </td>
             <td class="price">{{ formatPrice(property.price) }}</td>
@@ -113,6 +114,7 @@ const supabase = useSupabaseClient()
 const loading = ref(false)
 const properties = ref([])
 const categories = ref([])
+const statuses = ref([])
 const searchQuery = ref('')
 const filterStatus = ref('')
 const filterCategory = ref('')
@@ -127,7 +129,8 @@ const loadProperties = async () => {
       .select(`
         *,
         category:category_id(*),
-        city:city_id(*)
+        city:city_id(*),
+        status:status_id(*)
       `)
       .order('created_at', { ascending: false })
 
@@ -156,6 +159,21 @@ const loadCategories = async () => {
   }
 }
 
+// Cargar estados
+const loadStatuses = async () => {
+  try {
+    const { data, error } = await supabase
+      .from('status')
+      .select('*')
+      .order('name')
+
+    if (error) throw error
+    statuses.value = data || []
+  } catch (error) {
+    console.error('Error al cargar estados:', error)
+  }
+}
+
 // Propiedades filtradas
 const filteredProperties = computed(() => {
   let filtered = properties.value
@@ -169,7 +187,7 @@ const filteredProperties = computed(() => {
   }
 
   if (filterStatus.value) {
-    filtered = filtered.filter(p => p.status === filterStatus.value)
+    filtered = filtered.filter(p => p.status_id === filterStatus.value)
   }
 
   if (filterCategory.value) {
@@ -228,6 +246,7 @@ const deleteProperty = async (property) => {
 onMounted(() => {
   loadProperties()
   loadCategories()
+  loadStatuses()
 })
 </script>
 

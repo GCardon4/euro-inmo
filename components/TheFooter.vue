@@ -58,7 +58,7 @@
         <ul class="footer-contact">
           <li>
             <Icon name="location_on" custom-class="icon" />
-            <span>Marinilla - Antioquia</span>
+            <span>Calle 29 N° 29-15<br>Marinilla, Antioquia</span>
           </li>
           <li>
             <Icon name="phone" custom-class="icon" />

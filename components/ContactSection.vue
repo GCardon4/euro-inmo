@@ -5,7 +5,7 @@
         <!-- Columna izquierda: Información -->
         <div class="contact-info">
           <span class="contact-label">Contáctanos</span>
-          <h2 class="contact-title">¿Listo para Encontrar Tu Propiedad Ideal?</h2>
+          <h2 class="contact-title">¿Listo para encontrar tu propiedad ideal?</h2>
           <p class="contact-description">
             Estamos aquí para ayudarte. Completa el formulario y uno de nuestros 
             asesores se pondrá en contacto contigo en menos de 24 horas.
