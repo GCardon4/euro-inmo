@@ -1,5 +1,5 @@
 <template>
-  <section class="projects-section">
+  <section id="proyectos" class="projects-section">
     <div class="container">
       <!-- Encabezado de la sección -->
       <div class="section-header">

@@ -29,28 +29,28 @@
 
       <!-- Filtros de búsqueda -->
       <div class="search-filters">
-        <div class="status-toggle filtre-group">
-          <button
-            class="status-toggle-btn filter-btn"
+        <div class="radio-filter-group">
+          <label
+            class="radio-filter-option"
             :class="{ active: selectedStatus === 'arriendo' }"
-            @click="selectedStatus = selectedStatus === 'arriendo' ? '' : 'arriendo'"
+            @click.prevent="selectedStatus = selectedStatus === 'arriendo' ? '' : 'arriendo'"
           >
-            Arriendos
-          </button>
-          <button
-            class="status-toggle-btn filter-btn"
+            <span class="radio-indicator"></span>
+            <span>Arriendos</span>
+          </label>
+          <label
+            class="radio-filter-option"
             :class="{ active: selectedStatus === 'venta' }"
-            @click="selectedStatus = selectedStatus === 'venta' ? '' : 'venta'"
+            @click.prevent="selectedStatus = selectedStatus === 'venta' ? '' : 'venta'"
           >
-            Ventas
-          </button>
-
-          <button
-            class="status-toggle-btn filter-btn"
-            :class="{ active: selectedStatus === 'proyectos' }"
-            @click="selectedStatus = selectedStatus === 'proyectos' ? '' : 'proyectos'"
-          >
-            Proyectos
+            <span class="radio-indicator"></span>
+            <span>Ventas</span>
+          </label>
+          <button class="btn-proyectos" @click="goToProjects">
+            <span>Proyectos</span>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8 3v10M8 13l4-4M8 13L4 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
           </button>
         </div>
 
@@ -186,6 +186,18 @@ const propertyStatuses = [
 
 // Estado del filtro de búsqueda
 const selectedStatus = ref('')
+
+// Navegar a la sección de proyectos
+const goToProjects = () => {
+  if (route.path === '/') {
+    const el = document.getElementById('proyectos')
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' })
+    }
+  } else {
+    router.push('/#proyectos')
+  }
+}
 
 // Sincronizar selectedStatus con la URL para que PropertiesGrid reaccione
 watch(selectedStatus, (newStatus) => {
@@ -416,37 +428,86 @@ onUnmounted(() => {
   margin: 0 auto;
 }
 
-.status-toggle {
+.radio-filter-group {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 1rem;
   margin-bottom: 1.25rem;
 }
 
-.status-toggle-btn {
-  padding: 1rem 3rem;
-  border: 2px solid #e5e7eb;
+.radio-filter-option {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 2.25rem;
+  border: 2px solid #0b6182;
+  background: transparent;
+  color: #0b6182;
+  font-weight: 700;
+  font-size: 1.1rem;
+  border-radius: 2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
+.radio-indicator {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  position: relative;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.radio-indicator::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: currentColor;
+  transition: transform 0.2s ease;
+}
+
+.radio-filter-option.active .radio-indicator::after {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.radio-filter-option:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(11, 97, 130, 0.15);
+}
+
+.radio-filter-option.active {
   background: linear-gradient(135deg, #0b6182 0%, #094d68 100%);
   color: white;
   border-color: #0b6182;
+  box-shadow: 0 4px 16px rgba(11, 97, 130, 0.3);
+}
+
+.btn-proyectos {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.85rem 2.25rem;
+  border: 2px solid #0b6182;
+  background: linear-gradient(135deg, #0b6182 0%, #094d68 100%);
+  color: white;
   font-weight: 700;
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   border-radius: 2rem;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.status-toggle-btn:hover {
-  border-color: #0b6182;
-  color: #0b6182;
+.btn-proyectos:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(11, 97, 130, 0.15);
-}
-
-.status-toggle-btn.active {
-  background: linear-gradient(135deg, #0b6182 0%, #094d68 100%);
-  color: white;
-  border-color: #0b6182;
   box-shadow: 0 4px 16px rgba(11, 97, 130, 0.3);
 }
 
@@ -601,36 +662,6 @@ onUnmounted(() => {
 }
 
 
-.filtre-group {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  width: 100%;
-  max-width: 600px;
-  margin: 0 auto;
-  margin-bottom: 1.5rem;
-}
-
-.btn-filtre {
-  flex: 1; /* Todos ocupan el mismo ancho */
-  padding: 10px 12px;
-  font-size: 14px;
-  border: none;
-  border-radius: 8px;
-  background-color: #1976d2;
-  color: white;
-  cursor: pointer;
-  transition: 0.2s ease-in-out;
-}
-
-@media (max-width: 768px) {
-  .filtre-group {
-    flex-direction: column;
-  }
-}
-
-
-
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -708,9 +739,17 @@ onUnmounted(() => {
     font-size: 1.1rem;
   }
 
-  .status-toggle-btn {
+  .radio-filter-group {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .radio-filter-option,
+  .btn-proyectos {
     padding: 0.75rem 2rem;
     font-size: 1rem;
+    justify-content: center;
+    width: 100%;
   }
 
   .filter-checks {
