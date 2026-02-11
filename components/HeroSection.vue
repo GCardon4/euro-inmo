@@ -24,7 +24,7 @@
         >
       </div>
       <p class="hero-subtitle">
-        Las mejores propiedades del Oriente Antioqueño en un solo lugar
+        Invertir bien no es cuestión de suerte, es cuestión de asesoría
       </p>
 
       <!-- Filtros de búsqueda -->
