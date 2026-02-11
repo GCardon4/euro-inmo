@@ -26,6 +26,9 @@
     <!-- Información de la Empresa -->
     <AboutSection />
 
+    <!-- Euro Viajes -->
+    <TravelSection />
+
     <!-- Sección de Agentes -->
     <AgentsSection />
 
