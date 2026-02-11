@@ -255,68 +255,22 @@ const supabase = useSupabaseClient()
 const whatsappNumber = '573001234567'
 const propertyCode = route.params.code
 
-// Cargar datos en servidor (SSR) para que los meta OG estén disponibles
-const { data: propertyData, error: fetchError, pending: isLoading } = await useAsyncData(
-  `property-${propertyCode}`,
-  async () => {
-    const { data: prop, error: propError } = await supabase
-      .from('properties')
-      .select(`
-        id, code, name, description, price, rooms, bathrooms, area,
-        kitchen, hall, dining, closet, clothing, gas, dressing, is_active,
-        category(id, name), status(id, name), state(id, name),
-        city(id, name), zone(id, name)
-      `)
-      .eq('code', propertyCode)
-      .single()
-
-    if (propError) throw new Error('Propiedad no encontrada')
-
-    const { data: imagesData } = await supabase
-      .from('properties_images')
-      .select('url_image')
-      .eq('property_id', prop.id)
-      .order('main', { ascending: false })
-
-    const { data: amenitiesData } = await supabase
-      .from('property_amenities')
-      .select('amenity_id, amenities!inner(id, name)')
-      .eq('property_id', prop.id)
-
-    const imgs = imagesData?.map(img => img.url_image) || []
-
-    return {
-      property: prop,
-      images: imgs.length > 0 ? imgs : ['/property-img.jpg'],
-      amenities: amenitiesData?.filter(item => item.amenities).map(item => item.amenities) || []
-    }
-  }
-)
-
-// Datos reactivos
-const property = computed(() => propertyData.value?.property || null)
-const images = computed(() => propertyData.value?.images || ['/property-img.jpg'])
-const amenities = computed(() => propertyData.value?.amenities || [])
-const error = computed(() => fetchError.value?.message || null)
-
-// OG Meta tags para compartir en WhatsApp / redes sociales
-useSeoMeta({
-  title: () => property.value ? `${property.value.name} - Euro Inmobiliaria` : 'Euro Inmobiliaria',
-  description: () => property.value?.description || 'Propiedad disponible en Euro Inmobiliaria',
-  ogTitle: () => property.value?.name || 'Euro Inmobiliaria',
-  ogDescription: () => property.value?.description || 'Propiedad disponible en Euro Inmobiliaria',
-  ogImage: () => {
-    const img = images.value[0] || '/property-img.jpg'
-    return img.startsWith('/') ? `https://euroinmobiliaria.com.co${img}` : img
-  },
-  ogUrl: () => `https://euroinmobiliaria.com.co/property-${propertyCode}`,
-  ogType: 'website',
-})
-
-// Estado de galería
+// Estados
+const isLoading = ref(true)
+const error = ref(null)
+const property = ref(null)
+const images = ref([])
+const amenities = ref([])
 const currentImageIndex = ref(0)
 const isModalOpen = ref(false)
 
+// SEO meta reactivo (actualiza título del tab cuando carga la data)
+useSeoMeta({
+  title: () => property.value ? `${property.value.name} - Euro Inmobiliaria` : 'Euro Inmobiliaria',
+  description: () => property.value?.description || 'Propiedad disponible en Euro Inmobiliaria',
+})
+
+// Imagen actual
 const currentImage = computed(() => {
   return images.value[currentImageIndex.value] || '/property-img.jpg'
 })
@@ -345,16 +299,63 @@ const whatsappLink = computed(() => {
 // Compartir por WhatsApp
 const getShareText = () => {
   if (!property.value) return ''
-  const origin = process.client ? window.location.origin : 'https://euroinmobiliaria.com.co'
-  const url = `${origin}/property-${property.value.code}`
+  const url = `${window.location.origin}/property-${property.value.code}`
   const desc = property.value.description ? `\n${property.value.description}` : ''
   return `${property.value.name}\nCódigo: ${property.value.code}${desc}\n\nVer inmueble: ${url}`
 }
 
 const shareWhatsApp = () => {
-  if (!process.client) return
   const text = getShareText()
   window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank')
+}
+
+// Cargar datos de la propiedad
+const loadProperty = async () => {
+  try {
+    const { data: propertyData, error: propertyError } = await supabase
+      .from('properties')
+      .select(`
+        id, code, name, description, price, rooms, bathrooms, area,
+        kitchen, hall, dining, closet, clothing, gas, dressing, is_active,
+        category(id, name), status(id, name), state(id, name),
+        city(id, name), zone(id, name)
+      `)
+      .eq('code', propertyCode)
+      .single()
+
+    if (propertyError) throw new Error('Propiedad no encontrada')
+
+    property.value = propertyData
+
+    const { data: imagesData } = await supabase
+      .from('properties_images')
+      .select('url_image')
+      .eq('property_id', propertyData.id)
+      .order('main', { ascending: false })
+
+    if (imagesData) {
+      images.value = imagesData.map(img => img.url_image)
+    }
+    if (images.value.length === 0) {
+      images.value = ['/property-img.jpg']
+    }
+
+    const { data: amenitiesData } = await supabase
+      .from('property_amenities')
+      .select('amenity_id, amenities!inner(id, name)')
+      .eq('property_id', propertyData.id)
+
+    if (amenitiesData) {
+      amenities.value = amenitiesData
+        .filter(item => item.amenities)
+        .map(item => item.amenities)
+    }
+  } catch (err) {
+    console.error('Error cargando propiedad:', err)
+    error.value = err.message || 'Error al cargar la propiedad'
+  } finally {
+    isLoading.value = false
+  }
 }
 
 // Navegación de imágenes
@@ -369,15 +370,15 @@ const previousImage = () => {
 // Modal
 const openModal = () => {
   isModalOpen.value = true
-  if (process.client) document.body.style.overflow = 'hidden'
+  document.body.style.overflow = 'hidden'
 }
 
 const closeModal = () => {
   isModalOpen.value = false
-  if (process.client) document.body.style.overflow = 'auto'
+  document.body.style.overflow = 'auto'
 }
 
-// Teclado (solo cliente)
+// Teclado
 const handleKeydown = (event) => {
   if (event.key === 'ArrowRight') nextImage()
   if (event.key === 'ArrowLeft') previousImage()
@@ -385,6 +386,7 @@ const handleKeydown = (event) => {
 }
 
 onMounted(() => {
+  loadProperty()
   window.addEventListener('keydown', handleKeydown)
 })
 

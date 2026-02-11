@@ -74,5 +74,5 @@ export default defineNuxtConfig({
     logLevel: 3
   },
 
-  ssr: true
+  ssr: false
 })
