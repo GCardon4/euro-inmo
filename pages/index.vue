@@ -114,6 +114,8 @@ useHead({
   color: #0b6182;
 }
 
+
+
 @media (max-width: 600px) {
   .properties-links-section {
     flex-direction: column;

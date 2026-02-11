@@ -61,15 +61,15 @@
         </button>
       </div>
 
-      <!-- Botón ver todas -->
-      <div class="view-all">
-        <NuxtLink to="/properties" class="btn-view-all">
-          Ver todas las propiedades
-          <Icon name="arrow_forward" />
-        </NuxtLink>
-      </div>
+
     </div>
   </section>
+
+   <NuxtLink class="fab-home" to="/" >
+      <span class="material-icons">home</span>
+    </NuxtLink>
+
+
 </template>
 
 <script setup>
@@ -568,6 +568,47 @@ watch(() => route.query.maxPrice, () => {
   box-shadow: 0 8px 20px rgba(11, 97, 130, 0.4);
   background: linear-gradient(135deg, #0d7599 0%, #0b6182 100%);
 }
+
+.fab-home {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  
+  width: 48px;
+  height: 48px;
+  
+  background-color: #0b6182;
+  color: #ffffff;
+  
+  border: none;
+  border-radius: 50%;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  
+  transition: all 0.2s ease-in-out;
+  z-index: 9999;
+}
+
+.fab-home:hover {
+  transform: translateX(-50%) scale(1.08);
+  background-color: #1565c0;
+}
+
+.fab-home:active {
+  transform: translateX(-50%) scale(0.95);
+}
+
+/* Tamaño del ícono (no mayor a 20px) */
+.fab-home .material-icons {
+  font-size: 20px;
+}
+
 
 /* Responsive */
 @media (max-width: 1024px) {

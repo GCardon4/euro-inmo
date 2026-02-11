@@ -60,10 +60,10 @@
 
               <!-- Botón de acción -->
               <div class="project-actions">
-                <button class="btn-whatsapp-main" @click="contactProject(project)" title="Contactar este proyecto">
-                  <Icon name="whatsapp" />
-                  <span>Contactar este proyecto</span>
+                <button class="share-icon-btn" @click="contactProject(project)" title="Contactar este proyecto">
+                  <img src="/white-whatsapp.png" alt="WhatsApp" class="share-wa-icon">
                 </button>
+                <span>Contactar este Proyecto</span>
               </div>
             </div>
           </div>
@@ -143,6 +143,7 @@
 
             <button class="btn-modal-whatsapp" @click="contactProject(selectedProject)">
               <img src="/whatsapp-button.png" alt="Contactar por WhatsApp" class="whatsapp-btn-img">
+               <span>Contactar este Proyecto</span>
             </button>
           </div>
         </div>
@@ -498,6 +499,12 @@ onMounted(() => {
   margin-top: 1rem;
 }
 
+.project-actions span{
+  color: #0b6182;
+  font-weight: 600;
+  padding-top: 0.54rem;
+}
+
 .btn-whatsapp-main {
   display: flex;
   align-items: center;
@@ -539,6 +546,26 @@ onMounted(() => {
   margin-bottom: 1rem;
   color: #0b6182;
   animation: spin 1s linear infinite;
+}
+
+.share-icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #0b6182;
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.share-icon-btn:hover {
+  background: #094d68;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(11, 97, 130, 0.3);
 }
 
 @keyframes spin {
@@ -865,19 +892,28 @@ onMounted(() => {
 }
 
 .btn-modal-whatsapp {
+  width: 100%;
+  max-width: 300px;
   background: none;
   border: none;
   cursor: pointer;
   padding: 0;
   margin-top: auto;
+  text-align: left;
   transition: transform 0.3s ease;
+  color: #0b6182;
+}
+.btn-modal-whatsapp span {
+  margin-left: 0.75rem;
+  font-weight: 600;
+  font-size: 1rem;
 }
 
 .whatsapp-btn-img {
   width: 100%;
-  max-width: 80px;
+  max-width: 70px;
   height: auto;
-  object-fit: contain;
+
 }
 
 .btn-modal-whatsapp:hover {

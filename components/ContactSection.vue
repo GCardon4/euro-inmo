@@ -28,7 +28,7 @@
               </div>
               <div class="detail-content">
                 <h4>Teléfonos</h4>
-                <p>+57 301 242 1919<br>+57 350 777 6633</p>
+                <p>+57  350 777 6633<br>+57 301 242 1919</p>
               </div>
             </div>
 
@@ -48,7 +48,7 @@
               </div>
               <div class="detail-content">
                 <h4>Horario</h4>
-                <p>Lunes - Viernes: 8:00 AM - 6:00 PM<br>Sábados: 9:00 AM - 1:00 PM</p>
+                <p>Lunes - Viernes: 9:00 AM - 6:00 PM<br>Sábados: 9:00 AM - 3:00 PM</p>
               </div>
             </div>
           </div>
@@ -63,7 +63,7 @@
               <a target="_blank" href="https://www.instagram.com/euro_inmobiliaria" class="social-link" aria-label="Instagram">
                 <Icon name="instagram" />
               </a>
-              <a target="_blank" href="https://wa.me/573012421919" class="social-link" aria-label="WhatsApp">
+              <a target="_blank" href="https://wa.me/573507776633" class="social-link" aria-label="WhatsApp">
                 <Icon name="chat" />
               </a>
 

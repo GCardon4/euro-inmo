@@ -29,16 +29,16 @@
 
       <!-- Filtros de búsqueda -->
       <div class="search-filters">
-        <div class="status-toggle">
+        <div class="status-toggle filtre-group">
           <button
-            class="status-toggle-btn"
+            class="status-toggle-btn filter-btn"
             :class="{ active: selectedStatus === 'arriendo' }"
             @click="selectedStatus = selectedStatus === 'arriendo' ? '' : 'arriendo'"
           >
             Arriendos
           </button>
           <button
-            class="status-toggle-btn"
+            class="status-toggle-btn filter-btn"
             :class="{ active: selectedStatus === 'venta' }"
             @click="selectedStatus = selectedStatus === 'venta' ? '' : 'venta'"
           >
@@ -46,7 +46,7 @@
           </button>
 
           <button
-            class="status-toggle-btn"
+            class="status-toggle-btn filter-btn"
             :class="{ active: selectedStatus === 'proyectos' }"
             @click="selectedStatus = selectedStatus === 'proyectos' ? '' : 'proyectos'"
           >
@@ -599,6 +599,37 @@ onUnmounted(() => {
 .slider-nav.next {
   right: 2rem;
 }
+
+
+.filtre-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  margin-bottom: 1.5rem;
+}
+
+.btn-filtre {
+  flex: 1; /* Todos ocupan el mismo ancho */
+  padding: 10px 12px;
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  background-color: #1976d2;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+}
+
+@media (max-width: 768px) {
+  .filtre-group {
+    flex-direction: column;
+  }
+}
+
+
 
 @keyframes fadeInUp {
   from {

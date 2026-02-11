@@ -5,7 +5,7 @@
         <!-- Columna izquierda: Imagen -->
         <div class="about-image">
           <img 
-            src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=600" 
+            src="/fachada-euro.jpg" 
             alt="Oficina Euro Inmobiliaria"
             class="main-image"
           >
@@ -73,7 +73,7 @@
           <!-- Estadísticas -->
           <div class="stats">
             <div class="stat-item">
-              <span class="stat-number">500+</span>
+              <span class="stat-number">200+</span>
               <span class="stat-label">Propiedades</span>
             </div>
             <div class="stat-item">
@@ -130,7 +130,7 @@
 .image-badge {
   position: absolute;
   bottom: 2rem;
-  right: 2rem;
+  left: 2rem;
   filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.3));
 }
 
@@ -297,7 +297,7 @@
 
   .image-badge {
     bottom: 1rem;
-    right: 1rem;
+    left: 1rem;
   }
 
   .badge-image {

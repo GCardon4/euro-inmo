@@ -23,7 +23,7 @@
           <a href="https://www.instagram.com/euro_inmobiliaria" class="social-link" target="_blank" aria-label="Instagram">
             <Icon name="instagram" />
           </a>
-          <a href="https://wa.me/573012421919" class="social-link" target="_blank" aria-label="WhatsApp">
+          <a href="https://wa.me/573507776633" class="social-link" target="_blank" aria-label="WhatsApp">
             <Icon name="chat" />
           </a>
         </div>
@@ -64,7 +64,7 @@
           </li>
           <li>
             <Icon name="phone" custom-class="icon" />
-            <span>+57 301 242 1919</span>
+            <span>+57 350 777 6633</span>
           </li>
           <li>
             <Icon name="email" custom-class="icon" />
@@ -72,7 +72,7 @@
           </li>
           <li>
             <Icon name="schedule" custom-class="icon" />
-            <span>Lun - Vie: 8:00 AM - 6:00 PM</span>
+            <span>Lun - Vie: 9:00 AM - 6:00 PM<br>Sábados: 9:00 AM - 3:00 PM</span>
           </li>
         </ul>
       </div>

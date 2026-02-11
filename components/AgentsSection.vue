@@ -104,6 +104,18 @@ const agents = ref([
     rating: '4.7',
     description: 'Líder en ventas de apartamentos y locales comerciales. Atención personalizada garantizada.',
     whatsapp: 'https://wa.me/573236536666'
+  },
+  {
+    id: 5,
+    name: 'Diana García',
+    role: 'Gerente General',
+    photo: '/asesores/asesor-05.jpg'
+  },
+  {
+    id: 6,
+    name: 'Juan Felipe Urrea',
+    role: 'Abogado',
+    photo: '/asesores/asesor-06.jpg'
   }
 ])
 </script>
