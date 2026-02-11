@@ -16,7 +16,7 @@
     <!-- Contenido del Hero -->
     <div class="hero-content">
       <div class="hero-heading">
-        <h1 class="hero-title">Invertir SEGURO, empieza aquí</h1>
+        <h1 class="hero-title">Experiencia, respaldo y resultados en cada negocio</h1>
         <img
           src="/label-euro.png"
           alt="Euro Inmobiliaria - 14 años acompañando familias"
@@ -44,24 +44,16 @@
           >
             Ventas
           </button>
+
+          <button
+            class="status-toggle-btn"
+            :class="{ active: selectedStatus === 'proyectos' }"
+            @click="selectedStatus = selectedStatus === 'proyectos' ? '' : 'proyectos'"
+          >
+            Proyectos
+          </button>
         </div>
 
-        <div class="filter-checks">
-          <label
-            v-for="status in propertyStatuses"
-            :key="status.value"
-            class="filter-check"
-          >
-            <input
-              type="radio"
-              name="statusCheck"
-              :value="status.value"
-              v-model="selectedStatus"
-              class="filter-check-input"
-            >
-            <span class="filter-check-label">{{ status.label }}</span>
-          </label>
-        </div>
 
         <form class="search-form" @submit.prevent="handleSearch">
           <!-- Tipo de propiedad -->
@@ -434,8 +426,9 @@ onUnmounted(() => {
 .status-toggle-btn {
   padding: 1rem 3rem;
   border: 2px solid #e5e7eb;
-  background: white;
-  color: #585857;
+  background: linear-gradient(135deg, #0b6182 0%, #094d68 100%);
+  color: white;
+  border-color: #0b6182;
   font-weight: 700;
   font-size: 1.15rem;
   border-radius: 2rem;
