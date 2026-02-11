@@ -87,7 +87,7 @@
 
 <script setup>
 // Año actual para copyright
-const currentYear = new Date().getFullYear()
+const currentYear = computed(() => new Date().getFullYear())
 </script>
 
 <style scoped>

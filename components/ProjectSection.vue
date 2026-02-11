@@ -280,10 +280,12 @@ const contactProject = (project) => {
   const message = encodeURIComponent(
     `Hola, me interesa saber más sobre el proyecto "${project.name}". Muchas gracias.`
   )
-  window.open(
-    `https://wa.me/${phone}?text=${message}`,
-    '_blank'
-  )
+  if (process.client) {
+    window.open(
+      `https://wa.me/${phone}?text=${message}`,
+      '_blank'
+    )
+  }
 }
 
 // Truncar texto (no usado en la nueva vista, pero dejarlo para compatibilidad)

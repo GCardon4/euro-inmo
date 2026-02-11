@@ -196,6 +196,7 @@ const errorMessage = ref('')
 
 // Obtener token de reCAPTCHA v3
 const getRecaptchaToken = () => {
+  if (!process.client) return Promise.reject(new Error('Solo cliente'))
   return new Promise((resolve, reject) => {
     const siteKey = config.public.recaptchaSiteKey
     if (!window.grecaptcha) {

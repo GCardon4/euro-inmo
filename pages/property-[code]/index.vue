@@ -345,12 +345,14 @@ const whatsappLink = computed(() => {
 // Compartir por WhatsApp
 const getShareText = () => {
   if (!property.value) return ''
-  const url = `${window.location.origin}/property-${property.value.code}`
+  const origin = process.client ? window.location.origin : 'https://euroinmobiliaria.com.co'
+  const url = `${origin}/property-${property.value.code}`
   const desc = property.value.description ? `\n${property.value.description}` : ''
   return `${property.value.name}\nCódigo: ${property.value.code}${desc}\n\nVer inmueble: ${url}`
 }
 
 const shareWhatsApp = () => {
+  if (!process.client) return
   const text = getShareText()
   window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank')
 }
@@ -367,12 +369,12 @@ const previousImage = () => {
 // Modal
 const openModal = () => {
   isModalOpen.value = true
-  document.body.style.overflow = 'hidden'
+  if (process.client) document.body.style.overflow = 'hidden'
 }
 
 const closeModal = () => {
   isModalOpen.value = false
-  document.body.style.overflow = 'auto'
+  if (process.client) document.body.style.overflow = 'auto'
 }
 
 // Teclado (solo cliente)

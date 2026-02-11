@@ -120,13 +120,15 @@ const formattedPrice = computed(() => {
 
 // Generar texto para compartir
 const getShareText = () => {
-  const url = `${window.location.origin}/property-${props.property.code}`
+  const origin = process.client ? window.location.origin : 'https://euroinmobiliaria.com.co'
+  const url = `${origin}/property-${props.property.code}`
   const desc = props.property.description ? `\n${props.property.description}` : ''
   return `${props.property.name}\nCódigo: ${props.property.code}${desc}\n\nVer inmueble: ${url}`
 }
 
 // Compartir por WhatsApp
 const shareWhatsApp = () => {
+  if (!process.client) return
   const text = getShareText()
   window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank')
 }
