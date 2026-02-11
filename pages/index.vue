@@ -41,9 +41,9 @@
 // Configuración SEO para la página principal con useSeoMeta (mejor para Nuxt 3)
 useSeoMeta({
   title: 'Euro Inmobiliaria - Con más de 14 años de experiencia en el Oriente Antioqueño',
-  description: 'Invertir SEGURO, empieza aquí con Euro Inmobiliaria. Casas, apartamentos, fincas y más. Más de 14 años de experiencia en bienes raíces.',
-  ogTitle: 'Euro Inmobiliaria - Con más de 14 años de experiencia en el Oriente Antioqueño',
-  ogDescription: 'Invertir SEGURO, empieza aquí con Euro Inmobiliaria. Compra, venta y arriendo.',
+  description: 'Experiencia, respaldo y resultados en cada negocio. Invertir bien no es cuestión de suerte, es cuestión de asesoría',
+  ogTitle: 'Experiencia, respaldo y resultados en cada negocio',
+  ogDescription: 'Invertir bien no es cuestión de suerte, es cuestión de asesoría.',
   ogType: 'website',
   ogUrl: 'https://euroinmobiliaria.com.co',
   ogImage: '/og-image.jpg',
