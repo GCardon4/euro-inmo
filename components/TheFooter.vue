@@ -40,18 +40,6 @@
         </ul>
       </div>
 
-      <!-- Columna 3: Categorías -->
-      <div class="footer-column">
-        <h4 class="footer-subtitle">Categorías</h4>
-        <ul class="footer-links">
-          <li><a href="#">Apartamentos</a></li>
-          <li><a href="#">Casas</a></li>
-          <li><a href="#">Fincas</a></li>
-          <li><a href="#">Locales</a></li>
-          <li><a href="#">Lotes</a></li>
-        </ul>
-      </div>
-
       <!-- Columna 4: Contacto -->
       <div class="footer-column">
         <h4 class="footer-subtitle">Contacto</h4>
@@ -64,7 +52,7 @@
           </li>
           <li>
             <Icon name="phone" custom-class="icon" />
-            <span>+57 350 777 6633</span>
+            <a href="https://wa.me/573507776633" target="_blank" rel="noopener noreferrer">+57 350 777 6633</a>
           </li>
           <li>
             <Icon name="email" custom-class="icon" />
