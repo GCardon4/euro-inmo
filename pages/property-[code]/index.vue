@@ -570,7 +570,8 @@ onUnmounted(() => {
 .property-code {
   margin: 0.5rem 0 0 0;
   color: var(--color-text-light);
-  font-size: 0.95rem;
+  font-size: 1.2rem;
+  font-weight: bold;
 }
 
 .status-badge {
