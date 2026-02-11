@@ -63,7 +63,7 @@
               <a target="_blank" href="https://www.instagram.com/euro_inmobiliaria" class="social-link" aria-label="Instagram">
                 <Icon name="instagram" />
               </a>
-              <a target="_blank" href="https://wa.me/573507776633" class="social-link" aria-label="WhatsApp">
+              <a target="_blank" href="https://wa.me/573012421919" class="social-link" aria-label="WhatsApp">
                 <Icon name="chat" />
               </a>
 

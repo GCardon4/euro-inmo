@@ -61,6 +61,13 @@
         </button>
       </div>
 
+      <!-- Botón ver todas -->
+      <div class="view-all">
+        <NuxtLink to="/properties" class="btn-view-all">
+          Ver todas las propiedades
+          <Icon name="arrow_forward" />
+        </NuxtLink>
+      </div>
     </div>
   </section>
 </template>
@@ -534,6 +541,32 @@ watch(() => route.query.maxPrice, () => {
   background: #2563eb;
   color: white;
   transform: translateY(-2px);
+}
+
+.view-all {
+  text-align: center;
+  margin-top: 3rem;
+}
+
+.btn-view-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem 3rem;
+  background: linear-gradient(135deg, #0b6182 0%, #082f3d 100%);
+  color: white;
+  text-decoration: none;
+  border-radius: 0.75rem;
+  font-weight: 700;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(11, 97, 130, 0.3);
+}
+
+.btn-view-all:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(11, 97, 130, 0.4);
+  background: linear-gradient(135deg, #0d7599 0%, #0b6182 100%);
 }
 
 /* Responsive */
