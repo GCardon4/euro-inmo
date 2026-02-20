@@ -733,34 +733,35 @@ const uploadNewImages = async (propertyCode) => {
   return uploadedUrls
 }
 
+// Extraer el path de storage a partir de la URL pública
+const extraerPathStorage = (url) => {
+  const marker = '/storage/v1/object/public/properties/'
+  const idx = url.indexOf(marker)
+  return idx !== -1 ? url.substring(idx + marker.length) : null
+}
+
 // Eliminar imágenes de Supabase Storage y BD
 const deleteImages = async () => {
   if (imagesToDelete.value.length === 0) return
 
   for (const imageRecord of imagesToDelete.value) {
-    // Eliminar del storage
-    try {
-      // URL contiene: https://domain/storage/v1/object/properties/public/{code}/{filename}
-      const pathMatch = imageRecord.url_image.match(/\/storage\/v1\/object\/properties\/(.+)/)
-      if (pathMatch) {
-        const filePath = pathMatch[1]
-        await supabase.storage
-          .from('properties')
-          .remove([filePath])
-      }
-    } catch (error) {
-      console.error('Error eliminando imagen de storage:', error)
+    // Eliminar archivo del storage
+    const storagePath = extraerPathStorage(imageRecord.url_image)
+    if (storagePath) {
+      const { error: storageError } = await supabase.storage
+        .from('properties')
+        .remove([storagePath])
+
+      if (storageError) console.error('Error eliminando imagen de storage:', storageError)
     }
 
-    // Eliminar del registro de BD
+    // Eliminar registro de la BD
     const { error } = await supabase
       .from('properties_images')
       .delete()
       .eq('id', imageRecord.id)
 
-    if (error) {
-      console.error('Error eliminando registro de imagen:', error)
-    }
+    if (error) console.error('Error eliminando registro de imagen:', error)
   }
 }
 
