@@ -212,13 +212,49 @@ const editProperty = (id) => {
   navigateTo(`/admin/properties/edit/${id}`)
 }
 
-// Eliminar propiedad
+// Extraer el path de storage a partir de la URL pública de la imagen
+const extraerPathStorage = (url) => {
+  const marker = '/storage/v1/object/public/properties/'
+  const idx = url.indexOf(marker)
+  return idx !== -1 ? url.substring(idx + marker.length) : null
+}
+
+// Eliminar propiedad junto con sus imágenes del storage
 const deleteProperty = async (property) => {
   const ok = await confirmDialog(`¿Estás seguro de eliminar "${property.name}"?`)
   if (!ok) return
 
   try {
-    // 1. Eliminar primero los amenities relacionados
+    // 1. Obtener URLs de imágenes antes de eliminar
+    const { data: imageRecords } = await supabase
+      .from('properties_images')
+      .select('url_image')
+      .eq('property_id', property.id)
+
+    // 2. Borrar archivos del Storage de Supabase
+    if (imageRecords && imageRecords.length > 0) {
+      const storagePaths = imageRecords
+        .map(img => extraerPathStorage(img.url_image))
+        .filter(Boolean)
+
+      if (storagePaths.length > 0) {
+        const { error: storageError } = await supabase.storage
+          .from('properties')
+          .remove(storagePaths)
+
+        if (storageError) console.error('Error eliminando archivos del storage:', storageError)
+      }
+    }
+
+    // 3. Eliminar registros de imágenes en la BD
+    const { error: imagesError } = await supabase
+      .from('properties_images')
+      .delete()
+      .eq('property_id', property.id)
+
+    if (imagesError) throw imagesError
+
+    // 4. Eliminar amenities relacionados
     const { error: amenitiesError } = await supabase
       .from('property_amenities')
       .delete()
@@ -226,7 +262,13 @@ const deleteProperty = async (property) => {
 
     if (amenitiesError) throw amenitiesError
 
-    // 2. Luego eliminar la propiedad
+    // 5. Eliminar registro de vistas
+    await supabase
+      .from('properties_view')
+      .delete()
+      .eq('property_id', property.id)
+
+    // 6. Eliminar la propiedad
     const { error } = await supabase
       .from('properties')
       .delete()
