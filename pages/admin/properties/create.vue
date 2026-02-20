@@ -351,6 +351,7 @@ definePageMeta({
 const supabase = useSupabaseClient()
 const router = useRouter()
 const { notify } = useNotification()
+const { processPropertyImage } = useImageProcessor()
 
 // Estados
 const isSubmitting = ref(false)
@@ -530,78 +531,6 @@ const loadAmenities = async () => {
   amenitiesLoading.value = false
 }
 
-// Agregar marca de agua a la imagen
-const addWatermark = async (file) => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = async (e) => {
-      try {
-        const img = new Image()
-        img.onload = async () => {
-          const canvas = document.createElement('canvas')
-          canvas.width = img.width
-          canvas.height = img.height
-          const ctx = canvas.getContext('2d')
-          
-          // Dibujar imagen original
-          ctx.drawImage(img, 0, 0)
-          
-          // Cargar marca de agua
-          const watermarkImg = new Image()
-          watermarkImg.crossOrigin = 'anonymous'
-          watermarkImg.src = '/logotipo-euroinmo.png'
-          
-          watermarkImg.onload = () => {
-            // Calcular tamaño de la marca de agua (30% de la imagen)
-            const watermarkSize = Math.min(img.width, img.height) * 0.3
-            const watermarkWidth = watermarkImg.width * (watermarkSize / watermarkImg.height)
-            const watermarkHeight = watermarkSize
-            
-            // Posicionar en el centro
-            const x = (img.width - watermarkWidth) / 2
-            const y = (img.height - watermarkHeight) / 2
-            
-            // Aplicar opacidad (22%)
-            ctx.globalAlpha = 0.22
-            ctx.drawImage(watermarkImg, x, y, watermarkWidth, watermarkHeight)
-            ctx.globalAlpha = 1.0
-            
-            // Convertir canvas a blob - usar siempre image/jpeg para consistencia
-            const outputType = 'image/jpeg'
-            const quality = 0.92
-            canvas.toBlob((blob) => {
-              if (!blob) {
-                console.error('Error: canvas.toBlob retornó null')
-                resolve(file) // Retorna archivo original si falla
-                return
-              }
-              // Crear archivo con la marca de agua - asegurar extensión .jpg
-              const baseName = file.name.replace(/\.(jpeg|jpg|png|webp)$/i, '')
-              const watermarkedFile = new File(
-                [blob],
-                `${baseName}.jpg`,
-                { type: outputType }
-              )
-              resolve(watermarkedFile)
-            }, outputType, quality)
-          }
-          
-          watermarkImg.onerror = () => {
-            // Si falla cargar la marca de agua, retorna el archivo original
-            resolve(file)
-          }
-        }
-        img.src = e.target.result
-      } catch (error) {
-        console.error('Error agregando marca de agua:', error)
-        resolve(file) // Retorna archivo original en caso de error
-      }
-    }
-    reader.onerror = () => reject(reader.error)
-    reader.readAsDataURL(file)
-  })
-}
-
 // Manejar selección de archivos
 const handleFileSelect = (event) => {
   const files = Array.from(event.target.files)
@@ -631,11 +560,10 @@ const uploadImages = async (propertyCode) => {
     const imageData = uploadedImages.value[i]
     let file = imageData.file
 
-    // Agregar marca de agua a la imagen (convierte a .jpg)
-    file = await addWatermark(file)
+    // Procesar imagen: redimensionar, marca de agua y convertir a WebP
+    file = await processPropertyImage(file)
 
-    // Generar nombre después de watermark (ya que convierte a .jpg)
-    const fileName = `${Date.now()}_${i}.jpg`
+    const fileName = `${Date.now()}_${i}.webp`
     // Ruta: public/{code}/{filename} — requerido por políticas RLS de storage
     const filePath = `public/${propertyCode}/${fileName}`
 
@@ -644,7 +572,7 @@ const uploadImages = async (propertyCode) => {
       .upload(filePath, file, {
         cacheControl: '3600',
         upsert: false,
-        contentType: 'image/jpeg'
+        contentType: 'image/webp'
       })
 
     if (error) {

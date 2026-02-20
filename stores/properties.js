@@ -170,23 +170,54 @@ export const usePropertiesStore = defineStore('properties', {
       }
     },
 
-    // Incrementar contador de vistas
+    // Incrementar contador de vistas de una propiedad (UPSERT: crea o suma +1)
     async incrementViews(propertyId) {
       try {
         const supabase = useSupabaseClient()
-        
-        // Registrar vista en la tabla properties_view
-        const { error } = await supabase
-          .from('properties_view')
-          .insert({
-            property_id: propertyId,
-            viewed_at: new Date().toISOString()
-          })
 
-        if (error) throw error
-        
+        // Verificar si ya existe un registro para esta propiedad
+        const { data: registroExistente } = await supabase
+          .from('properties_view')
+          .select('view')
+          .eq('property_id', propertyId)
+          .single()
+
+        if (registroExistente) {
+          // Actualizar sumando 1 al contador actual
+          const { error } = await supabase
+            .from('properties_view')
+            .update({ view: registroExistente.view + 1 })
+            .eq('property_id', propertyId)
+
+          if (error) throw error
+        } else {
+          // Crear el primer registro de vistas para esta propiedad
+          const { error } = await supabase
+            .from('properties_view')
+            .insert({ property_id: propertyId, view: 1 })
+
+          if (error) throw error
+        }
       } catch (error) {
         console.error('Error al registrar vista:', error)
+      }
+    },
+
+    // Obtener el número total de vistas de una propiedad
+    async fetchPropertyViews(propertyId) {
+      try {
+        const supabase = useSupabaseClient()
+
+        const { data } = await supabase
+          .from('properties_view')
+          .select('view')
+          .eq('property_id', propertyId)
+          .single()
+
+        return data?.view || 0
+      } catch (error) {
+        console.error('Error al obtener vistas:', error)
+        return 0
       }
     }
   }

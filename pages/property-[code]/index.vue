@@ -65,6 +65,11 @@
             <div>
               <h1 class="property-title">{{ property.name }}</h1>
               <p class="property-code">Código: {{ property.code }}</p>
+              <!-- Badge de vistas -->
+              <div class="views-badge">
+                <Icon name="visibility" />
+                <span>{{ viewCount }} {{ viewCount === 1 ? 'vista' : 'vistas' }}</span>
+              </div>
             </div>
             <div class="status-badge" :class="`badge-${property.status?.name?.toLowerCase()}`">
               {{ property.status?.name }}
@@ -251,8 +256,11 @@ definePageMeta({
 
 const route = useRoute()
 const supabase = useSupabaseClient()
+const propertiesStore = usePropertiesStore()
 
-const whatsappNumber = '573001234567'
+// Números de contacto según tipo de negocio
+const whatsappArriendos = '573236536666'
+const whatsappVentas = '573507776633'
 const propertyCode = route.params.code
 
 // Estados
@@ -263,6 +271,7 @@ const images = ref([])
 const amenities = ref([])
 const currentImageIndex = ref(0)
 const isModalOpen = ref(false)
+const viewCount = ref(0)
 
 // SEO meta reactivo (actualiza título del tab cuando carga la data)
 useSeoMeta({
@@ -286,6 +295,12 @@ const formattedPrice = computed(() => {
   }).format(property.value.price)
 })
 
+// Número de contacto según el status de la propiedad (Arriendo o Venta)
+const whatsappContacto = computed(() => {
+  const status = property.value?.status?.name?.toLowerCase()
+  return status === 'arriendo' ? whatsappArriendos : whatsappVentas
+})
+
 // Link de WhatsApp
 const whatsappLink = computed(() => {
   if (!property.value) return '#'
@@ -293,7 +308,7 @@ const whatsappLink = computed(() => {
   const zona = property.value.zone?.name || 'Sin especificar'
   const codigo = property.value.code
   const mensaje = `Quiero saber acerca de ${tipoPropiedad}, en ${zona}, con el código ${codigo}, Muchas gracias`
-  return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(mensaje)}`
+  return `https://wa.me/${whatsappContacto.value}?text=${encodeURIComponent(mensaje)}`
 })
 
 // Compartir por WhatsApp
@@ -385,9 +400,15 @@ const handleKeydown = (event) => {
   if (event.key === 'Escape') closeModal()
 }
 
-onMounted(() => {
-  loadProperty()
+onMounted(async () => {
+  await loadProperty()
   window.addEventListener('keydown', handleKeydown)
+
+  // Registrar vista e incrementar contador cuando la propiedad carga correctamente
+  if (property.value?.id) {
+    await propertiesStore.incrementViews(property.value.id)
+    viewCount.value = await propertiesStore.fetchPropertyViews(property.value.id)
+  }
 })
 
 onUnmounted(() => {
@@ -799,6 +820,21 @@ onUnmounted(() => {
 .btn-contact:hover {
   background: #0d7599;
   transform: translateY(-2px);
+}
+
+/* Badge de vistas */
+.views-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.4rem;
+  color: var(--color-text-light);
+  font-size: 0.88rem;
+}
+
+.views-badge .material-icons {
+  font-size: 1rem;
+  color: var(--color-primary);
 }
 
 /* Animaciones */
