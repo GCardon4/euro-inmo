@@ -76,8 +76,9 @@
 // Estado de filtro seleccionado
 const selectedFilter = ref('all')
 
-// Propiedades por página
+// Propiedades por página y límite de carga desde Supabase
 const propertiesPerPage = 6
+const supabasePageSize = 24
 const currentPage = ref(1)
 
 // Cargar propiedades desde Supabase usando useAsyncData para SSR seguro
@@ -189,7 +190,7 @@ const { data: propertiesData, pending, error: fetchError } = await useAsyncData(
       return []
     }
 
-    // Traer TODAS las propiedades activas sin límite para que el filtrado por categoría funcione correctamente
+    // Traer las propiedades activas con límite para reducir egress de Supabase
     const { data, error: supabaseError } = await supabase
       .from('properties')
       .select(`
@@ -215,6 +216,7 @@ const { data: propertiesData, pending, error: fetchError } = await useAsyncData(
       `)
       .eq('is_active', true)
       .order('created_at', { ascending: false })
+      .limit(supabasePageSize)
 
     if (supabaseError) {
       console.error('❌ Error de Supabase:', supabaseError)

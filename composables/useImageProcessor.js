@@ -9,8 +9,8 @@ export const useImageProcessor = () => {
         try {
           const img = new Image()
           img.onload = async () => {
-            // Calcular dimensiones con ancho máximo de 1200px
-            const MAX_WIDTH = 1200
+            // Calcular dimensiones con ancho máximo de 900px (optimización de egress Supabase)
+            const MAX_WIDTH = 900
             let targetWidth = img.width
             let targetHeight = img.height
 
@@ -49,7 +49,7 @@ export const useImageProcessor = () => {
               ctx.drawImage(watermarkImg, x, y, watermarkWidth, watermarkHeight)
               ctx.globalAlpha = 1.0
 
-              // Convertir a WebP con calidad 0.80
+              // Convertir a WebP con calidad 0.72 (optimización de egress Supabase)
               exportToWebP(canvas, file, resolve)
             }
 
@@ -71,7 +71,7 @@ export const useImageProcessor = () => {
 
   const exportToWebP = (canvas, originalFile, resolve) => {
     const outputType = 'image/webp'
-    const quality = 0.80
+    const quality = 0.72
     canvas.toBlob((blob) => {
       if (!blob) {
         console.error('Error: canvas.toBlob retornó null')

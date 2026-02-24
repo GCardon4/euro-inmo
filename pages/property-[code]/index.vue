@@ -54,7 +54,7 @@
               :class="{ active: currentImageIndex === index }"
               @click="currentImageIndex = index"
             >
-              <img :src="image" :alt="`Imagen ${index + 1}`">
+              <img :src="image" :alt="`Imagen ${index + 1}`" loading="lazy">
             </button>
           </div>
         </section>

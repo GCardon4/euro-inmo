@@ -2,10 +2,11 @@
   <div class="property-card" @click="goToProperty">
     <div class="property-image-container">
       <!-- Imagen de la propiedad -->
-      <img 
-        :src="property.imageUrl || placeholderImage" 
+      <img
+        :src="property.imageUrl || placeholderImage"
         :alt="property.name"
         class="property-image"
+        loading="lazy"
       >
       
       <!-- Badge de estado (Venta/Arriendo) -->
