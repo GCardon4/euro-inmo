@@ -2,8 +2,8 @@
   <div class="amenities-page">
     <div class="page-header">
       <div>
-        <h1>Comodidades de Propiedades</h1>
-        <p>Gestiona las comodidades: Piscina, Jardín, Parqueadero, etc.</p>
+        <h1>Atributos de Propiedades</h1>
+        <p>Gestiona las atributos: Piscina, Jardín, Parqueadero, etc.</p>
       </div>
       <button @click="showModal = true" class="btn-primary">
         <span>➕</span>
@@ -49,7 +49,7 @@ definePageMeta({
   layout: 'admin'
 })
 
-useHead({ title: 'Comodidades - Admin' })
+useHead({ title: 'Atributos - Admin' })
 
 const supabase = useSupabaseClient()
 const loading = ref(false)

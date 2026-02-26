@@ -246,12 +246,12 @@
         </div>
       </div>
 
-      <!-- Comodidades -->
+      <!-- Atributos -->
       <div class="form-section">
-        <h2 class="section-title">Comodidades</h2>
+        <h2 class="section-title">Atributos</h2>
 
-        <div v-if="amenitiesLoading" class="loading-text">Cargando comodidades...</div>
-        <div v-else-if="amenities.length === 0" class="empty-text">No hay comodidades registradas</div>
+        <div v-if="amenitiesLoading" class="loading-text">Cargando atributos...</div>
+        <div v-else-if="amenities.length === 0" class="empty-text">No hay atributos registradas</div>
         <div v-else class="amenities-grid">
           <label
             v-for="amenity in amenities"
@@ -536,7 +536,7 @@ const loadProperty = async () => {
     existingImages.value = imagesData
   }
 
-  // Cargar comodidades seleccionadas
+  // Cargar atributos seleccionadas
   const { data: amenityData, error: amenityError } = await supabase
     .from('property_amenities')
     .select('amenity_id')
@@ -639,7 +639,7 @@ const loadZones = async () => {
   formData.value.zone_id = ''
 }
 
-// Cargar comodidades disponibles
+// Cargar atributos disponibles
 const loadAmenities = async () => {
   amenitiesLoading.value = true
 
@@ -649,7 +649,7 @@ const loadAmenities = async () => {
     .order('name')
 
   if (error) {
-    console.error('Error cargando comodidades:', error)
+    console.error('Error cargando atributos:', error)
     amenitiesLoading.value = false
     return
   }
@@ -799,19 +799,19 @@ const setMainImage = async (index) => {
   }
 }
 
-// Actualizar comodidades
+// Actualizar atributos
 const updateAmenities = async () => {
-  // Eliminar comodidades previas
+  // Eliminar atributos previas
   const { error: deleteError } = await supabase
     .from('property_amenities')
     .delete()
     .eq('property_id', propertyId)
 
   if (deleteError) {
-    console.error('Error eliminando comodidades previas:', deleteError)
+    console.error('Error eliminando atributos previas:', deleteError)
   }
 
-  // Insertar nuevas comodidades
+  // Insertar nuevas atributos
   if (selectedAmenities.value.length > 0) {
     const amenityRows = selectedAmenities.value.map(amenityId => ({
       property_id: propertyId,
@@ -823,7 +823,7 @@ const updateAmenities = async () => {
       .insert(amenityRows)
 
     if (insertError) {
-      console.error('Error guardando comodidades:', insertError)
+      console.error('Error guardando atributos:', insertError)
     }
   }
 }
@@ -889,7 +889,7 @@ const handleSubmit = async () => {
 
     if (error) throw error
 
-    // 5. Actualizar comodidades
+    // 5. Actualizar atributos
     await updateAmenities()
 
     notify('Propiedad actualizada exitosamente')
@@ -923,7 +923,7 @@ const handleDelete = async () => {
       await deleteImages()
     }
 
-    // 2. Eliminar comodidades asociadas
+    // 2. Eliminar atributos asociadas
     await supabase
       .from('property_amenities')
       .delete()
@@ -1078,7 +1078,7 @@ const handleDelete = async () => {
   cursor: pointer;
 }
 
-/* Comodidades */
+/* Atributos */
 .amenities-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));

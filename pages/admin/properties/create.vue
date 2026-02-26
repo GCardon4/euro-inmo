@@ -251,12 +251,12 @@
         </div>
       </div>
 
-      <!-- Comodidades -->
+      <!-- Atributos -->
       <div class="form-section">
-        <h2 class="section-title">Comodidades</h2>
+        <h2 class="section-title">Atributos</h2>
 
-        <div v-if="amenitiesLoading" class="loading-text">Cargando comodidades...</div>
-        <div v-else-if="amenities.length === 0" class="empty-text">No hay comodidades registradas</div>
+        <div v-if="amenitiesLoading" class="loading-text">Cargando atributos...</div>
+        <div v-else-if="amenities.length === 0" class="empty-text">No hay atributos registradas</div>
         <div v-else class="amenities-grid">
           <label
             v-for="amenity in amenities"
@@ -512,7 +512,7 @@ const loadZones = async () => {
   formData.value.zone_id = ''
 }
 
-// Cargar comodidades disponibles
+// Cargar atributos disponibles
 const loadAmenities = async () => {
   amenitiesLoading.value = true
 
@@ -522,7 +522,7 @@ const loadAmenities = async () => {
     .order('name')
 
   if (error) {
-    console.error('Error cargando comodidades:', error)
+    console.error('Error cargando atributos:', error)
     amenitiesLoading.value = false
     return
   }
@@ -664,7 +664,7 @@ const handleSubmit = async () => {
       }
     }
 
-    // 4. Guardar comodidades seleccionadas
+    // 4. Guardar atributos seleccionadas
     if (selectedAmenities.value.length > 0) {
       const amenityRows = selectedAmenities.value.map(amenityId => ({
         property_id: data.id,
@@ -676,7 +676,7 @@ const handleSubmit = async () => {
         .insert(amenityRows)
 
       if (amenityError) {
-        console.error('Error guardando comodidades:', amenityError)
+        console.error('Error guardando atributos:', amenityError)
       }
     }
 
@@ -831,7 +831,7 @@ const handleSubmit = async () => {
   cursor: pointer;
 }
 
-/* Comodidades */
+/* Atributos */
 .amenities-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));

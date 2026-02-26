@@ -179,9 +179,9 @@
             <p>{{ property.description }}</p>
           </div>
 
-          <!-- Comodidades -->
+          <!-- Atributos -->
           <div v-if="amenities.length > 0" class="amenities-section">
-            <h3>Comodidades</h3>
+            <h3>Atributos</h3>
             <div class="amenities-grid">
               <div v-for="amenity in amenities" :key="amenity.id" class="amenity-item">
                 <span>{{ amenity.name }}</span>
@@ -724,7 +724,7 @@ onUnmounted(() => {
   white-space: pre-wrap;
 }
 
-/* Comodidades */
+/* Atributos */
 .amenities-section {
   padding: 1.5rem;
   background: #f9fafb;

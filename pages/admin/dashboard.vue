@@ -71,8 +71,8 @@
 
           <NuxtLink to="/admin/amenities" class="action-card">
             <span class="action-icon">✨</span>
-            <h3>Comodidades</h3>
-            <p>Gestionar comodidades de inmuebles</p>
+            <h3>Atributos</h3>
+            <p>Gestionar atributos de inmuebles</p>
           </NuxtLink>
 
           <NuxtLink to="/admin/locations" class="action-card">
