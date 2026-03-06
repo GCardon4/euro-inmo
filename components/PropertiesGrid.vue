@@ -16,7 +16,7 @@
           :key="filter.value"
           class="quick-filter-btn"
           :class="{ active: selectedFilter === filter.value }"
-          @click="selectedFilter = filter.value"
+          @click="applyQuickFilter(filter.value)"
         >
           <Icon :name="filter.icon" custom-class="filter-icon" />
           <span>{{ filter.label }}</span>
@@ -35,9 +35,9 @@
         <p>{{ error }}</p>
       </div>
 
-      <div v-else-if="filteredProperties.length > 0" class="properties-grid">
+      <div v-else-if="properties.length > 0" class="properties-grid">
         <PropertyCard
-          v-for="property in displayedProperties"
+          v-for="property in properties"
           :key="property.id"
           :property="property"
         />
@@ -50,14 +50,15 @@
         <p>Intenta ajustar los filtros de búsqueda</p>
       </div>
 
-      <!-- Botón ver más -->
-      <div v-if="filteredProperties.length > propertiesPerPage" class="load-more">
+      <!-- Botón cargar más (paginación real desde Supabase) -->
+      <div v-if="hasMore" class="load-more">
         <button
-          v-if="displayedProperties.length < filteredProperties.length"
           class="btn-load-more"
+          :disabled="loadingMore"
           @click="loadMore"
         >
-          Ver más propiedades
+          <span v-if="loadingMore">Cargando...</span>
+          <span v-else>Ver más propiedades ({{ properties.length }} de {{ totalCount }})</span>
         </button>
       </div>
 
@@ -73,28 +74,194 @@
 </template>
 
 <script setup>
-// Estado de filtro seleccionado
+// Tamaño de cada lote de propiedades traído desde Supabase
+const PAGE_SIZE = 12
+
+// Filtro rápido de categoría (sincronizado con la URL)
 const selectedFilter = ref('all')
 
-// Propiedades por página y límite de carga desde Supabase
-const propertiesPerPage = 6
-const supabasePageSize = 24
-const currentPage = ref(1)
-
-// Cargar propiedades desde Supabase usando useAsyncData para SSR seguro
-const properties = ref([])
-const loading = ref(true)
-const error = ref(null)
-const quickFilters = ref([])
-
-// IMPORTANTE: Obtener composables FUERA del callback de useAsyncData
-// para evitar el error "nuxt instance unavailable"
+// IMPORTANTE: composables fuera de useAsyncData para evitar "nuxt instance unavailable"
+const router = useRouter()
+const route = useRoute()
 const supabase = useSupabaseClient()
 const config = useRuntimeConfig()
-const route = useRoute()
-const { parseURLFilters } = usePropertyFilters()
 
-// Cargar categorías de Supabase
+// Estado de propiedades y paginación real
+const properties = ref([])
+const totalCount = ref(0)
+const loadingMore = ref(false)
+const currentOffset = ref(0)
+const quickFilters = ref([])
+
+// Convertir texto a Title Case para comparar con nombres en la BD
+const toTitleCase = (str) => str ? str.replace(/\b\w/g, c => c.toUpperCase()) : ''
+
+// Construir query de Supabase con filtros activos desde URL y rango de paginación
+const buildQuery = (offset = 0) => {
+  let query = supabase
+    .from('properties')
+    .select(`
+      id,
+      code,
+      name,
+      description,
+      price,
+      rooms,
+      bathrooms,
+      area,
+      kitchen,
+      hall,
+      dining,
+      closet,
+      clothing,
+      gas,
+      dressing,
+      category!inner(name),
+      status!inner(name),
+      city!inner(id, name),
+      zone(name)
+    `, { count: 'exact' })
+    .eq('is_active', true)
+    .order('created_at', { ascending: false })
+    .range(offset, offset + PAGE_SIZE - 1)
+
+  // Filtrar por estado (venta/arriendo)
+  const statusFilter = route.query.status
+  if (statusFilter) {
+    const statusMap = { venta: 'Venta', arriendo: 'Arriendo', proyectos: 'Proyectos' }
+    query = query.eq('status.name', statusMap[statusFilter.toLowerCase()] || toTitleCase(statusFilter))
+  }
+
+  // Filtrar por categoría (la URL guarda el nombre en minúsculas)
+  const categoryFilter = route.query.categoryId
+  if (categoryFilter) {
+    query = query.eq('category.name', toTitleCase(categoryFilter.toLowerCase()))
+  }
+
+  // Filtrar por ciudad
+  const cityFilter = route.query.cityId
+  if (cityFilter) {
+    query = query.eq('city_id', cityFilter)
+  }
+
+  // Filtrar por rango de precio
+  const minPrice = route.query.minPrice ? parseInt(route.query.minPrice) : null
+  if (minPrice) query = query.gte('price', minPrice)
+
+  const maxPrice = route.query.maxPrice ? parseInt(route.query.maxPrice) : null
+  if (maxPrice) query = query.lte('price', maxPrice)
+
+  return query
+}
+
+// Mapear propiedades al formato del componente e incluir imagen principal
+const mapWithImages = async (data) => {
+  if (!data || data.length === 0) return []
+
+  const propertyIds = data.map(p => p.id)
+  const { data: allImages } = await supabase
+    .from('properties_images')
+    .select('property_id, url_image')
+    .in('property_id', propertyIds)
+    .eq('main', true)
+
+  const imageMap = {}
+  if (allImages) {
+    allImages.forEach(img => { imageMap[img.property_id] = img.url_image })
+  }
+
+  return data.map(prop => ({
+    id: prop.id,
+    code: prop.code,
+    name: prop.name,
+    category: prop.category?.name || 'Sin categoría',
+    status: prop.status?.name || 'Disponible',
+    cityId: prop.city?.id || null,
+    location: prop.zone ? `${prop.zone.name}, ${prop.city.name}` : (prop.city?.name || 'Sin ubicación'),
+    price: prop.price,
+    bedrooms: prop.rooms,
+    bathrooms: prop.bathrooms,
+    area: prop.area,
+    kitchen: prop.kitchen,
+    hall: prop.hall,
+    dining: prop.dining,
+    closet: prop.closet,
+    clothing: prop.clothing,
+    gas: prop.gas,
+    dressing: prop.dressing,
+    imageUrl: imageMap[prop.id] || '/property-img.jpg'
+  }))
+}
+
+// Carga inicial con soporte SSR — se refresca cuando cambian los filtros de la URL
+const { data: initialData, pending, error: fetchError, refresh } = await useAsyncData(
+  'featured-properties',
+  async () => {
+    if (!config.public.supabase?.url || !config.public.supabase?.key) {
+      return { properties: [], total: 0 }
+    }
+
+    const { data, error: supabaseError, count } = await buildQuery(0)
+
+    if (supabaseError) {
+      console.error('❌ Error de Supabase:', supabaseError)
+      throw new Error('No se pudieron cargar las propiedades')
+    }
+
+    const mapped = await mapWithImages(data)
+    console.log(`✅ Propiedades cargadas: ${mapped.length} de ${count} total`)
+    return { properties: mapped, total: count || 0 }
+  },
+  { default: () => ({ properties: [], total: 0 }) }
+)
+
+// Sincronizar estado al cargar o al cambiar filtros (resetea la lista)
+watch(initialData, (newData) => {
+  if (newData) {
+    properties.value = newData.properties || []
+    totalCount.value = newData.total || 0
+    currentOffset.value = (newData.properties || []).length
+  }
+}, { immediate: true })
+
+const loading = computed(() => pending.value)
+const error = computed(() => fetchError.value ? 'Error al cargar propiedades' : null)
+
+// Indica si quedan más propiedades por cargar en Supabase
+const hasMore = computed(() => properties.value.length < totalCount.value)
+
+// Cargar el siguiente lote de propiedades desde Supabase
+const loadMore = async () => {
+  if (loadingMore.value || !hasMore.value) return
+  loadingMore.value = true
+  try {
+    const { data, error: supabaseError } = await buildQuery(currentOffset.value)
+    if (supabaseError) throw supabaseError
+    if (data && data.length > 0) {
+      const mapped = await mapWithImages(data)
+      properties.value = [...properties.value, ...mapped]
+      currentOffset.value += data.length
+    }
+  } catch (err) {
+    console.error('❌ Error al cargar más propiedades:', err)
+  } finally {
+    loadingMore.value = false
+  }
+}
+
+// Obtener icono según categoría
+const getCategoryIcon = (categoryName) => {
+  const icons = {
+    'apartamento': 'apartment', 'apartamentos': 'apartment',
+    'casa': 'home', 'casas': 'home',
+    'finca': 'landscape', 'fincas': 'landscape',
+    'lote': 'grid_on', 'lotes': 'grid_on',
+    'local': 'store', 'locales': 'store'
+  }
+  return icons[categoryName] || 'home_work'
+}
+
+// Cargar categorías de Supabase para los filtros rápidos
 const loadCategories = async () => {
   try {
     const { data: categories, error: catError } = await supabase
@@ -107,22 +274,16 @@ const loadCategories = async () => {
       return []
     }
 
-    // Mapear categorías a filtros
     const categoryFilters = (categories || []).map(cat => ({
       label: cat.name,
       value: cat.name.toLowerCase().trim(),
       icon: getCategoryIcon(cat.name.toLowerCase())
     }))
 
-    // Agregar filtro "Todas" al principio
     quickFilters.value = [
       { label: 'Todas', value: 'all', icon: 'home_work' },
       ...categoryFilters
     ]
-
-    if (process.client) {
-      console.log('✅ Categorías cargadas:', quickFilters.value.map(f => `${f.label} (${f.value})`))
-    }
 
     return categoryFilters
   } catch (err) {
@@ -131,259 +292,45 @@ const loadCategories = async () => {
   }
 }
 
-// Obtener icono según categoría
-const getCategoryIcon = (categoryName) => {
-  const icons = {
-    'apartamento': 'apartment',
-    'apartamentos': 'apartment',
-    'casa': 'home',
-    'casas': 'home',
-    'finca': 'landscape',
-    'fincas': 'landscape',
-    'lote': 'grid_on',
-    'lotes': 'grid_on',
-    'local': 'store',
-    'locales': 'store'
+// Aplicar filtro rápido de categoría actualizando la URL (dispara nueva carga)
+const applyQuickFilter = (value) => {
+  selectedFilter.value = value
+  const newQuery = { ...route.query }
+  if (value === 'all') {
+    delete newQuery.categoryId
+  } else {
+    newQuery.categoryId = value
   }
-  return icons[categoryName] || 'home_work'
+  router.push({ query: newQuery })
 }
 
-// Cargar categorías al montar el componente
 onMounted(async () => {
   const loadedFilters = await loadCategories()
-  
-  // Si no se cargaron categorías, usar valores por defecto
   if (loadedFilters.length === 0) {
-    console.warn('⚠️ No se cargaron categorías, usando valores por defecto')
     quickFilters.value = [
       { label: 'Todas', value: 'all', icon: 'home_work' },
-      { label: 'Apartamentos', value: 'apartamentos', icon: 'apartment' },
-      { label: 'Casas', value: 'casas', icon: 'home' },
-      { label: 'Fincas', value: 'fincas', icon: 'landscape' },
-      { label: 'Lotes', value: 'lotes', icon: 'grid_on' }
+      { label: 'Apartamentos', value: 'apartamento', icon: 'apartment' },
+      { label: 'Casas', value: 'casa', icon: 'home' },
+      { label: 'Fincas', value: 'finca', icon: 'landscape' },
+      { label: 'Lotes', value: 'lote', icon: 'grid_on' }
     ]
   }
-  
-  // Aplicar filtros de URL si existen
-  const urlFilters = parseURLFilters()
-  if (urlFilters.selectedStatus) {
-    // Si hay status en URL, el componente mostrará un filtro especial
-    if (process.client) {
-      console.log('🔍 Filtros desde URL aplicados:', urlFilters)
-    }
-  }
-  
-  // Si hay categoría en la URL, aplicar ese filtro
-  if (urlFilters.selectedCategory) {
-    selectedFilter.value = urlFilters.selectedCategory
+
+  // Sincronizar filtro activo desde la URL
+  if (route.query.categoryId) {
+    selectedFilter.value = route.query.categoryId
   }
 })
 
-
-// Usar useAsyncData para cargar datos de forma segura en SSR
-const { data: propertiesData, pending, error: fetchError } = await useAsyncData(
-  'featured-properties',
-  async () => {
-    // Verificar que las credenciales de Supabase estén disponibles
-    if (!config.public.supabase?.url || !config.public.supabase?.key) {
-      console.warn('Configuración de Supabase no disponible')
-      return []
-    }
-
-    // Traer las propiedades activas con límite para reducir egress de Supabase
-    const { data, error: supabaseError } = await supabase
-      .from('properties')
-      .select(`
-        id,
-        code,
-        name,
-        description,
-        price,
-        rooms,
-        bathrooms,
-        area,
-        kitchen,
-        hall,
-        dining,
-        closet,
-        clothing,
-        gas,
-        dressing,
-        category!inner(name),
-        status!inner(name),
-        city!inner(id, name),
-        zone(name)
-      `)
-      .eq('is_active', true)
-      .order('created_at', { ascending: false })
-      .limit(supabasePageSize)
-
-    if (supabaseError) {
-      console.error('❌ Error de Supabase:', supabaseError)
-      throw new Error('No se pudieron cargar las propiedades')
-    }
-
-    if (!data || data.length === 0) {
-      console.warn('⚠️ No hay propiedades en la base de datos')
-      return []
-    }
-
-    console.log('✅ Propiedades cargadas:', data.length)
-
-    // Obtener imágenes principales de todas las propiedades en una sola consulta
-    const propertyIds = data.map(p => p.id)
-    const { data: allImages } = await supabase
-      .from('properties_images')
-      .select('property_id, url_image')
-      .in('property_id', propertyIds)
-      .eq('main', true)
-
-    // Crear mapa de imágenes para acceso rápido
-    const imageMap = {}
-    if (allImages) {
-      allImages.forEach(img => {
-        imageMap[img.property_id] = img.url_image
-      })
-    }
-
-    // Mapear propiedades con sus imágenes
-    const propertiesWithImages = data.map(prop => ({
-      id: prop.id,
-      code: prop.code,
-      name: prop.name,
-      category: prop.category?.name || 'Sin categoría',
-      status: prop.status?.name || 'Disponible',
-      cityId: prop.city?.id || null,
-      location: prop.zone ? `${prop.zone.name}, ${prop.city.name}` : (prop.city?.name || 'Sin ubicación'),
-      price: prop.price,
-      bedrooms: prop.rooms,
-      bathrooms: prop.bathrooms,
-      area: prop.area,
-      kitchen: prop.kitchen,
-      hall: prop.hall,
-      dining: prop.dining,
-      closet: prop.closet,
-      clothing: prop.clothing,
-      gas: prop.gas,
-      dressing: prop.dressing,
-      imageUrl: imageMap[prop.id] || '/property-img.jpg'
-    }))
-
-    return propertiesWithImages
-  },
-  {
-    default: () => []
-  }
-)
-
-// Sincronizar los datos con las refs reactivas
-watch(propertiesData, (newData) => {
-  if (newData && newData.length > 0) {
-    properties.value = newData
-    console.log('✅ PropertiesGrid: Datos sincronizados -', newData.length, 'propiedades')
-  }
-}, { immediate: true })
-
-watch(pending, (isPending) => {
-  loading.value = isPending
-}, { immediate: true })
-
-watch(fetchError, (err) => {
-  error.value = err ? 'Error al cargar propiedades' : null
-  if (err) {
-    console.error('❌ PropertiesGrid: Error -', err)
-  }
-}, { immediate: true })
-
-// Propiedades filtradas
-const filteredProperties = computed(() => {
-  let result = properties.value
-
-  // Filtrar por status desde la URL (sincronizado con HeroSection)
-  const statusFilter = route.query.status || ''
-  if (statusFilter) {
-    result = result.filter(prop => {
-      return prop.status.toLowerCase().trim() === statusFilter.toLowerCase().trim()
-    })
-  }
-
-  // Filtrar por ciudad desde la URL
-  const cityFilter = route.query.cityId || ''
-  if (cityFilter) {
-    result = result.filter(prop => {
-      return String(prop.cityId) === String(cityFilter)
-    })
-  }
-
-  // Filtrar por categoría (desde quick filters o desde URL)
-  const categoryFilter = route.query.categoryId || ''
-  const activeCategoryFilter = selectedFilter.value !== 'all' ? selectedFilter.value : categoryFilter
-  if (activeCategoryFilter) {
-    result = result.filter(prop => {
-      return prop.category.toLowerCase().trim() === activeCategoryFilter.toLowerCase().trim()
-    })
-  }
-
-  // Filtrar por precio mínimo
-  const minPrice = route.query.minPrice ? parseInt(route.query.minPrice) : null
-  if (minPrice) {
-    result = result.filter(prop => prop.price >= minPrice)
-  }
-
-  // Filtrar por precio máximo
-  const maxPrice = route.query.maxPrice ? parseInt(route.query.maxPrice) : null
-  if (maxPrice) {
-    result = result.filter(prop => prop.price <= maxPrice)
-  }
-
-  if (process.client) {
-    console.log(`🔍 Filtro: status="${statusFilter}", ciudad="${cityFilter}", categoría="${selectedFilter.value}", precio=[${minPrice || '-'}, ${maxPrice || '-'}] -> ${result.length} propiedades`)
-  }
-
-  return result
-})
-
-// Propiedades mostradas según paginación
-const displayedProperties = computed(() => {
-  return filteredProperties.value.slice(0, currentPage.value * propertiesPerPage)
-})
-
-// Cargar más propiedades
-const loadMore = () => {
-  currentPage.value++
-}
-
-// Resetear paginación al cambiar filtro
-watch(selectedFilter, () => {
-  currentPage.value = 1
-})
-
-// Resetear paginación al cambiar filtros desde la URL
-watch(() => route.query.status, () => {
-  currentPage.value = 1
-})
-
-watch(() => route.query.cityId, () => {
-  currentPage.value = 1
-})
-
+// Sincronizar selectedFilter cuando la categoría cambia desde la URL
 watch(() => route.query.categoryId, (newVal) => {
-  currentPage.value = 1
-  // Sincronizar selectedFilter al remover/cambiar categoría desde URL
-  if (!newVal) {
-    selectedFilter.value = 'all'
-  } else {
-    selectedFilter.value = newVal
-  }
+  selectedFilter.value = newVal || 'all'
 })
 
-watch(() => route.query.minPrice, () => {
-  currentPage.value = 1
-})
-
-watch(() => route.query.maxPrice, () => {
-  currentPage.value = 1
-})
+// Re-cargar desde Supabase cuando cambie cualquier filtro de la URL
+watch(() => route.query, () => {
+  refresh()
+}, { deep: true })
 </script>
 
 <style scoped>
