@@ -36,6 +36,10 @@
               Hasta: {{ formatPrice(activeFilters.maxPrice) }}
               <button @click="clearFilter('maxPrice')" class="close-btn">✕</button>
             </span>
+            <span v-if="activeFilters.code" class="filter-chip">
+              Código: {{ activeFilters.code }}
+              <button @click="clearFilter('code')" class="close-btn">✕</button>
+            </span>
           </div>
           <button @click="clearAllFilters" class="btn-clear-all">Limpiar todos</button>
         </div>
@@ -66,12 +70,13 @@ const activeFilters = computed(() => ({
   categoryId: route.query.categoryId || '',
   cityId: route.query.cityId || '',
   minPrice: route.query.minPrice ? parseInt(route.query.minPrice) : null,
-  maxPrice: route.query.maxPrice ? parseInt(route.query.maxPrice) : null
+  maxPrice: route.query.maxPrice ? parseInt(route.query.maxPrice) : null,
+  code: route.query.code || ''
 }))
 
 const hasActiveFilters = computed(() => {
   const f = activeFilters.value
-  return Boolean(f.status || f.categoryId || f.cityId || f.minPrice || f.maxPrice)
+  return Boolean(f.status || f.categoryId || f.cityId || f.minPrice || f.maxPrice || f.code)
 })
 
 // Cargar nombres de categorías y ciudades

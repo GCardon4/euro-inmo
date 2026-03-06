@@ -144,6 +144,12 @@ const buildQuery = (offset = 0) => {
     query = query.eq('city_id', cityFilter)
   }
 
+  // Filtrar por código de propiedad (búsqueda parcial)
+  const codeFilter = route.query.code
+  if (codeFilter) {
+    query = query.ilike('code', `%${codeFilter}%`)
+  }
+
   // Filtrar por rango de precio
   const minPrice = route.query.minPrice ? parseInt(route.query.minPrice) : null
   if (minPrice) query = query.gte('price', minPrice)

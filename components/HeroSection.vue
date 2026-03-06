@@ -78,6 +78,18 @@
             </select>
           </div>
 
+          <!-- Código de propiedad -->
+          <div class="form-group">
+            <label for="code">Código</label>
+            <input
+              v-model="searchFilters.code"
+              type="text"
+              id="code"
+              class="form-input"
+              placeholder="Ej: EUR-001"
+            >
+          </div>
+
           <!-- Rango de precio -->
           <div class="form-group">
             <label for="minPrice">Precio Mínimo</label>
@@ -210,6 +222,7 @@ watch(selectedStatus, (newStatus) => {
   router.replace({ query })
 })
 const searchFilters = ref({
+  code: '',
   categoryId: '',
   cityId: '',
   minPrice: null,
@@ -293,6 +306,10 @@ const handleSearch = () => {
     filters.status = selectedStatus.value
   }
   
+  if (searchFilters.value.code) {
+    filters.code = searchFilters.value.code.trim()
+  }
+
   if (searchFilters.value.categoryId) {
     filters.categoryId = searchFilters.value.categoryId
   }
