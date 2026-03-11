@@ -305,7 +305,7 @@ const whatsappContacto = computed(() => {
 const whatsappLink = computed(() => {
   if (!property.value) return '#'
   const tipoPropiedad = property.value.category?.name || 'Propiedad'
-  const zona = property.value.zone?.name || 'Sin especificar'
+  const zona = property.value.zone?.name || ' '
   const codigo = property.value.code
   const mensaje = `Quiero saber acerca de ${tipoPropiedad}, en ${zona}, con el código ${codigo}, Muchas gracias`
   return `https://wa.me/${whatsappContacto.value}?text=${encodeURIComponent(mensaje)}`
