@@ -67,19 +67,19 @@
 const agents = ref([
   {
     id: 1,
-    name: 'Valentina Florez',
-    role: 'Asesora Arriendos',
-    photo: '/asesores/asesor-01.jpeg',
+    name: 'Leidy Gil',
+    role: 'Asesora Comercial',
+    photo: '/asesores/asesor-01.jpg',
     properties: 45,
     rating: '4.9',
     description: 'Especialista en propiedades residenciales del Oriente Antioqueño con 8 años de experiencia.',
-    whatsapp: 'https://wa.me/573012421919'
+    whatsapp: 'https://wa.me/573507776633'
   },
   {
     id: 2,
-    name: 'Mayerly Martínez',
-    role: 'Contabilidad',
-    photo: '/asesores/asesor-02.jpeg',
+    name: 'Alejandra Vergara',
+    role: 'Asesora Comercial',
+    photo: '/asesores/asesor-02.jpg',
     properties: 38,
     rating: '4.8',
     description: 'Experto en fincas y propiedades rurales. Conocimiento profundo del mercado regional.',
@@ -87,35 +87,25 @@ const agents = ref([
   },
   {
     id: 3,
-    name: 'Leidy Gil',
-    role: 'Asesora Ventas',
-    photo: '/asesores/asesor-03.jpeg',
+    name: 'Mayerly Martínez',
+    role: 'Asesora Inmobiliaria',
+    photo: '/asesores/asesor-03.jpg',
     properties: 52,
     rating: '5.0',
-    description: 'Líder en ventas de apartamentos y locales comerciales. Atención personalizada garantizada.',
-    whatsapp: 'https://wa.me/573507776633'
-  },
-   {
-    id: 4,
-    name: 'Natalia López',
-    role: 'Asesora Inmobiliaria',
-    photo: '/asesores/asesor-04.jpeg',
-    properties: 28,
-    rating: '4.7',
     description: 'Líder en ventas de apartamentos y locales comerciales. Atención personalizada garantizada.',
     whatsapp: 'https://wa.me/573236536666'
   },
   {
-    id: 5,
+    id: 4,
     name: 'Diana García',
     role: 'Gerente General',
-    photo: '/asesores/asesor-05.jpg'
+    photo: '/asesores/asesor-04.jpg'
   },
   {
-    id: 6,
+    id: 5,
     name: 'Juan Felipe Urrea',
     role: 'Abogado',
-    photo: '/asesores/asesor-06.jpg'
+    photo: '/asesores/asesor-05.jpg'
   }
 ])
 </script>
